@@ -1,0 +1,15 @@
+jwt:
+  secret: ilmklaopdk23klmkalsklk3klnfjknjkndm2lld
+  access-expire: 60000
+  refresh-expire: 1000000000
+
+spring:
+  security:
+    oauth2:
+      client:
+        registration:
+          github:
+            client-id: Ov23liI00bUYPa2kUsYU
+            client-secret: 97353ad84834dd0b3940a248c10563fc1d8e79e9
+            redirect-uri: https://ttalkak.com/v1/auth/oauth2/code/github
+            scope: repo, admin:repo_hook, user

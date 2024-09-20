@@ -1,0 +1,43 @@
+spring:
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://34.64.227.45:5432/ttalkak
+    username: ttalkak
+    password: ttalkak
+  data:
+    redis:
+      host: 34.64.227.45
+      port: 6379
+      password: ttalkak
+
+  jpa:
+    hibernate:
+      dialect: org.hibernate.dialect.PostgreSQLDialect
+      ddl-auto: update
+
+  kafka:
+    consumer:
+      group-id: deployment
+    bootstrap-servers: pkc-gq2xn.asia-northeast3.gcp.confluent.cloud:9092
+    properties:
+      security.protocol: SASL_SSL
+      sasl.mechanism: PLAIN
+      sasl.jaas.config: org.apache.kafka.common.security.plain.PlainLoginModule required username='SFNPCFPWJ2MXHBAT' password='Ncu+N8VXz2I8q/1SuuxIYopg7IfHQOFo6TPUR7jFl2DtG2irFqXn2dqdCRz6ykMA';
+
+eureka:
+  instance:
+    instance-id: ${spring.cloud.client.hostname}:${spring.application.instance_id:${random.value}}
+  client:
+    fetch-registry: true
+    register-with-eureka: true
+
+management:
+  tracing:
+    sampling:
+      probability: 1.0
+
+# 임시 디버그 로그 추가
+logging:
+  level:
+    com:
+      ttalkak: DEBUG

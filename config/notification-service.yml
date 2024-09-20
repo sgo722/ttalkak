@@ -1,0 +1,14 @@
+spring:
+  mail:
+    username: sunsuking.dev
+    password: ccdg mnjy ecql bmfi
+    default-encoding: UTF-8
+    host: smtp.gmail.com
+    port: 587
+    properties:
+      mail:
+        smtp:
+          auth: true
+          timeout: 5000
+          starttls:
+            enable: true
