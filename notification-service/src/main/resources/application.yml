@@ -1,0 +1,24 @@
+server:
+  port: 0
+
+spring:
+  profiles:
+    include: kafka
+  application:
+    name: notification-service
+  mail:
+    default-encoding: UTF-8
+    host: smtp.gmail.com
+    port: 587
+    properties:
+      mail:
+        smtp:
+          auth: true
+          timeout: 5000
+          starttls:
+            enable: true
+
+producer:
+  topics:
+    verify-user-email:
+      name: verify-user-email

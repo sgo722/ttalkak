@@ -1,0 +1,352 @@
+openapi: 3.0.1
+info:
+  title: TTALKAK API Documentation
+  description: 딸깍 프로젝트 배포 API 문서입니다.
+  version: 0.0.1
+servers:
+- url: http://localhost:8080
+- url: https://www.ttalkak.com
+tags: []
+paths:
+  /v1/deployment:
+    post:
+      tags:
+      - 배포
+      summary: 배포 생성
+      description: 사용자가 FRONTEND 혹은 BACKEND를 배포할 수 있습니다.
+      operationId: deployment-controller-test/create-deployment
+      requestBody:
+        content:
+          application/json;charset=UTF-8:
+            schema:
+              $ref: '#/components/schemas/v1-deployment-1100406878'
+            examples:
+              deployment-controller-test/create-deployment:
+                value: "{\r\n  \"projectId\" : 1,\r\n  \"serviceType\" : \"BACKEND\"\
+                  ,\r\n  \"hostingPort\" : 8080,\r\n  \"githubRepositoryRequest\"\
+                  \ : {\r\n    \"repositoryOwner\" : \"repoOwner\",\r\n    \"repositoryName\"\
+                  \ : \"repo-name\",\r\n    \"repositoryUrl\" : \"https://github.com/repo-url\"\
+                  ,\r\n    \"rootDirectory\" : \"root/\",\r\n    \"branch\" : \"main\"\
+                  \r\n  },\r\n  \"versionRequest\" : {\r\n    \"repositoryLastCommitMessage\"\
+                  \ : \"Initial commit\",\r\n    \"repositoryLastCommitUserProfile\"\
+                  \ : \"https://github.com/user/profile\",\r\n    \"repositoryLastCommitUserName\"\
+                  \ : \"userName\"\r\n  },\r\n  \"databaseCreateRequests\" : [ {\r\
+                  \n    \"databaseName\" : \"MYSQL\",\r\n    \"databasePort\" : 3306,\r\
+                  \n    \"username\" : \"dbUser\",\r\n    \"password\" : \"dbPassword\"\
+                  \r\n  } ],\r\n  \"envs\" : [ {\r\n    \"key\" : \"key1\",\r\n  \
+                  \  \"value\" : \"value1\"\r\n  }, {\r\n    \"key\" : \"key2\",\r\
+                  \n    \"value\" : \"value2\"\r\n  } ],\r\n  \"framework\" : \"Spring\
+                  \ Boot\"\r\n}"
+      responses:
+        "201":
+          description: "201"
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/v1-deployment-1908880419'
+              examples:
+                deployment-controller-test/create-deployment:
+                  value: "{\r\n  \"success\" : true,\r\n  \"message\" : \"CREATED\"\
+                    ,\r\n  \"status\" : 201,\r\n  \"data\" : {\r\n    \"webhookUrl\"\
+                    \ : \"https://ttalkak.com/webhook/deployment/backend/{webhooktoken}\"\
+                    \r\n  }\r\n}"
+  /v1/deployment/{deploymentId}:
+    get:
+      tags:
+      - 배포
+      summary: 배포 상세 조회
+      description: 사용자가 FRONTEND 혹은 BACKEND를 배포할 수 있습니다.
+      operationId: deployment-controller-test/get-deployment
+      parameters:
+      - name: deploymentId
+        in: path
+        description: 조회할 배포의 ID
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: "200"
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/v1-deployment-deploymentId-1789972629'
+              examples:
+                deployment-controller-test/get-deployment:
+                  value: "{\r\n  \"success\" : true,\r\n  \"message\" : \"OK\",\r\n\
+                    \  \"status\" : 200,\r\n  \"data\" : {\r\n    \"deploymentId\"\
+                    \ : 1,\r\n    \"projectId\" : 1,\r\n    \"status\" : \"PENDING\"\
+                    ,\r\n    \"serviceType\" : \"BACKEND\",\r\n    \"repositoryName\"\
+                    \ : \"repo-name\",\r\n    \"repositoryUrl\" : \"sgo722\",\r\n\
+                    \    \"branch\" : \"main\",\r\n    \"repositoryOwner\" : \"https://github.com/repo-url\"\
+                    ,\r\n    \"framework\" : \"Spring Boot\",\r\n    \"payloadURL\"\
+                    \ : \"https://ttalkak.com/webhook/deployment/backend/{webhooktoken}\"\
+                    ,\r\n    \"versions\" : [ {\r\n      \"id\" : 1,\r\n      \"version\"\
+                    \ : 1,\r\n      \"logUrl\" : \"https://ttalkak.com/logs/1\",\r\
+                    \n      \"repositoryLastCommitMessage\" : \"Initial commit\",\r\
+                    \n      \"repositoryLastCommitUserProfile\" : \"https://github.com/user/profile\"\
+                    ,\r\n      \"repositoryLastCommitUserName\" : \"userName\"\r\n\
+                    \    } ],\r\n    \"envs\" : [ {\r\n      \"envId\" : 1,\r\n  \
+                    \    \"key\" : \"key1\",\r\n      \"value\" : \"value1\"\r\n \
+                    \   }, {\r\n      \"envId\" : 2,\r\n      \"key\" : \"key2\",\r\
+                    \n      \"value\" : \"value2\"\r\n    } ],\r\n    \"hostingResponse\"\
+                    \ : {\r\n      \"hostingId\" : 1,\r\n      \"detailDomainName\"\
+                    \ : \"backend.ttalkak.com\",\r\n      \"serviceType\" : \"BACKEND\"\
+                    ,\r\n      \"hostingPort\" : 8080\r\n    },\r\n    \"databaseResponses\"\
+                    \ : [ {\r\n      \"databaseId\" : 1,\r\n      \"databaseType\"\
+                    \ : \"MYSQL\",\r\n      \"username\" : \"dbUser\",\r\n      \"\
+                    password\" : \"dbPassword\",\r\n      \"port\" : 3306\r\n    },\
+                    \ {\r\n      \"databaseId\" : 2,\r\n      \"databaseType\" : \"\
+                    REDIS\",\r\n      \"username\" : \"redisUser\",\r\n      \"password\"\
+                    \ : \"redisPassword\",\r\n      \"port\" : 6379\r\n    } ]\r\n\
+                    \  }\r\n}"
+    delete:
+      tags:
+      - 배포
+      summary: 배포 삭제
+      description: 사용자가 배포했던 기록을 삭제할 수 있습니다.
+      operationId: deployment-controller-test/delete-deployment
+      parameters:
+      - name: deploymentId
+        in: path
+        description: 배포 ID
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: "200"
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/v1-deployment-deploymentId938806120'
+              examples:
+                deployment-controller-test/delete-deployment:
+                  value: "{\r\n  \"success\" : true,\r\n  \"message\" : \"OK\",\r\n\
+                    \  \"status\" : 200,\r\n  \"data\" : null\r\n}"
+components:
+  schemas:
+    v1-deployment-deploymentId-1789972629:
+      type: object
+      properties:
+        data:
+          type: object
+          properties:
+            serviceType:
+              type: string
+              description: "서비스 유형 (예: FRONTEND, BACKEND)"
+            hostingResponse:
+              type: object
+              properties:
+                hostingPort:
+                  type: number
+                  description: 호스팅 포트
+                serviceType:
+                  type: string
+                  description: 호스팅 서비스 타입
+                detailDomainName:
+                  type: string
+                  description: 호스팅 서브 도메인 이름
+                hostingId:
+                  type: number
+                  description: 호스팅 ID
+              description: 호스팅 정보
+            repositoryOwner:
+              type: string
+              description: 깃허브 레포지토리 오너
+            envs:
+              type: array
+              description: 환경 변수 목록
+              items:
+                type: object
+                properties:
+                  envId:
+                    type: number
+                    description: 환경 변수 ID
+                  value:
+                    type: string
+                    description: 환경 변수 값
+                  key:
+                    type: string
+                    description: 환경 변수 키
+            repositoryName:
+              type: string
+              description: 깃허브 저장소 이름
+            branch:
+              type: string
+              description: 깃허브 브랜치
+            payloadURL:
+              type: string
+              description: Payload URL
+            repositoryUrl:
+              type: string
+              description: 깃허브 저장소 URL
+            framework:
+              type: string
+              description: 사용된 프레임워크
+            versions:
+              type: array
+              description: 버전 정보 목록
+              items:
+                type: object
+                properties:
+                  repositoryLastCommitUserName:
+                    type: string
+                    description: 최근 커밋 유저 이름
+                  repositoryLastCommitUserProfile:
+                    type: string
+                    description: 최근 커밋 유저 프로필 URL
+                  id:
+                    type: number
+                    description: 버전 ID
+                  logUrl:
+                    type: string
+                    description: 로그 URL
+                  repositoryLastCommitMessage:
+                    type: string
+                    description: 최근 커밋 메시지
+                  version:
+                    type: number
+                    description: 버전 번호
+            databaseResponses:
+              type: array
+              description: 데이터베이스 응답 목록
+              items:
+                type: object
+                properties:
+                  databaseType:
+                    type: string
+                    description: 데이터베이스 타입
+                  password:
+                    type: string
+                    description: 데이터베이스 비밀번호
+                  port:
+                    type: number
+                    description: 데이터베이스 포트번호
+                  databaseId:
+                    type: number
+                    description: 데이터베이스 ID
+                  username:
+                    type: string
+                    description: 데이터베이스 사용자 이름
+            deploymentId:
+              type: number
+              description: 배포의 ID
+            projectId:
+              type: number
+              description: 프로젝트의 ID
+            status:
+              type: string
+              description: "배포 상태 (예: READY, RUNNING, ERROR)"
+        success:
+          type: boolean
+          description: 요청 성공 여부
+        message:
+          type: string
+          description: "응답 메시지 (예: 'OK')"
+        status:
+          type: number
+          description: "응답 코드 (예: 200)"
+    v1-deployment-1908880419:
+      type: object
+      properties:
+        data:
+          type: object
+          properties:
+            webhookUrl:
+              type: string
+              description: 웹 훅 URL
+        success:
+          type: boolean
+          description: 요청 성공 여부
+        message:
+          type: string
+          description: 응답 메시지 (현재 null)
+        status:
+          type: number
+          description: "응답 코드 (예: 201)"
+    v1-deployment-1100406878:
+      type: object
+      properties:
+        hostingPort:
+          type: number
+          description: 호스팅 포트
+        serviceType:
+          type: string
+          description: "서비스 유형 (예: FRONTEND, BACKEND)"
+        githubRepositoryRequest:
+          type: object
+          properties:
+            repositoryOwner:
+              type: string
+              description: 깃허브 레포지토리 오너
+            rootDirectory:
+              type: string
+              description: 루트 디렉토리 경로
+            repositoryName:
+              type: string
+              description: 깃허브 저장소 이름
+            branch:
+              type: string
+              description: 깃허브 브랜치
+            repositoryUrl:
+              type: string
+              description: 깃허브 저장소 URL
+        framework:
+          type: string
+          description: 프레임워크
+        envs:
+          type: array
+          items:
+            type: object
+            properties:
+              value:
+                type: string
+                description: 환경변수 키에 해당하는 응답값
+              key:
+                type: string
+                description: 환경변수 키 값
+        databaseCreateRequests:
+          type: array
+          items:
+            type: object
+            properties:
+              password:
+                type: string
+                description: 데이터베이스 비밀번호
+              databaseName:
+                type: string
+                description: 데이터베이스 이름
+              username:
+                type: string
+                description: 데이터베이스 사용자 이름
+              databasePort:
+                type: number
+                description: 데이터베이스 포트
+        projectId:
+          type: number
+          description: 프로젝트 ID
+        versionRequest:
+          type: object
+          properties:
+            repositoryLastCommitUserName:
+              type: string
+              description: 깃허브 레포지토리 마지막 커밋 유저 이름
+            repositoryLastCommitUserProfile:
+              type: string
+              description: 깃허브 레포지토리 커밋 유저 프로필 이미지
+            repositoryLastCommitMessage:
+              type: string
+              description: 깃허브 레포지토리 마지막 커밋 메시지
+    v1-deployment-deploymentId938806120:
+      type: object
+      properties:
+        success:
+          type: boolean
+          description: 성공 여부
+        message:
+          type: string
+          description: 응답 메시지
+        status:
+          type: number
+          description: HTTP 상태 코드
