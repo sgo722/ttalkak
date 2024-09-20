@@ -1,0 +1,15 @@
+jwt:
+  secret: asdqwfjidjogwieogkdnvoiweogiweywhrudjbf
+  access-expire: 1000000000
+  refresh-expire: 1000000000
+
+spring:
+  security:
+    oauth2:
+      client:
+        registration:
+          github:
+            client-id: Ov23likLdgFUK74uRDuf
+            client-secret: d07d1813369e716960ee3e5cdffd074a6ff3ff47
+            redirect-uri: http://localhost:8000/v1/auth/oauth2/code/github
+            scope: repo, admin:repo_hook, user
