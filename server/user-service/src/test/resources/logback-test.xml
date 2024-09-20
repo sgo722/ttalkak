@@ -1,0 +1,13 @@
+<configuration>
+    <!-- ConsoleAppender만 사용하여 STDOUT에만 로그를 출력하도록 설정 -->
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <!-- ROOT 로거에 ConsoleAppender를 연결 -->
+    <root level="INFO">
+        <appender-ref ref="STDOUT" />
+    </root>
+</configuration>
