@@ -1,0 +1,448 @@
+openapi: 3.0.1
+info:
+  title: TTALKAK API Documentation
+  description: 딸깍 프로젝트 배포 API 문서입니다.
+  version: 0.0.1
+servers:
+- url: http://localhost:8080
+- url: https://www.ttalkak.com
+tags: []
+paths:
+  /v1/project:
+    post:
+      tags:
+      - 프로젝트
+      summary: 프로젝트 생성
+      description: 사용자는 프로젝트를 생성할 수 있습니다.
+      operationId: project-controller-test/프로젝트_생성_테스트
+      requestBody:
+        content:
+          application/json;charset=UTF-8:
+            schema:
+              $ref: '#/components/schemas/v1-project531068385'
+            examples:
+              project-controller-test/프로젝트_생성_테스트:
+                value: "{\r\n  \"projectName\" : \"project\",\r\n  \"domainName\"\
+                  \ : \"domain\"\r\n}"
+      responses:
+        "200":
+          description: "200"
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/v1-project-1610656077'
+              examples:
+                project-controller-test/프로젝트_생성_테스트:
+                  value: "{\r\n  \"success\" : true,\r\n  \"message\" : \"\",\r\n\
+                    \  \"status\" : 201,\r\n  \"data\" : {\r\n    \"id\" : 1,\r\n\
+                    \    \"userId\" : 1,\r\n    \"projectName\" : \"project\",\r\n\
+                    \    \"domainName\" : \"domain\",\r\n    \"createdAt\" : \"2024-01-01T00:00:00\"\
+                    ,\r\n    \"updatedAt\" : \"2024-01-01T00:00:00\"\r\n  }\r\n}"
+  /v1/project/search:
+    get:
+      tags:
+      - 프로젝트
+      summary: 프로젝트 페이징 조회
+      description: 사용자는 프로젝트를 페이징 조회할 수 있습니다.
+      operationId: project-controller-test/프로젝트_페이징_조회
+      responses:
+        "200":
+          description: "200"
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/v1-project-search-2146246880'
+              examples:
+                project-controller-test/프로젝트_페이징_조회:
+                  value: "{\r\n  \"success\" : true,\r\n  \"message\" : \"OK\",\r\n\
+                    \  \"status\" : 200,\r\n  \"data\" : {\r\n    \"content\" : [\
+                    \ {\r\n      \"id\" : 1,\r\n      \"userId\" : 1,\r\n      \"\
+                    projectName\" : \"project1\",\r\n      \"domainName\" : \"domain1\"\
+                    ,\r\n      \"webhookToken\" : \"githubWebhookToken\",\r\n    \
+                    \  \"createdAt\" : \"2024-01-01T00:00:00\",\r\n      \"updatedAt\"\
+                    \ : \"2024-01-01T00:00:00\",\r\n      \"deployments\" : [ ]\r\n\
+                    \    }, {\r\n      \"id\" : 1,\r\n      \"userId\" : 1,\r\n  \
+                    \    \"projectName\" : \"project2\",\r\n      \"domainName\" :\
+                    \ \"domain2\",\r\n      \"webhookToken\" : \"githubWebhookToken\"\
+                    ,\r\n      \"createdAt\" : \"2024-01-01T00:00:00\",\r\n      \"\
+                    updatedAt\" : \"2024-01-01T00:00:00\",\r\n      \"deployments\"\
+                    \ : [ ]\r\n    } ],\r\n    \"pageNumber\" : 0,\r\n    \"pageSize\"\
+                    \ : 0,\r\n    \"totalElements\" : 0,\r\n    \"totalPages\" : 0\r\
+                    \n  }\r\n}"
+  /v1/project/{projectId}:
+    get:
+      tags:
+      - 프로젝트
+      summary: 프로젝트 조회
+      description: 사용자는 프로젝트를 조회할 수 있습니다.
+      operationId: project-controller-test/프로젝트_조회_테스트
+      parameters:
+      - name: projectId
+        in: path
+        description: 프로젝트 ID
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: "200"
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/v1-project-projectId-1571942885'
+              examples:
+                project-controller-test/프로젝트_조회_테스트:
+                  value: "{\r\n  \"success\" : true,\r\n  \"message\" : \"OK\",\r\n\
+                    \  \"status\" : 200,\r\n  \"data\" : {\r\n    \"id\" : 1,\r\n\
+                    \    \"userId\" : 1,\r\n    \"projectName\" : \"project\",\r\n\
+                    \    \"domainName\" : \"domain\",\r\n    \"webhookToken\" : \"\
+                    githubWebhookToken\",\r\n    \"createdAt\" : \"2024-01-01T00:00:00\"\
+                    ,\r\n    \"updatedAt\" : \"2024-01-01T00:00:00\",\r\n    \"deployments\"\
+                    \ : [ {\r\n      \"deploymentId\" : 1,\r\n      \"projectId\"\
+                    \ : 1,\r\n      \"status\" : \"RUNNING\",\r\n      \"serviceType\"\
+                    \ : \"BACKEND\",\r\n      \"repositoryName\" : \"repo-name\",\r\
+                    \n      \"repositoryUrl\" : \"https://github.com/repo-url\",\r\
+                    \n      \"repositoryLastCommitMessage\" : \"Initial commit\",\r\
+                    \n      \"repositoryLastCommitUserProfile\" : \"https://github.com/user/profile\"\
+                    ,\r\n      \"repositoryLastCommitUserName\" : \"userName\",\r\n\
+                    \      \"repositoryOwner\" : \"sgo722\"\r\n    } ]\r\n  }\r\n}"
+    delete:
+      tags:
+      - 프로젝트
+      summary: 프로젝트 삭제
+      description: 사용자는 프로젝트를 삭제할 수 있습니다.
+      operationId: project-controller-test/delete-project
+      parameters:
+      - name: projectId
+        in: path
+        description: 삭제할 프로젝트의 ID
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: "200"
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/v1-project-projectId-1129293166'
+              examples:
+                project-controller-test/delete-project:
+                  value: "{\r\n  \"success\" : true,\r\n  \"message\" : null,\r\n\
+                    \  \"status\" : 200,\r\n  \"data\" : null\r\n}"
+    patch:
+      tags:
+      - v1
+      operationId: project-controller-test/update-project
+      parameters:
+      - name: projectId
+        in: path
+        description: 프로젝트 ID
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json;charset=UTF-8:
+            schema:
+              $ref: '#/components/schemas/v1-project-projectId486549215'
+            examples:
+              project-controller-test/update-project:
+                value: "{\r\n  \"projectName\" : \"updatedProject\",\r\n  \"domainName\"\
+                  \ : \"updatedDomain\"\r\n}"
+      responses:
+        "200":
+          description: "200"
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/v1-project-projectId-930093202'
+              examples:
+                project-controller-test/update-project:
+                  value: "{\r\n  \"success\" : true,\r\n  \"message\" : \"OK\",\r\n\
+                    \  \"status\" : 200,\r\n  \"data\" : {\r\n    \"id\" : 1,\r\n\
+                    \    \"userId\" : 1,\r\n    \"projectName\" : \"updatedProject\"\
+                    ,\r\n    \"domainName\" : \"updatedDomain\",\r\n    \"webhookToken\"\
+                    \ : \"githubWebhookToken\",\r\n    \"createdAt\" : \"2024-01-01T00:00:00\"\
+                    ,\r\n    \"updatedAt\" : \"2024-01-01T00:00:00\",\r\n    \"deployments\"\
+                    \ : null\r\n  }\r\n}"
+  /v1/project/domain/check:
+    post:
+      tags:
+      - 프로젝트
+      summary: 중복되지 않는 도메인
+      description: 도메인이 중복되지 않을 시 도메인 생성이 가능합니다.
+      operationId: project-controller-test/중복되지_않는_도메인
+      requestBody:
+        content:
+          application/json;charset=UTF-8:
+            schema:
+              $ref: '#/components/schemas/v1-project-domain-check-2035933760'
+            examples:
+              project-controller-test/중복되지_않는_도메인:
+                value: "{\r\n  \"domainName\" : \"domain\"\r\n}"
+      responses:
+        "200":
+          description: "200"
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/v1-project-domain-check1272779915'
+              examples:
+                project-controller-test/중복되지_않는_도메인:
+                  value: "{\r\n  \"success\" : true,\r\n  \"message\" : \"OK\",\r\n\
+                    \  \"status\" : 200,\r\n  \"data\" : {\r\n    \"message\" : \"\
+                    생성할 수 있는 도메인입니다.\",\r\n    \"canMake\" : true\r\n  }\r\n}"
+components:
+  schemas:
+    v1-project-projectId-930093202:
+      type: object
+      properties:
+        data:
+          type: object
+          properties:
+            createdAt:
+              type: string
+              description: 생성일시
+            domainName:
+              type: string
+              description: 도메인명
+            webhookToken:
+              type: string
+              description: 웹 훅 토큰
+            id:
+              type: number
+              description: 프로젝트 ID
+            projectName:
+              type: string
+              description: 프로젝트명
+            userId:
+              type: number
+              description: 유저 ID
+            updatedAt:
+              type: string
+              description: 업데이트일시
+        success:
+          type: boolean
+          description: 요청 성공 여부
+        message:
+          type: string
+          description: 응답 메시지 (현재 null)
+        status:
+          type: number
+          description: "응답 코드 (예: 201)"
+    v1-project-search-2146246880:
+      type: object
+      properties:
+        data:
+          type: object
+          properties:
+            pageNumber:
+              type: number
+              description: 현재 페이지 번호
+            totalPages:
+              type: number
+              description: 전체 페이지 수
+            pageSize:
+              type: number
+              description: 페이지 크기
+            content:
+              type: array
+              description: 프로젝트 목록
+              items:
+                type: object
+                properties:
+                  createdAt:
+                    type: string
+                    description: 생성 일시
+                  deployments:
+                    type: array
+                    description: 배포 정보
+                    items:
+                      oneOf:
+                      - type: object
+                      - type: boolean
+                      - type: string
+                      - type: number
+                  domainName:
+                    type: string
+                    description: 도메인 이름
+                  id:
+                    type: number
+                    description: 프로젝트 ID
+                  webhookToken:
+                    type: string
+                    description: 웹 훅 토큰
+                  projectName:
+                    type: string
+                    description: 프로젝트 이름
+                  userId:
+                    type: number
+                    description: 사용자 ID
+                  updatedAt:
+                    type: string
+                    description: 수정 일시
+            totalElements:
+              type: number
+              description: 전체 항목 수
+        success:
+          type: boolean
+          description: 요청 성공 여부
+        message:
+          type: string
+          description: 응답 메시지 (현재 null)
+        status:
+          type: number
+          description: "응답 코드 (예: 201)"
+    v1-project-projectId-1129293166:
+      type: object
+      properties:
+        success:
+          type: boolean
+          description: 요청 성공 여부
+        status:
+          type: number
+          description: "응답 코드 (예: 200)"
+    v1-project-projectId-1571942885:
+      type: object
+      properties:
+        data:
+          type: object
+          properties:
+            createdAt:
+              type: string
+              description: 생성일시
+            deployments:
+              type: array
+              description: 배포 목록
+              items:
+                type: object
+                properties:
+                  serviceType:
+                    type: string
+                    description: "서비스 유형 (예: FRONTEND, BACKEND)"
+                  repositoryLastCommitUserName:
+                    type: string
+                    description: 최근 커밋 유저 이름
+                  deploymentId:
+                    type: number
+                    description: 생성된 배포의 ID
+                  repositoryOwner:
+                    type: string
+                    description: 깃허브 레포지토리 주인
+                  repositoryLastCommitUserProfile:
+                    type: string
+                    description: 최근 커밋 유저 프로필 URL
+                  repositoryName:
+                    type: string
+                    description: 깃허브 저장소 이름
+                  repositoryLastCommitMessage:
+                    type: string
+                    description: 최근 커밋 메시지
+                  projectId:
+                    type: number
+                    description: 프로젝트의 ID
+                  repositoryUrl:
+                    type: string
+                    description: 깃허브 저장소 URL
+                  status:
+                    type: string
+                    description: "배포 상태 (예: READY, RUNNING, ERROR)"
+            domainName:
+              type: string
+              description: 도메인명
+            webhookToken:
+              type: string
+              description: 웹 훅 토큰
+            id:
+              type: number
+              description: 프로젝트 ID
+            projectName:
+              type: string
+              description: 프로젝트명
+            userId:
+              type: number
+              description: 유저 ID
+            updatedAt:
+              type: string
+              description: 업데이트일시
+        success:
+          type: boolean
+          description: 요청 성공 여부
+        message:
+          type: string
+          description: 응답 메시지 (현재 null)
+        status:
+          type: number
+          description: "응답 코드 (예: 201)"
+    v1-project531068385:
+      type: object
+      properties:
+        domainName:
+          type: string
+          description: 도메인명
+        projectName:
+          type: string
+          description: 프로젝트명
+    v1-project-domain-check-2035933760:
+      type: object
+      properties:
+        domainName:
+          type: string
+          description: 도메인명
+    v1-project-domain-check1272779915:
+      type: object
+      properties:
+        data:
+          type: object
+          properties:
+            message:
+              type: string
+              description: 메시지
+            canMake:
+              type: boolean
+              description: 중복 여부
+        success:
+          type: boolean
+          description: 요청 성공 여부
+        message:
+          type: string
+          description: 응답 메시지 (현재 null)
+        status:
+          type: number
+          description: "응답 코드 (예: 201)"
+    v1-project-1610656077:
+      type: object
+      properties:
+        data:
+          type: object
+          properties:
+            createdAt:
+              type: string
+              description: 생성일시
+            domainName:
+              type: string
+              description: 도메인명
+            id:
+              type: number
+              description: 프로젝트 ID
+            projectName:
+              type: string
+              description: 프로젝트명
+            userId:
+              type: number
+              description: 유저 ID
+            updatedAt:
+              type: string
+              description: 업데이트일시
+        success:
+          type: boolean
+          description: 요청 성공 여부
+        message:
+          type: string
+          description: 응답 메시지 (현재 null)
+        status:
+          type: number
+          description: "응답 코드 (예: 201)"
+    v1-project-projectId486549215:
+      type: object
