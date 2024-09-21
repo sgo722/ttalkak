@@ -1,0 +1,4 @@
+producer:
+  topics:
+    create-user:
+      name: create-user

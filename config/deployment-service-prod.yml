@@ -1,0 +1,7 @@
+subdomain:
+  endpoint: http://34.47.108.121:9000
+
+producers:
+  topics:
+    command-deployment-status:
+      name: command-deployment-status

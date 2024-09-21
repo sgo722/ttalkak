@@ -1,0 +1,10 @@
+consumer:
+  topics:
+    create-compute:
+      name: create-compute
+
+    create-user:
+      name: create-user
+
+    command-deployment-status:
+      name : command-deployment-status
