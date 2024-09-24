@@ -1,8 +1,8 @@
 # 1. 빌드 환경 설정
 FROM gradle:8.8-jdk17 AS build
 WORKDIR /app
-COPY . .
 
+COPY . .
 
 # 2. Gradle 빌드
 RUN gradle clean build --no-daemon
