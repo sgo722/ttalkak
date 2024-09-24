@@ -45,7 +45,7 @@ export interface GetProjectsParams {
   size: number;
   sort: string;
   direction: string;
-  userId: number;
+  userId?: number;
   searchKeyword?: string;
 }
 

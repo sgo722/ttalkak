@@ -29,7 +29,7 @@ export default function ProjectsPage() {
     size: 9,
     sort: "createdAt",
     direction: direction.toUpperCase(),
-    userId: userInfo!.userId as number,
+    userId: userInfo?.userId,
     searchKeyword,
   };
 
