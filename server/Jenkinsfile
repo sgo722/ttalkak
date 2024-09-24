@@ -16,6 +16,7 @@ pipeline {
             }
         }
 
+        
         stage('Test Services') {
             parallel {
                 // stage('Test Eureka Server') {
@@ -321,7 +322,6 @@ pipeline {
                 }
 
 
-
                 stage('Build and Deploy Project Service') {
                     when {
                         changeset "project-service/**"
@@ -343,6 +343,34 @@ pipeline {
                         }
                     }
                 }
+            }
+        }
+
+        stage('Update GitLab Repository') {
+            steps {
+                sh '''
+                        git config --global user.email "sgo722@naver.com"
+                        git config --global user.name "sgo722"
+
+                        # Clone GitLab repository
+                        rm -rf S11P21C108
+                        git clone https://oauth2:9-hymdP5xVN_HrdaNw8Y@lab.ssafy.com/s11-blochain-transaction-sub1/S11P21C108.git
+                        cd S11P21C108
+
+                        git subtree pull --prefix=config https://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@github.com/sunsuking/ddalkak_config.git main --squash
+                        git subtree pull --prefix=tunneling https://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@github.com/sunsuking/tunelling.git master --squash
+                        git subtree pull --prefix=config https://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@github.com/sunsuking/ddalkak_config.git main --squash
+                        git subtree pull --prefix=server https://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@github.com/sunsuking/ddalkak.git master --squash
+                        git subtree pull --prefix=client https://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@github.com/ljjunh/ttalkak.git master --squash
+
+                        # Set remote URL for GitLab
+                        git remote set-url origin https://oauth2:9-hymdP5xVN_HrdaNw8Y@lab.ssafy.com/s11-blochain-transaction-sub1/S11P21C108.git
+
+                        # Ensure there are changes to commit and force push
+                        git add .
+                        git commit -m "Update subtrees" || true
+                        git push --force origin master
+                    '''
             }
         }
     }

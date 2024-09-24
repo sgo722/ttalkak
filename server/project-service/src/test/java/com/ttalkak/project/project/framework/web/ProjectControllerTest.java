@@ -12,10 +12,7 @@ import com.ttalkak.project.project.framework.deploymentadapter.dto.HostingRespon
 import com.ttalkak.project.project.framework.web.request.DomainNameRequest;
 import com.ttalkak.project.project.framework.web.request.ProjectCreateRequest;
 import com.ttalkak.project.project.framework.web.request.ProjectUpdateRequest;
-import com.ttalkak.project.project.framework.web.response.DomainNameResponse;
-import com.ttalkak.project.project.framework.web.response.ProjectCreateResponse;
-import com.ttalkak.project.project.framework.web.response.ProjectPageResponse;
-import com.ttalkak.project.project.framework.web.response.ProjectResponse;
+import com.ttalkak.project.project.framework.web.response.*;
 import com.ttalkak.project.project.support.RestDocsSupport;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -27,7 +24,6 @@ import org.springframework.restdocs.payload.FieldDescriptor;
 import org.springframework.restdocs.payload.JsonFieldType;
 import org.springframework.test.web.servlet.ResultActions;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -175,7 +171,7 @@ class ProjectControllerTest extends RestDocsSupport {
 
         List<DeploymentResponse> deploymentResponses = List.of(deploymentResponse);
 
-        ProjectResponse projectResponse = ProjectResponse.builder()
+        ProjectDetailResponse projectDetailResponse = ProjectDetailResponse.builder()
                 .id(1L)
                 .userId(1L)
                 .projectName("project")
@@ -186,11 +182,11 @@ class ProjectControllerTest extends RestDocsSupport {
                 .webhookToken("githubWebhookToken")
                 .build();
 
-        projectResponse.setDeployments(deploymentResponses);
+        projectDetailResponse.setDeployments(deploymentResponses);
 
         Long projectId = 1L;
         when(getProjectUseCase.getProject(eq(projectId)))
-                .thenReturn(projectResponse);
+                .thenReturn(projectDetailResponse);
 
         // when
         ResultActions perform = mockMvc.perform(
@@ -227,7 +223,7 @@ class ProjectControllerTest extends RestDocsSupport {
         // given
         Long userId = 1L;
 
-        ProjectResponse projectResponse1 = ProjectResponse.builder()
+        ProjectSearchResponse projectSearchResponse1 = ProjectSearchResponse.builder()
                 .id(1L)
                 .userId(1L)
                 .projectName("project1")
@@ -237,9 +233,8 @@ class ProjectControllerTest extends RestDocsSupport {
                 .createdAt(fixedClock)
                 .updatedAt(fixedClock)
                 .build();
-        projectResponse1.setDeployments(new ArrayList<>());
 
-        ProjectResponse projectResponse2 = ProjectResponse.builder()
+        ProjectSearchResponse projectSearchResponse2 = ProjectSearchResponse.builder()
                 .id(1L)
                 .userId(1L)
                 .projectName("project2")
@@ -250,10 +245,9 @@ class ProjectControllerTest extends RestDocsSupport {
                 .updatedAt(fixedClock)
                 .build();
 
-        projectResponse2.setDeployments(new ArrayList<>());
 
         ProjectPageResponse projectPageResponse = ProjectPageResponse.builder()
-                .content(Arrays.asList(projectResponse1, projectResponse2))
+                .content(Arrays.asList(projectSearchResponse1, projectSearchResponse2))
                 .build();
 
         when(getProjectUseCase.getProjects(any(Pageable.class), any(String.class), eq(userId))).thenReturn(projectPageResponse);
@@ -303,7 +297,7 @@ class ProjectControllerTest extends RestDocsSupport {
                 .expirationDate("2024-11-11")
                 .build();
 
-        ProjectResponse projectResponse = ProjectResponse
+        ProjectDetailResponse projectDetailResponse = ProjectDetailResponse
                 .builder()
                 .userId(1L)
                 .id(1L)
@@ -315,7 +309,7 @@ class ProjectControllerTest extends RestDocsSupport {
                 .updatedAt(fixedClock)
                 .build();
 
-        when(updateProjectUseCase.updateProject(eq(1L), any(ProjectUpdateRequest.class))).thenReturn(projectResponse);
+        when(updateProjectUseCase.updateProject(eq(1L), any(ProjectUpdateRequest.class))).thenReturn(projectDetailResponse);
 
         // when
         ResultActions perform = mockMvc.perform(
@@ -423,5 +417,4 @@ class ProjectControllerTest extends RestDocsSupport {
                         )
                 ));
     }
-
 }

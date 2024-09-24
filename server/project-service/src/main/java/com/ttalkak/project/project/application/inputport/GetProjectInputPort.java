@@ -5,20 +5,27 @@ import com.ttalkak.project.project.application.outputport.DeploymentOutputPort;
 import com.ttalkak.project.project.application.outputport.LoadProjectOutputPort;
 import com.ttalkak.project.project.application.usecase.GetProjectUseCase;
 import com.ttalkak.project.project.domain.model.ProjectEntity;
+import com.ttalkak.project.project.framework.deploymentadapter.dto.DeploymentResponse;
 import com.ttalkak.project.project.framework.web.request.DomainNameRequest;
 import com.ttalkak.project.project.framework.web.response.ProjectPageResponse;
-import com.ttalkak.project.project.framework.web.response.ProjectResponse;
+import com.ttalkak.project.project.framework.web.response.ProjectDetailResponse;
+import com.ttalkak.project.project.framework.web.response.ProjectSearchResponse;
 import com.ttalkak.project.project.framework.web.response.ProjectWebHookResponse;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @Transactional
 @UseCase
 @RequiredArgsConstructor
 public class GetProjectInputPort implements GetProjectUseCase {
 
+    private static final Logger log = LoggerFactory.getLogger(GetProjectInputPort.class);
     private final LoadProjectOutputPort loadProjectOutputPort;
 
     private final DeploymentOutputPort deploymentOutputPort;
@@ -29,18 +36,19 @@ public class GetProjectInputPort implements GetProjectUseCase {
      * @return
      */
     @Override
-    public ProjectResponse getProject(Long projectId) {
+    public ProjectDetailResponse getProject(Long projectId) {
         ProjectEntity result = loadProjectOutputPort.findById(projectId);
-        ProjectResponse projectResponse = ProjectResponse.mapToResponse(result);
-        projectResponse.setDeployments(deploymentOutputPort.getDeployments(projectId));
-        return projectResponse;
+        ProjectDetailResponse projectDetailResponse = ProjectDetailResponse.mapToResponse(result);
+        List<DeploymentResponse> deployments = deploymentOutputPort.getDeployments(projectId);
+        projectDetailResponse.setDeployments(deployments);
+        return projectDetailResponse;
     }
 
     @Override
-    public ProjectResponse getFeignProject(Long projectId) {
+    public ProjectDetailResponse getFeignProject(Long projectId) {
         ProjectEntity result = loadProjectOutputPort.findById(projectId);
-        ProjectResponse projectResponse = ProjectResponse.mapToResponse(result);
-        return projectResponse;
+        ProjectDetailResponse projectDetailResponse = ProjectDetailResponse.mapToResponse(result);
+        return projectDetailResponse;
     }
 
     @Override
@@ -64,9 +72,9 @@ public class GetProjectInputPort implements GetProjectUseCase {
         if(searchKeyword == null || searchKeyword.isEmpty()) {
             projects = loadProjectOutputPort.findMyProjects(pageable, userId);
         } else {
-            projects = loadProjectOutputPort.findMyPrjectsContinsSearchKeyWord(pageable, userId, searchKeyword);
+            projects = loadProjectOutputPort.findMyProjectsContainsSearchKeyWord(pageable, userId, searchKeyword);
         }
-        Page<ProjectResponse> page = projects.map(ProjectResponse::mapToResponse);
+        Page<ProjectSearchResponse> page = projects.map(ProjectSearchResponse::mapToResponse);
 
         ProjectPageResponse projectPageResponse = ProjectPageResponse.builder()
                 .content(page.getContent())
@@ -80,7 +88,7 @@ public class GetProjectInputPort implements GetProjectUseCase {
     }
 
     /**
-     * 모메인명 중복 체크
+     * 도메인명 중복 체크
      * @param domainNameRequest
      * @return
      */

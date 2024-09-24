@@ -1,22 +1,27 @@
 package com.ttalkak.project.project.framework.web.response;
 
-import lombok.Builder;
+import lombok.*;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
+import java.util.Map;
 
+@Getter
+@NoArgsConstructor
 public class LogPageResponse {
-    List<LogResponse> content;
-    private int pageNumber;
-    private int pageSize;
-    private long totalElements;
-    private int totalPages;
+    private List<LogResponse> content;
+    private Map<String, Long> methodCounts;
+    private Map<String, Long> statusCounts;
+
+//    private int pageNumber;
+//    private int pageSize;
+//    private long totalElements;
+//    private int totalPages;
 
     @Builder
-    public LogPageResponse(List<LogResponse> content, int pageNumber, int pageSize, long totalElements, int totalPages) {
+    public LogPageResponse(List<LogResponse> content, Map<String, Long> methodCounts, Map<String, Long> statusCounts) {
         this.content = content;
-        this.pageNumber = pageNumber;
-        this.pageSize = pageSize;
-        this.totalElements = totalElements;
-        this.totalPages = totalPages;
+        this.methodCounts = methodCounts;
+        this.statusCounts = statusCounts;
     }
 }

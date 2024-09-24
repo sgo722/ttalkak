@@ -45,11 +45,13 @@ public class InquiryInputPort implements InquiryUsecase {
     // 프로젝트 관련 배포이력 전체조회
     @Override
     public List<DeploymentPreviewResponse> getDeploymentsByProjectId(Long projectId) {
-        return deploymentOutputPort.findAllByProjectId(projectId)
+        List<DeploymentPreviewResponse> collect = deploymentOutputPort.findAllByProjectId(projectId)
                 .stream()
                 .filter(deployment -> DeploymentStatus.isAlive(deployment.getStatus()))
                 .map(DeploymentPreviewResponse::mapToDTO)
                 .collect(Collectors.toList());
+        log.info("getDeploymentsByProjectId: {} :: {}", projectId, collect);
+        return collect;
     }
 
     // 레포지토리 이름을 포함하면 반

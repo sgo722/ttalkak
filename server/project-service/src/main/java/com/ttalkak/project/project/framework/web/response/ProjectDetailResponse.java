@@ -6,13 +6,12 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
 @NoArgsConstructor
 @Data
-public class ProjectResponse {
+public class ProjectDetailResponse {
 
     private Long id;
 
@@ -33,7 +32,7 @@ public class ProjectResponse {
     private List<DeploymentResponse> deployments;
 
     @Builder
-    private ProjectResponse(Long id, Long userId, String projectName, String webhookToken, String domainName, String expirationDate, LocalDateTime createdAt, LocalDateTime updatedAt) {
+    private ProjectDetailResponse(Long id, Long userId, String projectName, String webhookToken, String domainName, String expirationDate, LocalDateTime createdAt, LocalDateTime updatedAt) {
         this.id = id;
         this.userId = userId;
         this.projectName = projectName;
@@ -44,8 +43,8 @@ public class ProjectResponse {
         this.expirationDate = expirationDate;
     }
 
-    public static ProjectResponse mapToResponse(ProjectEntity projectEntity) {
-        return ProjectResponse.builder()
+    public static ProjectDetailResponse mapToResponse(ProjectEntity projectEntity) {
+        return ProjectDetailResponse.builder()
                 .id(projectEntity.getId())
                 .userId(projectEntity.getUserId())
                 .webhookToken(projectEntity.getWebhookToken())

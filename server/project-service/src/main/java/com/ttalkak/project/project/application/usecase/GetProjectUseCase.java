@@ -2,15 +2,15 @@ package com.ttalkak.project.project.application.usecase;
 
 import com.ttalkak.project.project.framework.web.request.DomainNameRequest;
 import com.ttalkak.project.project.framework.web.response.ProjectPageResponse;
-import com.ttalkak.project.project.framework.web.response.ProjectResponse;
+import com.ttalkak.project.project.framework.web.response.ProjectDetailResponse;
 import com.ttalkak.project.project.framework.web.response.ProjectWebHookResponse;
 import org.springframework.data.domain.Pageable;
 
 public interface GetProjectUseCase {
 
-    ProjectResponse getProject(Long projectId);
+    ProjectDetailResponse getProject(Long projectId);
 
-    ProjectResponse getFeignProject(Long projectId);
+    ProjectDetailResponse getFeignProject(Long projectId);
 
     ProjectWebHookResponse getWebHookProject(String webhookToken);
 

@@ -11,7 +11,7 @@ import com.ttalkak.project.project.domain.event.DomainNameEvent;
 import com.ttalkak.project.project.domain.model.vo.ProjectEditor;
 import com.ttalkak.project.project.domain.model.ProjectEntity;
 import com.ttalkak.project.project.framework.web.request.ProjectUpdateRequest;
-import com.ttalkak.project.project.framework.web.response.ProjectResponse;
+import com.ttalkak.project.project.framework.web.response.ProjectDetailResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -33,7 +33,7 @@ public class UpdateProjectInputPort implements UpdateProjectUseCase {
      * @return
      */
     @Override
-    public ProjectResponse updateProject(Long projectId, ProjectUpdateRequest projectUpdateRequest) {
+    public ProjectDetailResponse updateProject(Long projectId, ProjectUpdateRequest projectUpdateRequest) {
         ProjectEntity projectEntity = loadProjectOutputPort.findById(projectId);
 
         // 도메인명 중복 체크
@@ -62,7 +62,7 @@ public class UpdateProjectInputPort implements UpdateProjectUseCase {
             eventOutputPort.occurUpdateHostingDomainName(new DomainNameEvent(projectId, orgDomainName, projectUpdateRequest.getDomainName()));
         }
 
-        return ProjectResponse.mapToResponse(projectEntity);
+        return ProjectDetailResponse.mapToResponse(projectEntity);
     }
 
     /**

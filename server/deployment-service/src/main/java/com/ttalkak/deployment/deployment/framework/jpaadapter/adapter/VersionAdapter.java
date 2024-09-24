@@ -28,6 +28,11 @@ public class VersionAdapter implements VersionOutputPort {
     }
 
     @Override
+    public VersionEntity findLastVersionByDeploymentId(Long deploymentId) {
+        return versionRepository.findLastVersionByDeploymentId(deploymentId);
+    }
+
+    @Override
     public List<VersionEntity> findAllByDeploymentId(DeploymentEntity deploymentEntity) {
         return versionRepository.findAllByDeploymentId(deploymentEntity);
     }

@@ -5,6 +5,7 @@ import com.ttalkak.compute.compute.adapter.out.feign.DeploymentFeignClient
 import com.ttalkak.compute.compute.adapter.out.feign.request.DeploymentUpdateStatusRequest
 import com.ttalkak.compute.compute.application.port.`in`.*
 import com.ttalkak.compute.compute.application.port.out.*
+import com.ttalkak.compute.compute.domain.AllocateCompute
 import com.ttalkak.compute.compute.domain.ComputeRunning
 import io.github.oshai.kotlinlogging.KotlinLogging
 
@@ -13,9 +14,11 @@ class ComputeService (
     private val saveComputePort: SaveComputePort,
     private val removeConnectPort: RemoveConnectPort,
     private val loadComputePort: LoadComputePort,
+    private val loadStatusPort: LoadStatusPort,
     private val saveDeploymentStatusPort: SaveDeploymentStatusPort,
     private val saveRunningPort: SaveRunningPort,
     private val loadRunningPort: LoadRunningPort,
+    private val loadPortPort: LoadPortPort,
     private val deploymentFeignClient: DeploymentFeignClient
 ): ComputeUseCase, AllocateUseCase, ComputeStatusUseCase, UpsertRunningUseCase, LoadRunningUseCase {
     val log = KotlinLogging.logger {  }
@@ -35,10 +38,29 @@ class ComputeService (
         saveComputePort.deleteCompute(userId)
     }
 
-    override fun allocate(command: AllocateCommand): Long {
+    override fun allocate(command: AllocateCommand): AllocateCompute {
+        log.info {
+            "AllocateCommand: $command"
+        }
+        log.info {
+            "loadComputePort: ${loadComputePort.loadAllCompute()}"
+        }
         loadComputePort.loadAllCompute().forEach {
-            if (command.computeCount <= it.remainCompute && command.useMemory <= it.remainMemory) {
-                return it.userId
+            log.info {
+                "it: $it"
+            }
+//            if (command.computeCount <= it.remainCompute && command.useMemory <= it.remainMemory) {
+            if (command.computeCount <= it.remainCompute) {
+                val availablePorts = loadStatusPort.loadStatus(it.userId).orElseThrow {
+                    IllegalArgumentException("유저에 알맞는 상태가 존재하지 않습니다.")
+                }.let { status ->
+                    status.availablePortStart..status.availablePortEnd
+                }.subtract(loadPortPort.loadPorts(it.userId).toSet())
+
+                return AllocateCompute(
+                    userId = it.userId,
+                    ports = availablePorts.shuffled().take(command.computeCount),
+                )
             }
         }
 
@@ -66,6 +88,7 @@ class ComputeService (
         saveRunningPort.saveRunning(
             userId = userId,
             deploymentId = runningCommand.deploymentId,
+            port = runningCommand.port,
             status = runningCommand.status,
             message = runningCommand.message
         )

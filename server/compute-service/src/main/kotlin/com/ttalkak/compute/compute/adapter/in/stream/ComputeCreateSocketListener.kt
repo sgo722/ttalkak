@@ -26,21 +26,21 @@ class ComputeCreateSocketListener(
 
         require(response != null) { "이벤트 수신에 문제가 발생하였습니다." }
 
-//        val command = AllocateCommand(
-//            computeCount = response.databases.size + 1,
-//            useMemory = 0,
-//            usePorts = response.databases.map { it.port } + response.port
-//        )
+        val command = AllocateCommand(
+            computeCount = response.databases.size + 1,
+            useMemory = 512 * (response.databases.size + 1)
+        )
 
-//        val deployerId = allocateUseCase.allocate(command)
-        val deployerId = 2L
+        val allocate = allocateUseCase.allocate(command)
+
+        val deployerId = allocate.userId
 
         val mainContainer = DockerContainer(
             deploymentId = response.deploymentId,
             hasDockerImage = false,
             containerName = "${response.serviceType}-${response.deploymentId}",
             inboundPort = response.port,
-            outboundPort = response.port,
+            outboundPort = allocate.ports.first(),
             subdomainName = response.subdomainName,
             subdomainKey = response.subdomainKey,
             sourceCodeLink = parseGithubLink(response.repositoryUrl, response.branch),
@@ -48,8 +48,19 @@ class ComputeCreateSocketListener(
             dockerImageName = null,
             dockerImageTag = null
         )
+
+//        val databases = response.databases.map {
+//            DockerContainer(
+//                deploymentId = response.deploymentId,
+//                hasDockerImage = true,
+//                containerName = "${response.serviceType}-${response.deploymentId}-db-${it.databaseId}",
+//                inboundPort = it.port,
+//                outboundPort = allocate.ports[response.databases.indexOf(it) + 1],
+//                subdomainName = it.databaseType.name,
+//            )
+//        }
         simpleMessagingTemplate.convertAndSend("/sub/compute-create/${deployerId}", Json.serialize(listOf(mainContainer)))
     }
 
-    private fun parseGithubLink(baseURL: String, branch: String): String = baseURL.replace(".git", "/archive/refs/heads/") + branch + ".zip"
+    private fun parseGithubLink(baseURL: String, branch: String): String = "$baseURL/archive/refs/heads/$branch.zip"
 }

@@ -105,8 +105,6 @@ public class RestDocsUtils {
                 fieldWithPath("data.content[].domainName").type(JsonFieldType.STRING).description("도메인 이름"),
                 fieldWithPath("data.content[].createdAt").type(JsonFieldType.STRING).description("생성 일시"),
                 fieldWithPath("data.content[].updatedAt").type(JsonFieldType.STRING).description("수정 일시"),
-                fieldWithPath("data.content[].deployments").type(JsonFieldType.ARRAY).description("배포 정보")
-
         };
     }
 
