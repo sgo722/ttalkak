@@ -40,6 +40,10 @@ public class DeleteDeploymentInputPort implements DeleteDeploymentUsecase {
                 .orElseThrow(() -> new EntityNotFoundException(ErrorCode.NOT_EXISTS_DEPLOYMENT));
         Long projectId = deploymentEntity.getProjectId();
 
+
+        HostingEntity hosting = hostingOutputPort.findByProjectIdAndServiceType(deploymentEntity.getProjectId(), deploymentEntity.getServiceType());
+        hosting.delete();
+
         ProjectInfoResponse projectInfo = projectOutputPort.getProjectInfo(projectId);
 
         if(!Objects.equals(userId, projectInfo.getUserId())){
