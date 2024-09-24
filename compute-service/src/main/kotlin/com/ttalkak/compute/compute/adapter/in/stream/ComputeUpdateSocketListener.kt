@@ -25,8 +25,6 @@ class ComputeUpdateSocketListener (
 
         val running = loadRunningUseCase.loadRunning(response.deploymentId)
 
-        // TODO: 만약, 이미 실행중인 인스턴스에 상태 수정을 막아야한다면 여기서 처리해야됨.
-
         simpleMessagingTemplate.convertAndSend("/sub/compute-update/${running.userId}", Json.serialize(response))
     }
 }

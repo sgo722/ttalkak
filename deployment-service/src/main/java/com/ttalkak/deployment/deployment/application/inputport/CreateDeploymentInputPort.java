@@ -56,7 +56,7 @@ public class CreateDeploymentInputPort implements CreateDeploymentUsecase {
         ProjectInfoResponse projectInfo = projectOutputPort.getProjectInfo(deploymentCreateRequest.getProjectId());
         String domainName = projectInfo.getDomainName();
         String webhookToken = projectInfo.getWebhookToken();
-        String payloadURL = "https://ttalkak.com/webhook/deployment/" + deploymentCreateRequest.getServiceType().toLowerCase() + "/" + webhookToken;
+        String payloadURL = "https://api.ttalkak.com/webhook/deployment/" + deploymentCreateRequest.getServiceType().toLowerCase() + "/" + webhookToken;
         String expirationDate = projectInfo.getExpirationDate();
 
         // 배포 객체 생성
