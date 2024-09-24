@@ -2,7 +2,8 @@
 
 import { Doughnut } from "react-chartjs-2";
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
-import React from "react";
+import React, { useEffect, useState } from "react";
+import { formatTimestamp } from "@/utils/getDate";
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
@@ -39,10 +40,24 @@ const getPercentageData = (counts: Record<string, number>) => {
 const DoughnutChart = ({
   title,
   counts,
+  logs,
 }: {
   title: string;
   counts: Record<string, number>;
+  logs: any[];
 }) => {
+  const [sortedLogs, setSortedLogs] = useState<any[]>([]);
+
+  // 최신순으로 로그 정렬
+  useEffect(() => {
+    const sorted = logs.sort((a, b) => {
+      const dateA = new Date(a.timestamp).getTime();
+      const dateB = new Date(b.timestamp).getTime();
+      return dateB - dateA;
+    });
+    setSortedLogs(sorted);
+  }, [logs]);
+
   const chartData = getPercentageData(counts);
 
   const data = {
@@ -77,9 +92,28 @@ const DoughnutChart = ({
   };
 
   return (
-    <div style={{ width: "300px", height: "300px" }}>
-      <h3>{title}</h3>
-      <Doughnut data={data} options={options} />
+    <div className="flex">
+      <div style={{ width: "300px", height: "300px" }}>
+        <h3>{title}</h3>
+        <Doughnut data={data} options={options} />
+      </div>
+
+      <div className="w-2/3 h-80 overflow-y-auto ">
+        {sortedLogs.length > 0 ? (
+          sortedLogs.map((log, index) => (
+            <div key={index} className="flex border-b py-3.5">
+              <div className="w-52">{formatTimestamp(log.timestamp)}</div>
+              <div>method: {log.method}</div>
+              <div>status: {log.status}</div>
+              <div>path: {log.path}</div>
+              <div>duration: {log.duration}s</div>
+              <hr />
+            </div>
+          ))
+        ) : (
+          <p>No logs available.</p>
+        )}
+      </div>
     </div>
   );
 };

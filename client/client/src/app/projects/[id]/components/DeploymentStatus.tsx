@@ -1,11 +1,7 @@
 import Link from "next/link";
 import Image from "next/image";
-import {
-  DeployCommand,
-  Deployment,
-  ServiceType,
-  DeployStatus,
-} from "@/types/deploy";
+import { Deployment } from "@/types/project";
+import { DeployCommand, ServiceType, DeployStatus } from "@/types/deploy";
 import useModifyDeployStatus from "@/apis/deploy/useModifyDeployStatus";
 import { FaPlay } from "react-icons/fa6";
 import { VscDebugRestart } from "react-icons/vsc";

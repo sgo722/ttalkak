@@ -2,7 +2,8 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Deployment, ServiceType } from "@/types/deploy";
+import { ServiceType } from "@/types/deploy";
+import { Deployment } from "@/types/project";
 import { CreateProjectParams } from "@/types/project";
 import ConfirmModal from "@/components/ConfirmModal";
 import Modal from "@/app/projects/components/Modal";
@@ -49,9 +50,12 @@ export default function ProjectContent({ id }: ProjectContentProps) {
   };
 
   const getLatestDeploy = (
-    deployments: Deployment[],
+    deployments: Deployment[] | null,
     type: ServiceType
   ): Deployment | null => {
+    if (!deployments) {
+      return null;
+    }
     return (
       deployments
         .filter((deploy) => deploy.serviceType === type)

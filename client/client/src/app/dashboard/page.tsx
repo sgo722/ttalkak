@@ -2,10 +2,10 @@
 
 import { useEffect, useState } from "react";
 import DoughnutChart from "./DoughnutChart";
-import useGetProject from "@/apis/project/useGetProject";
+import useGetProjectToLog from "@/apis/project/useGetProjectToLog";
 import useGetProjects from "@/apis/project/useGetProjects";
-import useDashboardLog from "@/apis/project/useDashboardLog";
-import { getISODate } from "@/utils/getISODate";
+import useGetLog from "@/apis/project/useGetLog";
+import { getISODate } from "@/utils/getDate";
 import useAuthStore from "@/store/useAuthStore";
 import { GetProjectsParams, Project, Deployment } from "@/types/project";
 import { DeploymentLogParams, DeploymentLog } from "@/types/dashboard";
@@ -34,12 +34,12 @@ export default function CallbackPage() {
 
   const { data: projectData } = useGetProjects(params);
 
-  const { data: selectedProjectData, isLoading } = useGetProject(
+  const { data: selectedProjectData, isLoading } = useGetProjectToLog(
     selectedProjectId || 0,
     !!selectedProjectId
   );
 
-  const { data: deployLog } = useDashboardLog(
+  const { data: deployLog } = useGetLog(
     logParams as DeploymentLogParams,
     !!logParams && !!selectedDeployId && !!selectedDate
   );
@@ -94,7 +94,7 @@ export default function CallbackPage() {
     }
   }, [selectedProjectId, selectedDeployId, selectedDate, project]);
 
-  // 프로젝트 선택
+  // Project 선택
   const handleProjectChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const projectId = Number(e.target.value);
     setSelectedProjectId(projectId);
@@ -106,7 +106,7 @@ export default function CallbackPage() {
     setSelectedDeployId(deployId);
   };
 
-  // 날짜 선택 변경
+  // 날짜 선택
   const handleDateChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setSelectedDate(e.target.value);
   };
@@ -176,7 +176,11 @@ export default function CallbackPage() {
           <option value="status">Status</option>
         </select>
 
-        <DoughnutChart title={chartTitle} counts={chartData || {}} />
+        <DoughnutChart
+          title={chartTitle}
+          counts={chartData || {}}
+          logs={logData?.content || []}
+        />
       </div>
     </>
   );
