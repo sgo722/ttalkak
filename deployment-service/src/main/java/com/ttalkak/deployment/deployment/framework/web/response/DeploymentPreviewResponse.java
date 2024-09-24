@@ -42,8 +42,7 @@ public class DeploymentPreviewResponse {
                                       String repositoryLastCommitMessage,
                                       String repositoryLastCommitUserProfile,
                                       String repositoryLastCommitUserName,
-                                      String repositoryOwner,
-                                      String framework) {
+                                      String repositoryOwner) {
         this.deploymentId = deploymentId;
         this.projectId = projectId;
         this.status = status;

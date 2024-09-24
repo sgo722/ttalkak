@@ -6,6 +6,7 @@ interface SaveRunningPort {
     fun saveRunning(
         userId: Long,
         deploymentId: Long,
+        port: Int,
         status: RunningStatus,
         message: String?
     )

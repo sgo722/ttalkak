@@ -9,14 +9,14 @@ import java.util.List;
 @Getter
 @NoArgsConstructor
 public class ProjectPageResponse {
-    private List<ProjectResponse> content;
+    private List<ProjectSearchResponse> content;
     private int pageNumber;
     private int pageSize;
     private long totalElements;
     private int totalPages;
 
     @Builder
-    public ProjectPageResponse(List<ProjectResponse> content, int pageNumber, int pageSize, long totalElements, int totalPages) {
+    public ProjectPageResponse(List<ProjectSearchResponse> content, int pageNumber, int pageSize, long totalElements, int totalPages) {
         this.content = content;
         this.pageNumber = pageNumber;
         this.pageSize = pageSize;

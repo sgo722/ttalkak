@@ -56,6 +56,7 @@ public class ProjectPersistenceAdapter implements SaveProjectOutputPort,
         ProjectEntity projectEntity = projectJpaRepository.findById(projectId)
                 .orElseThrow(() -> new EntityNotFoundException(ErrorCode.NOT_EXISTS_PROJECT));
 
+
         if(projectEntity.getStatus() == ProjectStatus.DELETED) throw new EntityNotFoundException(ErrorCode.NOT_EXISTS_PROJECT);
         return projectEntity;
     }
@@ -79,7 +80,7 @@ public class ProjectPersistenceAdapter implements SaveProjectOutputPort,
      * @return
      */
     @Override
-    public Page<ProjectEntity> findMyPrjectsContinsSearchKeyWord(Pageable pageable, Long userId, String searchKeyword) {
+    public Page<ProjectEntity> findMyProjectsContainsSearchKeyWord(Pageable pageable, Long userId, String searchKeyword) {
         return projectJpaRepository.findMyProjectsContainsSearchKeyWord(pageable, userId, searchKeyword);
     }
 

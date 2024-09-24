@@ -16,12 +16,14 @@ import com.ttalkak.user.user.domain.UserCreateEvent;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collections;
 import java.util.List;
 
 @UseCase
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class AuthenticationService implements AuthenticationUseCase, UserEmailVerifyUseCase {
     private final LoadUserPort loadUserPort;
     private final SaveUserPort saveUserPort;
@@ -47,6 +49,7 @@ public class AuthenticationService implements AuthenticationUseCase, UserEmailVe
         return jwtTokenProvider.generate(user.getId(), authorities);
     }
 
+    @Transactional
     @Override
     public void signUp(RegisterCommand command) {
         // 사용자 ID 중복 체크
@@ -66,6 +69,7 @@ public class AuthenticationService implements AuthenticationUseCase, UserEmailVe
         ));
     }
 
+    @Transactional
     @Override
     public void verifyEmail(Long userId, String email) {
         loadUserPort.loadUser(userId).orElseThrow(

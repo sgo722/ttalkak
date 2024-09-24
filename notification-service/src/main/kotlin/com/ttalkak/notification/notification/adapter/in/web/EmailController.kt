@@ -5,6 +5,7 @@ import com.ttalkak.notification.notification.adapter.`in`.web.request.EmailCodeR
 import com.ttalkak.notification.notification.adapter.`in`.web.request.EmailConfirmRequest
 import com.ttalkak.notification.notification.application.port.`in`.ConfirmCodeUseCase
 import com.ttalkak.notification.notification.application.port.`in`.SendCodeUseCase
+import com.ttalkak.notification.notification.domain.ApiResponse
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
@@ -20,14 +21,18 @@ class EmailController (
     @PostMapping("/code")
     fun sendEmailCode(
         @RequestBody request: EmailCodeRequest,
-    ) {
+    ): ApiResponse<Void> {
         sendCodeUseCase.sendCode(request.email, request.nickname)
+
+        return ApiResponse.empty()
     }
 
     @PostMapping("/confirm")
     fun confirmEmailCode(
         @RequestBody request: EmailConfirmRequest,
-    ) {
-        return confirmCodeUseCase.confirmCode(request.userId, request.email, request.code)
+    ): ApiResponse<Void> {
+        confirmCodeUseCase.confirmCode(request.userId, request.email, request.code)
+
+        return ApiResponse.empty()
     }
 }

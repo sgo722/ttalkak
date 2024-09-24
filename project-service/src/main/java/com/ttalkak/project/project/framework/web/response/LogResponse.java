@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 public class LogResponse {
 
     private String timestamp;
+    private String deploymentId;
     private String ip;
     private String domain;
     private String path;
@@ -18,8 +19,9 @@ public class LogResponse {
     private Double duration;
 
     @Builder
-    public LogResponse(String timestamp, String ip, String domain, String path, String method, String status, Double duration) {
+    public LogResponse(String timestamp, String deploymentId, String ip, String domain, String path, String method, String status, Double duration) {
         this.timestamp = timestamp;
+        this.deploymentId = deploymentId;
         this.ip = ip;
         this.domain = domain;
         this.path = path;

@@ -13,7 +13,7 @@ import com.ttalkak.project.project.framework.web.request.ProjectUpdateRequest;
 import com.ttalkak.project.project.framework.web.response.DomainNameResponse;
 import com.ttalkak.project.project.framework.web.response.ProjectCreateResponse;
 import com.ttalkak.project.project.framework.web.response.ProjectPageResponse;
-import com.ttalkak.project.project.framework.web.response.ProjectResponse;
+import com.ttalkak.project.project.framework.web.response.ProjectDetailResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
@@ -57,9 +57,9 @@ public class ProjectController {
      */
     @GetMapping("/project/{projectId}")
     @ResponseStatus(HttpStatus.OK)
-    public ApiResponse<ProjectResponse> getProject(@PathVariable Long projectId) {
-        ProjectResponse projectResponse = getProjectUseCase.getProject(projectId);
-        return ApiResponse.success(projectResponse);
+    public ApiResponse<ProjectDetailResponse> getProject(@PathVariable Long projectId) {
+        ProjectDetailResponse projectDetailResponse = getProjectUseCase.getProject(projectId);
+        return ApiResponse.success(projectDetailResponse);
     }
 
     /**
@@ -95,7 +95,7 @@ public class ProjectController {
      */
     @PatchMapping("/project/{projectId}")
     @ResponseStatus(HttpStatus.OK)
-    public ApiResponse<ProjectResponse> updateProject(@PathVariable Long projectId, @RequestBody ProjectUpdateRequest projectUpdateRequest) {
+    public ApiResponse<ProjectDetailResponse> updateProject(@PathVariable Long projectId, @RequestBody ProjectUpdateRequest projectUpdateRequest) {
         return ApiResponse.success(updateProjectUseCase.updateProject(projectId, projectUpdateRequest));
     }
 

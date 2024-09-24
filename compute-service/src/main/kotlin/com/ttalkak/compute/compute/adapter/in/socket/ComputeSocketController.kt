@@ -88,6 +88,7 @@ class ComputeSocketController(
 
         val command = RunningCommand(
             deploymentId = deploymentId,
+            port = request.port,
             status = request.status,
             message = request.message
         )

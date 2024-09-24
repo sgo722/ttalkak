@@ -2,7 +2,7 @@ package com.ttalkak.project.project.framework.web;
 
 import com.ttalkak.project.common.WebAdapter;
 import com.ttalkak.project.project.application.usecase.GetProjectUseCase;
-import com.ttalkak.project.project.framework.web.response.ProjectResponse;
+import com.ttalkak.project.project.framework.web.response.ProjectDetailResponse;
 import com.ttalkak.project.project.framework.web.response.ProjectWebHookResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -24,9 +24,9 @@ public class ProjectFeignController {
      */
     @GetMapping("/{projectId}")
     @ResponseStatus(HttpStatus.OK)
-    public ProjectResponse getFeignProject(@PathVariable Long projectId) {
-        ProjectResponse projectResponse = getProjectUseCase.getFeignProject(projectId);
-        return projectResponse;
+    public ProjectDetailResponse getFeignProject(@PathVariable Long projectId) {
+        ProjectDetailResponse projectDetailResponse = getProjectUseCase.getFeignProject(projectId);
+        return projectDetailResponse;
     }
 
     @GetMapping("/webhook/{webhookToken}")

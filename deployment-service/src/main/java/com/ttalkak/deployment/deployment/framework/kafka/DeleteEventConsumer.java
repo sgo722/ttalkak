@@ -24,6 +24,7 @@ public class DeleteEventConsumer {
             deleteDeploymentsEvent = objectMapper.readValue(record.value(), DeleteDeploymentsEvent.class);
             deleteDeploymentInputPort.deleteDeploymentByProject(deleteDeploymentsEvent.getProjectId());
         } catch (Exception e) {
+            e.printStackTrace();
             sagaRollBackProducer.rollbackDeleteStatus(deleteDeploymentsEvent);
         }
     }

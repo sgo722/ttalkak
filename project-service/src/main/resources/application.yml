@@ -28,3 +28,7 @@ consumers:
     update-hosting-status:
       name: update_hosting_status
 
+aws:
+  access-key: dsadasd
+  secret-key: dasdasd
+

@@ -1,6 +1,7 @@
 package com.ttalkak.deployment.deployment.application.outputport;
 
 import com.ttalkak.deployment.deployment.domain.model.DeploymentEntity;
+import com.ttalkak.deployment.deployment.domain.model.vo.ServiceType;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -21,5 +22,5 @@ public interface DeploymentOutputPort {
 
     void saveAll(List<DeploymentEntity> deploymentEntities);
 
-    Optional<DeploymentEntity> findByProjectIdAndServiceType(Long projectId, String serviceType);
+    Optional<DeploymentEntity> findByProjectIdAndServiceType(Long projectId, ServiceType serviceType);
 }

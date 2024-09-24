@@ -13,7 +13,7 @@ public interface LoadProjectOutputPort {
     Page<ProjectEntity> findMyProjects(Pageable pageable, Long userId);
 
     // 프로젝트 키워드 포함 페이징 처리
-    Page<ProjectEntity> findMyPrjectsContinsSearchKeyWord(Pageable pageable, Long userId, String searchKeyword);
+    Page<ProjectEntity> findMyProjectsContainsSearchKeyWord(Pageable pageable, Long userId, String searchKeyword);
 
     // 도메인명으로 조회 
     ProjectEntity findByDomainName(String domainName);

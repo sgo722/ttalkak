@@ -2,6 +2,7 @@ package com.ttalkak.deployment.deployment.framework.jpaadapter.adapter;
 
 import com.ttalkak.deployment.deployment.application.outputport.DeploymentOutputPort;
 import com.ttalkak.deployment.deployment.domain.model.DeploymentEntity;
+import com.ttalkak.deployment.deployment.domain.model.vo.ServiceType;
 import com.ttalkak.deployment.deployment.framework.jpaadapter.repository.DeploymentRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
@@ -49,7 +50,7 @@ public class DeploymentAdapter implements DeploymentOutputPort {
     }
 
     @Override
-    public Optional<DeploymentEntity> findByProjectIdAndServiceType(Long projectId, String serviceType) {
+    public Optional<DeploymentEntity> findByProjectIdAndServiceType(Long projectId, ServiceType serviceType) {
         return deploymentRepository.findByProjectIdAndServiceType(projectId, serviceType).stream().findAny();
     }
 }
