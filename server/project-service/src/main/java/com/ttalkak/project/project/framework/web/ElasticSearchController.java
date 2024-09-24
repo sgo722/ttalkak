@@ -77,7 +77,6 @@ public class ElasticSearchController {
 //        MonitoringInfoResponse m = getElasticSearchUseCase.getAIMonitoringInfo("42");
 //        return ApiResponse.success(m);
 //    }
-
     @GetMapping("/monitioring/{deploymentId}")
     @ResponseStatus(HttpStatus.OK)
     public ApiResponse<AIMonitoringResponse> getMonitoringInfo(@PathVariable String deploymentId) throws Exception {
