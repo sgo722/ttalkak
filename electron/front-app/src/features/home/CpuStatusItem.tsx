@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { LuCpu } from "react-icons/lu";
+import { FiCpu } from "react-icons/fi";
 
 const CpuStatusItem = () => {
   const [cpuUsage, setCpuUsage] = useState<number>(0);
@@ -21,11 +21,11 @@ const CpuStatusItem = () => {
   }, []);
 
   return (
-    <div className="card w-1/2">
-      <p className="font-sans font-bold text-xl">Container CPU Usage</p>
-      <p className="font-sans text-color-10">System-wide CPU utilization</p>
-      <div className="flex items-center">
-        <LuCpu className="text-2xl text-color-6 mr-2" />
+    <div className="card w-1/2 mr-1">
+      <p className="font-sans font-bold text-lg">CPU 사용률</p>
+      <p className="font-sans text-color-10 text-xs">배포 CPU 사용률</p>
+      <div className="flex items-center mt-2">
+        <FiCpu className="text-2xl text-color-6 mr-2" />
         <div className="w-full bg-gray-200 rounded-full h-3">
           <div
             className={`bg-blue-500 h-3 ${
