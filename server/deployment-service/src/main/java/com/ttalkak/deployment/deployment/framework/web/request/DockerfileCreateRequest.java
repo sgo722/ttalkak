@@ -10,4 +10,12 @@ public class DockerfileCreateRequest {
     private String buildEnv;
 
     private String gitTree;
+
+    private String owner;
+
+    private String repo;
+
+    private String rootDirectory;
+
+    private String branch;
 }

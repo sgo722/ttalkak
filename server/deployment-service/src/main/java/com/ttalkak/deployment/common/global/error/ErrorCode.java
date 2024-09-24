@@ -19,6 +19,9 @@ public enum ErrorCode {
     // 배포
     NOT_EXIST_VERSION(HttpStatus.NOT_FOUND, HttpStatus.NOT_FOUND.value(), "해당 배포버전이 존재하지 않습니다"),
 
+    GITHUB_FEIGN_ERROR(HttpStatus.SERVICE_UNAVAILABLE, HttpStatus.SERVICE_UNAVAILABLE.value(), "git feign 요청 중 오류가 발생했습니다."),
+
+    GPT_NOT_CREATE_DOCKERFILE(HttpStatus.SERVICE_UNAVAILABLE, HttpStatus.SERVICE_UNAVAILABLE.value(), "Dockerfile 생성 실패 요청 중 오류가 발생했습니다."),
     ;
     private final HttpStatus httpStatus;
 

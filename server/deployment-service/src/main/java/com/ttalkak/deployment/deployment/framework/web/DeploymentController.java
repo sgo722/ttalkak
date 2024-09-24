@@ -32,10 +32,10 @@ public class DeploymentController {
 
     // 도커 파일 생성
     @PostMapping("/dockerfile")
-    @ResponseStatus(HttpStatus.OK)
-    public ApiResponse<DockerFileResponse> createDockerFile(@RequestBody DockerfileCreateRequest dockerfileCreateRequest){
-        DockerFileResponse dockerFile = createDockerFileUsecase.createDockerFile(dockerfileCreateRequest);
-        return ApiResponse.success(dockerFile);
+    @ResponseStatus(HttpStatus.CREATED)
+    public ApiResponse<Void> createDockerFile(@RequestHeader("X-USER-ID") Long userId, @RequestBody DockerfileCreateRequest dockerfileCreateRequest){
+        createDockerFileUsecase.createDockerFile(userId, dockerfileCreateRequest);
+        return ApiResponse.success();
     }
 
     // 배포 등록
