@@ -1,18 +1,21 @@
 package com.ttalkak.project.project.application.inputport;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.ttalkak.project.common.UseCase;
+import com.ttalkak.project.config.OpenAIFeignClient;
 import com.ttalkak.project.project.application.outputport.LoadElasticSearchOutputPort;
 import com.ttalkak.project.project.application.usecase.GetLLMUseCase;
 import com.ttalkak.project.project.framework.web.response.AIMonitoringResponse;
 import com.ttalkak.project.project.framework.web.response.MonitoringInfoResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.transaction.annotation.Transactional;
-import software.amazon.awssdk.services.bedrockruntime.BedrockRuntimeClient;
-import software.amazon.awssdk.services.bedrockruntime.model.ContentBlock;
-import software.amazon.awssdk.services.bedrockruntime.model.ConversationRole;
-import software.amazon.awssdk.services.bedrockruntime.model.ConverseResponse;
-import software.amazon.awssdk.services.bedrockruntime.model.Message;
 
+import java.lang.reflect.Type;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Transactional
@@ -20,12 +23,8 @@ import java.util.stream.Collectors;
 @UseCase
 public class GetLLInputPort implements GetLLMUseCase {
 
-    private final BedrockRuntimeClient client;
-    private final String modelId = "anthropic.claude-3-5-sonnet-20240620-v1:0";
-    private final float TOP_P = 0.99f;
-    private final float TEMPERATURE = 1f;
-
     private final LoadElasticSearchOutputPort loadElasticSearchOutputPort;
+    private final OpenAIFeignClient openAIFeignClient;
 
     @Override
     @SuppressWarnings("unchecked")
@@ -56,6 +55,10 @@ public class GetLLInputPort implements GetLLMUseCase {
         double errorRate = (double) totalErrors / totalDocCount * 100;
 
         String input = """
+            
+            "We analyze the monitoring data. We provide an analysis summary of usage, errors, etc. in Korean. 
+             We give advice on potential risks and performance improvements. Full letters cannot exceed 600 characters."
+            
             Full Overview:
             Total requests: %d
             Average response time: %.2f seconds
@@ -68,31 +71,26 @@ public class GetLLInputPort implements GetLLMUseCase {
 
 
         // 입력 메시지
-        Message message = Message.builder()
-                .content(ContentBlock.fromText(input))
-                .role(ConversationRole.USER)
-                .build();
+        Map<String, String> message = new HashMap<>();
+        message.put("role", "user");
+        message.put("content", input);
 
-        ConverseResponse response = client.converse(request -> request
-                .modelId(modelId)
-                .inferenceConfig(config -> config
-                        .topP(TOP_P)
-                        .temperature(TEMPERATURE)
-                        .build()
-                )
+        Map<String, Object> request = new HashMap<>();
+        request.put("model", "gpt-4o-mini");
+        request.put("messages", Collections.singletonList(message));
 
-                // 프롬프트
-                .system(system -> system.text("""
-                        "We analyze the monitoring data. We provide an analysis summary of usage, errors, etc. in Korean. 
-                        We give advice on potential risks and performance improvements. Full letters cannot exceed 600 characters."
-                        """).build())
-        );
+        String response = openAIFeignClient.getChatCompletion(request);
 
-        String answer = response.output().message().content().get(0).text();
+        Gson gson = new Gson();
+        Type type = new TypeToken<Map<String, Object>>(){}.getType();
+        Map<String, Object> answerMap = gson.fromJson(response, type);
+        Map<String, Object> choices = (Map<String, Object>) ((List<Object>) answerMap.get("choices")).get(0);
+        Map<String, Object> messages = (Map<String, Object>) choices.get("message");
+        String content = (String) messages.get("content");
 
         return AIMonitoringResponse.builder()
                 .monitoringInfoResponse(monitoring)
-                .answer(answer)
+                .answer(content)
                 .build();
 
     }
