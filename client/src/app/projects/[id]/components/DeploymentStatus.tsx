@@ -1,15 +1,15 @@
 import Link from "next/link";
+import Image from "next/image";
 import {
   DeployCommand,
   Deployment,
   ServiceType,
   DeployStatus,
 } from "@/types/deploy";
-import Image from "next/image";
+import useModifyDeployStatus from "@/apis/deploy/useModifyDeployStatus";
 import { FaPlay } from "react-icons/fa6";
 import { VscDebugRestart } from "react-icons/vsc";
 import { FaStop } from "react-icons/fa";
-import useModifyDeployStatus from "@/apis/deploy/useModifyDeployStatus";
 
 interface DeploymentStatusProps {
   type: ServiceType;

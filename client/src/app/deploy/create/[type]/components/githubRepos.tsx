@@ -3,17 +3,26 @@
 import { useState, useEffect } from "react";
 import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import { Repository, FileContent, Commit, DeployType } from "@/types/repo";
-import { SearchBar } from "@/app/deploy/create/[type]/components/SearchBar";
-import { RepoList } from "@/app/deploy/create/[type]/components/RepoList";
-import { DirectoryNavigator } from "@/app/deploy/create/[type]/components/DirectoryNavigator";
-import { FileList } from "@/app/deploy/create/[type]/components/FileList";
-import { LiaGithubAlt } from "react-icons/lia";
-import useGetRepos from "@/apis/repo/useGetRepos";
-import Button from "@/components/Button";
 import useDeployStore from "@/store/useDeployStore";
 import useAuthStore from "@/store/useAuthStore";
+import Button from "@/components/Button";
+import SearchBar from "@/app/deploy/create/[type]/components/SearchBar";
+import RepoList from "@/app/deploy/create/[type]/components/RepoList";
+import DirectoryNavigator from "@/app/deploy/create/[type]/components/DirectoryNavigator";
+import FileList from "@/app/deploy/create/[type]/components/FileList";
+import useGetRepos from "@/apis/repo/useGetRepos";
+import { LiaGithubAlt } from "react-icons/lia";
 
 export default function GitHubRepos() {
+  const searchParams = useSearchParams();
+  const pathname = usePathname();
+  const router = useRouter();
+
+  const githubApiKey = useAuthStore((state) => state.userInfo?.accessToken);
+  const { setGithubRepositoryRequest, setVersionRequest } = useDeployStore();
+
+  const { data: repos } = useGetRepos();
+
   const [filteredRepos, setFilteredRepos] = useState<Repository[]>([]); // 검색 필터링된 레포지토리 목록
   const [isLoading, setIsLoading] = useState(true); // 로딩 상태
   const [error, setError] = useState<string | null>(null); // 에러 메시지
@@ -26,22 +35,6 @@ export default function GitHubRepos() {
   const [branches, setBranches] = useState<string[]>([]); // 브랜치 목록
   const [selectedBranch, setSelectedBranch] = useState<string>(""); // 선택된 브랜치
   const [isFileSelected, setIsFileSelected] = useState(false); // 파일을 볼때 선택완료 버튼 disable
-
-  const searchParams = useSearchParams();
-  const pathname = usePathname();
-  const router = useRouter();
-  const projectId = searchParams.get("projectId"); // 프로젝트 ID
-  const deployTypeMatch = pathname.match(
-    /\/deploy\/create\/(frontend|backend)/
-  );
-  const deployType: DeployType = deployTypeMatch
-    ? (deployTypeMatch[1].toUpperCase() as DeployType)
-    : null;
-
-  const githubApiKey = useAuthStore((state) => state.userInfo?.accessToken);
-  const { setGithubRepositoryRequest, setVersionRequest } = useDeployStore();
-
-  const { data: repos } = useGetRepos();
 
   // 검색어 변경시 레포지토리 필터링
   useEffect(() => {
@@ -286,6 +279,14 @@ export default function GitHubRepos() {
       router.push(`/deploy/form?projectId=${projectId}&type=${deployType}`);
     }
   };
+
+  const projectId = searchParams.get("projectId"); // 프로젝트 ID
+  const deployTypeMatch = pathname.match(
+    /\/deploy\/create\/(frontend|backend)/
+  );
+  const deployType: DeployType = deployTypeMatch
+    ? (deployTypeMatch[1].toUpperCase() as DeployType)
+    : null;
 
   if (error) {
     return <div>에러...</div>;

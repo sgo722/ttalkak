@@ -1,7 +1,7 @@
-import client from "@/apis/core/client";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "react-toastify";
 import { DeployCommand } from "@/types/deploy";
+import client from "@/apis/core/client";
 
 interface DeployStatusRequest {
   deploymentId: string;

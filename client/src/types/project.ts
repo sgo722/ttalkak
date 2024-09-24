@@ -1,3 +1,16 @@
+export interface Deployment {
+  deploymentId: number;
+  projectId: number;
+  repositoryLastCommitMessage: string;
+  repositoryLastCommitUserName: string;
+  repositoryLastCommitUserProfile: string;
+  repositoryName: string;
+  repositoryOwner: string;
+  repositoryUrl: string;
+  serviceType: string;
+  status: string;
+}
+
 export interface Project {
   id: number;
   userId: number;
@@ -6,7 +19,7 @@ export interface Project {
   expirationDate: string;
   createdAt: string;
   updatedAt: string;
-  deployments: null | any;
+  deployments: null | Deployment[];
 }
 
 export enum PaymentType {

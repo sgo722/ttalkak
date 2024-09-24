@@ -1,29 +1,29 @@
 "use client";
 
-import { IoIosSearch } from "react-icons/io";
-import { FaSort } from "react-icons/fa";
 import { useState } from "react";
 import Link from "next/link";
-import Modal from "@/app/projects/components/Modal";
-import useGetProjects from "@/apis/project/useGetProjects";
-import useCreateProject from "@/apis/project/useCreateProject";
-import useAuthStore from "@/store/useAuthStore";
-import getRelativeTime from "@/utils/getRelativeTime";
 import {
   GetProjectsParams,
   Project,
   CreateProjectParams,
 } from "@/types/project";
+import useAuthStore from "@/store/useAuthStore";
+import Modal from "@/app/projects/components/Modal";
+import useGetProjects from "@/apis/project/useGetProjects";
+import useCreateProject from "@/apis/project/useCreateProject";
+import getRelativeTime from "@/utils/getRelativeTime";
+import { IoIosSearch } from "react-icons/io";
+import { FaSort } from "react-icons/fa";
 
 export default function ProjectsPage() {
+  const userInfo = useAuthStore((state) => state.userInfo);
+  const { mutate: createProject } = useCreateProject();
+
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [searchKeyword, setSearchKeyword] = useState("");
   const [sortOrder, setSortOrder] = useState("createdAt");
   const [direction, setDirection] = useState("desc");
   const [currentPage, setCurrentPage] = useState(0);
-
-  const userInfo = useAuthStore((state) => state.userInfo);
-  const { mutate: createProject } = useCreateProject();
 
   const params: GetProjectsParams = {
     page: currentPage,
@@ -34,6 +34,8 @@ export default function ProjectsPage() {
     searchKeyword,
   };
 
+  const { data } = useGetProjects(params);
+
   const handleCreateProject = (data: CreateProjectParams) => {
     createProject(data, {
       onSuccess: () => {
@@ -41,9 +43,6 @@ export default function ProjectsPage() {
       },
     });
   };
-
-  const { data, isLoading, error, isFetching } = useGetProjects(params);
-  // isLoading일때 suspense fallback으로 skeletonUI 만들기
 
   return (
     <div>

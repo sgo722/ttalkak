@@ -1,12 +1,12 @@
 "use client";
 
 import { useEffect } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useForm, Controller, useFieldArray, useWatch } from "react-hook-form";
+import { DatabaseType, ServiceType, Framework } from "@/types/deploy";
 import useDeployStore from "@/store/useDeployStore";
 import useCreateDeploy from "@/apis/deploy/useCreateDeploy";
 import useCreateWebhook from "@/apis/webhook/useCreateWebhook";
-import { DatabaseType, ServiceType, Framework } from "@/types/deploy";
-import { useRouter, useSearchParams } from "next/navigation";
 
 interface DatabaseForm {
   databaseType: DatabaseType;
@@ -27,13 +27,6 @@ export default function BackendForm() {
   const router = useRouter();
   const projectId = searchParams.get("projectId");
   const typeParam = searchParams.get("type");
-  const serviceType: ServiceType | null =
-    typeParam === "FRONTEND" || typeParam === "BACKEND"
-      ? (typeParam as ServiceType)
-      : null;
-
-  const { mutate: createDeploy } = useCreateDeploy();
-  const { mutate: createWebhook } = useCreateWebhook();
 
   const {
     githubRepositoryRequest,
@@ -60,12 +53,16 @@ export default function BackendForm() {
     name: "databases",
   });
 
-  const useDatabase = watch("useDatabase");
   const databaseTypes = useWatch({
     control,
     name: "databases",
     defaultValue: [],
   });
+
+  const useDatabase = watch("useDatabase");
+
+  const { mutate: createDeploy } = useCreateDeploy();
+  const { mutate: createWebhook } = useCreateWebhook();
 
   useEffect(() => {
     if (!useDatabase) {
@@ -111,6 +108,11 @@ export default function BackendForm() {
       }
     );
   };
+
+  const serviceType: ServiceType | null =
+    typeParam === "FRONTEND" || typeParam === "BACKEND"
+      ? (typeParam as ServiceType)
+      : null;
 
   return (
     <>

@@ -1,6 +1,6 @@
-import client from "@/apis/core/client";
 import { useQuery, UseQueryResult } from "@tanstack/react-query";
 import { GetProjectsParams, GetProjectsResponse } from "@/types/project";
+import client from "@/apis/core/client";
 
 const getProjects = async (
   params: GetProjectsParams

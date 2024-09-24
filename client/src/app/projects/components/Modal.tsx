@@ -1,16 +1,16 @@
-import Button from "@/components/Button";
 import { useEffect } from "react";
 import { useForm, Controller } from "react-hook-form";
-import { IoClose } from "react-icons/io5";
-import { BiInfinite } from "react-icons/bi";
-import { FaCheck } from "react-icons/fa6";
-import { FaRegCalendarAlt } from "react-icons/fa";
-import { Project } from "@/types/project";
 import {
   ProjectFormData,
   CreateProjectParams,
   PaymentType,
 } from "@/types/project";
+import { Project } from "@/types/project";
+import Button from "@/components/Button";
+import { IoClose } from "react-icons/io5";
+import { BiInfinite } from "react-icons/bi";
+import { FaCheck } from "react-icons/fa6";
+import { FaRegCalendarAlt } from "react-icons/fa";
 
 interface ProjectModalProps {
   isOpen: boolean;
@@ -71,8 +71,6 @@ export default function Modal({
     }
   }, [isOpen, reset, project, mode]);
 
-  if (!isOpen) return null;
-
   const onSubmitForm = (data: ProjectFormData) => {
     const formattedDate =
       data.paymentType === PaymentType.Unlimited
@@ -85,6 +83,8 @@ export default function Modal({
     });
     onClose();
   };
+
+  if (!isOpen) return null;
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
