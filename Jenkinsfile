@@ -372,6 +372,8 @@ pipeline {
                             git subtree pull --prefix=server https://${GITHUB_TOKEN}@github.com/sunsuking/ddalkak.git master --squash
                             git subtree pull --prefix=client https://${GITHUB_TOKEN}@github.com/ljjunh/ttalkak.git master --squash
 
+                            git subtree pull --prefix=electron https://oauth2:${GITLAB_PASSWORD}@lab.ssafy.com/yhy5049/electron-vite.git master --squash
+
                             # Set remote URL for GitLab
                             git clone https://oauth2:${GITLAB_PASSWORD}@lab.ssafy.com/s11-blochain-transaction-sub1/S11P21C108.git
 
