@@ -1,4 +1,4 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 import { toast } from "react-toastify";
 import { DeployCommand } from "@/types/deploy";
 import client from "@/apis/core/client";
@@ -19,13 +19,10 @@ const modifyDeployStatus = async (data: DeployStatusRequest): Promise<void> => {
 };
 
 const useModifyDeployStatus = () => {
-  const queryClient = useQueryClient();
-
   return useMutation({
     mutationFn: modifyDeployStatus,
     onSuccess: () => {
       toast.success("요청에 성공했습니다.");
-      // 쿼리무효화 추가해야함
     },
     onError: (error) => {
       toast.error(error.message);

@@ -20,6 +20,7 @@ const useGetProjects = (
   return useQuery({
     queryKey: ["projects", params] as const,
     queryFn: () => getProjects(params),
+    throwOnError: true,
   });
 };
 
