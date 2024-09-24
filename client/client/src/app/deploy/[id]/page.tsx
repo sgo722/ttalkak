@@ -1,16 +1,16 @@
 "use client";
 
-import useGetDeploy from "@/apis/deploy/useGetDeploy";
+import { useEffect, useState } from "react";
+import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import Button from "@/components/Button";
-import { useEffect, useState } from "react";
-import { useParams, useRouter } from "next/navigation";
+import ConfirmModal from "@/components/ConfirmModal";
+import useGetDeploy from "@/apis/deploy/useGetDeploy";
 import useGetWebhooks from "@/apis/webhook/useGetWebhooks";
 import useCreateWebhook from "@/apis/webhook/useCreateWebhook";
 import useDeleteWebhook from "@/apis/webhook/useDeleteWebhook";
 import useDeleteDeploy from "@/apis/deploy/useDeleteDeploy";
-import ConfirmModal from "@/components/ConfirmModal";
 import { FaExternalLinkAlt } from "react-icons/fa";
 import { FaCodeBranch, FaCodeCommit } from "react-icons/fa6";
 import { IoChevronBack } from "react-icons/io5";
@@ -19,19 +19,19 @@ export default function DeployDetailPage() {
   const router = useRouter();
   const params = useParams();
   const deployId = params.id;
-  const [deleteModal, setDeleteModal] = useState(false);
-  const [isToggled, setIsToggled] = useState(false);
-  const [isWebhookLoading, setIsWebhookLoading] = useState(false); // 웹훅 생성,삭제 중 실행 막기
-  const { data } = useGetDeploy(Number(deployId));
-  const { mutate: createWebhook } = useCreateWebhook();
-  const { mutate: deleteWebhook } = useDeleteWebhook();
-  const { mutate: deleteDeploy } = useDeleteDeploy();
 
-  // 웹훅 목록 조회
+  const { data } = useGetDeploy(Number(deployId));
   const { data: webhooksData } = useGetWebhooks(
     data?.repositoryOwner || "",
     data?.repositoryName || ""
   );
+  const { mutate: createWebhook } = useCreateWebhook();
+  const { mutate: deleteWebhook } = useDeleteWebhook();
+  const { mutate: deleteDeploy } = useDeleteDeploy();
+
+  const [deleteModal, setDeleteModal] = useState(false);
+  const [isToggled, setIsToggled] = useState(false);
+  const [isWebhookLoading, setIsWebhookLoading] = useState(false); // 웹훅 생성,삭제 중 실행 막기
 
   // 웹훅 목록을 기반으로 payloadURL과 일치하는 웹훅을 찾아서 자동업데이트 버튼 상태 설정
   useEffect(() => {
@@ -100,16 +100,6 @@ export default function DeployDetailPage() {
     });
   };
 
-  // status 아이콘 색 처리
-  const statusColor =
-    data?.status === "STOPPED"
-      ? "bg-red-500"
-      : data?.status === "RUNNING"
-        ? "bg-green-500"
-        : data?.status === "PENDING"
-          ? "bg-yellow-400 animate-pulse"
-          : "bg-gray-500";
-
   // 도메인 처리
   const formatDomain = (serviceType?: string, detailDomainName?: string) => {
     if (!serviceType || !detailDomainName) return "";
@@ -123,11 +113,22 @@ export default function DeployDetailPage() {
     return detailDomainName;
   };
 
+  // status 아이콘 색 처리
+  const statusColor =
+    data?.status === "STOPPED"
+      ? "bg-red-500"
+      : data?.status === "RUNNING"
+        ? "bg-green-500"
+        : data?.status === "PENDING"
+          ? "bg-yellow-400 animate-pulse"
+          : "bg-gray-500";
+
   // 포멧된 도메인주소
   const formattedDomain = formatDomain(
     data?.serviceType,
     data?.hostingResponse?.detailDomainName
   );
+
   return (
     <div>
       <div className="flex justify-between mb-3">

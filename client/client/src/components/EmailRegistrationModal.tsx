@@ -3,7 +3,7 @@
 import { useState, ChangeEvent, useEffect } from "react";
 import client from "@/apis/core/client";
 import { IoMdClose } from "react-icons/io";
-import Button from "@/components/Button";
+import useAuthStore from "@/store/useAuthStore";
 
 interface EmailRegistrationModalProps {
   isOpen: boolean;
@@ -14,13 +14,14 @@ export default function EmailRegistrationModal({
   isOpen,
   onClose,
 }: EmailRegistrationModalProps) {
+  const { userInfo, setUserInfo } = useAuthStore();
   const [email, setEmail] = useState("");
   const [isSent, setIsSent] = useState(false);
   const [verificationCode, setVerificationCode] = useState("");
   const [isVerified, setIsVerified] = useState(false);
   const [timeLeft, setTimeLeft] = useState(300);
 
-  // 인증 유효 시간 관리
+  // 만료 시간 관리
   useEffect(() => {
     if (isSent && timeLeft > 0) {
       const timer = setInterval(() => {
@@ -38,13 +39,13 @@ export default function EmailRegistrationModal({
     setVerificationCode(e.target.value);
   };
 
-  // 이메일 인증 요청
+  // 인증 메일 발송 요청
   const sendVerificationEmail = async () => {
     if (!email) return;
 
     const response = await client.post({
-      url: "send-verification-email",
-      data: { email },
+      url: "notification/email/code",
+      data: { email, nickname: userInfo?.username },
     });
 
     if (!response.success) {
@@ -56,17 +57,29 @@ export default function EmailRegistrationModal({
     setTimeLeft(300);
   };
 
-  // 인증 코드 확인 요청
+  // 발급 코드 확인 및 userInfo 업데이트
   const verifyCode = async () => {
+    if (!userInfo || !userInfo.userId) {
+      throw new Error("유저 정보가 없습니다.");
+    }
+
     const response = await client.post({
-      url: "verify-code",
-      data: { email, code: verificationCode },
+      url: "notification/email/confirm",
+      data: { userId: userInfo.userId, email, code: verificationCode },
     });
 
     if (!response.success) {
       throw new Error(response.message || "인증에 실패했습니다.");
     }
 
+    // 이메일 인증 성공 시, zustand의 userInfo 업데이트
+    const updatedUserInfo = {
+      ...userInfo,
+      email: email,
+      emailVerified: true,
+    };
+
+    setUserInfo(updatedUserInfo); // userInfo 업데이트
     alert("이메일 인증에 성공했습니다.");
     setIsVerified(true);
     onClose();
@@ -81,7 +94,7 @@ export default function EmailRegistrationModal({
           <IoMdClose />
         </button>
 
-        <h2 className="text-center text-xl mb-6">이메일 인증</h2>
+        <h2 className="text-center text-xl mb-6">이메일 등록</h2>
 
         <form className="space-y-4">
           <div className="flex items-center space-x-2">
@@ -117,7 +130,7 @@ export default function EmailRegistrationModal({
           </div>
 
           {isSent ? (
-            <div className="text-gray-500 text-center">
+            <div className="text-gray-500 text-center text-red-400 text-sm">
               {Math.floor(timeLeft / 60)}분 {timeLeft % 60}초
             </div>
           ) : null}

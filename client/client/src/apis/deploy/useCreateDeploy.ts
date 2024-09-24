@@ -1,4 +1,3 @@
-import client from "@/apis/core/client";
 import {
   useMutation,
   UseMutationResult,
@@ -6,6 +5,7 @@ import {
 } from "@tanstack/react-query";
 import { toast } from "react-toastify";
 import { CreateDeployRequest } from "@/types/deploy";
+import client from "@/apis/core/client";
 
 interface CreateDeployResponse {
   webhookUrl: string;

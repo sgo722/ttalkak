@@ -1,13 +1,13 @@
 "use client";
 
+import { useRouter, useSearchParams } from "next/navigation";
 import { useForm, useFieldArray, Controller } from "react-hook-form";
-import { MdAdd } from "react-icons/md";
-import { LuMinusCircle } from "react-icons/lu";
+import { ServiceType, Framework } from "@/types/deploy";
 import useDeployStore from "@/store/useDeployStore";
 import useCreateDeploy from "@/apis/deploy/useCreateDeploy";
 import useCreateWebhook from "@/apis/webhook/useCreateWebhook";
-import { useRouter, useSearchParams } from "next/navigation";
-import { ServiceType, Framework } from "@/types/deploy";
+import { LuMinusCircle } from "react-icons/lu";
+import { MdAdd } from "react-icons/md";
 
 interface FormData {
   framework: Framework;
@@ -20,21 +20,6 @@ export default function FrontendForm() {
   const router = useRouter();
   const projectId = searchParams.get("projectId"); // 프로젝트 ID
   const typeParam = searchParams.get("type");
-  const serviceType: ServiceType | null =
-    typeParam === "FRONTEND"
-      ? ServiceType.FRONTEND
-      : typeParam === "BACKEND"
-        ? ServiceType.BACKEND
-        : null;
-
-  const { mutate: createDeploy } = useCreateDeploy();
-  const { mutate: createWebhook } = useCreateWebhook();
-
-  const {
-    githubRepositoryRequest,
-    versionRequest,
-    reset: resetDelpoyStore,
-  } = useDeployStore();
 
   const {
     control,
@@ -52,6 +37,15 @@ export default function FrontendForm() {
     control,
     name: "envVars",
   });
+
+  const { mutate: createDeploy } = useCreateDeploy();
+  const { mutate: createWebhook } = useCreateWebhook();
+
+  const {
+    githubRepositoryRequest,
+    versionRequest,
+    reset: resetDelpoyStore,
+  } = useDeployStore();
 
   const onSubmit = (data: FormData) => {
     const envString = data.envVars
@@ -83,6 +77,13 @@ export default function FrontendForm() {
       }
     );
   };
+
+  const serviceType: ServiceType | null =
+    typeParam === "FRONTEND"
+      ? ServiceType.FRONTEND
+      : typeParam === "BACKEND"
+        ? ServiceType.BACKEND
+        : null;
 
   return (
     <>

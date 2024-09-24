@@ -1,7 +1,7 @@
-import client from "@/apis/core/client";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { CreateProjectParams } from "@/types/project";
 import { toast } from "react-toastify";
+import { CreateProjectParams } from "@/types/project";
+import client from "@/apis/core/client";
 
 const createProject = async (data: CreateProjectParams): Promise<void> => {
   const response = await client.post({

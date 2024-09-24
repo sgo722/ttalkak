@@ -3,9 +3,9 @@ import {
   useMutation,
   UseMutationResult,
 } from "@tanstack/react-query";
-import client from "@/apis/core/client";
 import { toast } from "react-toastify";
 import { PatchProjectParams } from "@/types/project";
+import client from "@/apis/core/client";
 
 const modifyProject = async ({
   projectId,

@@ -2,28 +2,30 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { FaRegEdit } from "react-icons/fa";
-import { RiDeleteBin5Line } from "react-icons/ri";
 import { Deployment, ServiceType } from "@/types/deploy";
 import { CreateProjectParams } from "@/types/project";
+import ConfirmModal from "@/components/ConfirmModal";
+import Modal from "@/app/projects/components/Modal";
 import DeploymentStatus from "@/app/projects/[id]/components/DeploymentStatus";
 import useGetProject from "@/apis/project/useGetProject";
 import useDeleteProject from "@/apis/project/useDeleteProject";
 import useModifyProject from "@/apis/project/useModifyProject";
-import ConfirmModal from "@/components/ConfirmModal";
-import Modal from "@/app/projects/components/Modal";
+import { FaRegEdit } from "react-icons/fa";
+import { RiDeleteBin5Line } from "react-icons/ri";
 
 interface ProjectContentProps {
   id: string;
 }
 
 export default function ProjectContent({ id }: ProjectContentProps) {
-  const [editModal, setEditModal] = useState(false);
-  const [deleteModal, setDeleteModal] = useState(false);
   const router = useRouter();
+
   const { data: project } = useGetProject(Number(id));
   const { mutate: modifyProject } = useModifyProject();
   const { mutate: deleteProject } = useDeleteProject();
+
+  const [editModal, setEditModal] = useState(false);
+  const [deleteModal, setDeleteModal] = useState(false);
 
   const handleEditSubmit = (data: CreateProjectParams) => {
     modifyProject({
