@@ -1,6 +1,10 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
+interface IERC20 {
+    function transferFrom(address sender, address recipient, uint256 amount) external returns (bool);
+}
+
 contract PaymentContract {
     struct Payment {
         address from;
@@ -11,25 +15,27 @@ contract PaymentContract {
 
     address public owner;
     uint256 public ownerFeePercent;
+    IERC20 public tokenContract; // ERC20 토큰 컨트랙트
 
     Payment[] public paymentHistory;
 
     event PaymentMade(address indexed from, address indexed to, uint256 amount, uint256 ownerFee, uint256 timestamp);
 
-    constructor(uint256 _ownerFeePercent) {
+    constructor(uint256 _ownerFeePercent, address _tokenContract) {
         owner = msg.sender;
         ownerFeePercent = _ownerFeePercent;
+        tokenContract = IERC20(_tokenContract); // 토큰 컨트랙트 설정
     }
 
-    function sendPayment(address payable _to) external payable {
-        require(msg.value > 0, "Amount must be greater than zero");
+    function sendPayment(address _to, uint256 _amount) external {
+        require(_amount > 0, "Amount must be greater than zero");
 
-        uint256 ownerFee = (msg.value * ownerFeePercent) / 100;
+        uint256 ownerFee = (_amount * ownerFeePercent) / 100;
+        uint256 recipientAmount = _amount - ownerFee;
 
-        uint256 recipientAmount = msg.value - ownerFee;
-
-        _to.transfer(recipientAmount);
-        payable(owner).transfer(ownerFee);
+        // ERC20 토큰 전송
+        require(tokenContract.transferFrom(msg.sender, _to, recipientAmount), "Token transfer failed");
+        require(tokenContract.transferFrom(msg.sender, owner, ownerFee), "Fee transfer failed");
 
         paymentHistory.push(Payment({
             from: msg.sender,
@@ -43,16 +49,5 @@ contract PaymentContract {
 
     function getPaymentHistory() external view returns (Payment[] memory) {
         return paymentHistory;
-    }
-
-    function getPaymentCount() external view returns (uint256) {
-        return paymentHistory.length;
-    }
-
-    function getPaymentByIndex(uint256 index) external view returns (address from, address to, uint256 amount, uint256 timestamp) {
-        require(index < paymentHistory.length, "Invalid index");
-
-        Payment memory payment = paymentHistory[index];
-        return (payment.from, payment.to, payment.amount, payment.timestamp);
     }
 }
