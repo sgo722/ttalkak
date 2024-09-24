@@ -65,6 +65,9 @@ dependencies {
     implementation "org.springframework.cloud:spring-cloud-starter-openfeign"
     implementation 'org.springframework.kafka:spring-kafka'
 
+    // chatGPT 의존성
+    implementation 'io.github.flashvayne:chatgpt-spring-boot-starter:1.0.4'
+
 
     // 개발 도구 의존성
     compileOnly 'org.projectlombok:lombok'
