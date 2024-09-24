@@ -5,5 +5,5 @@ import com.ttalkak.deployment.deployment.framework.web.response.DockerFileRespon
 
 public interface CreateDockerFileUsecase {
 
-    DockerFileResponse createDockerFile(DockerfileCreateRequest dockerfileCreateRequest);
+    DockerFileResponse createDockerFile(Long userId, DockerfileCreateRequest dockerfileCreateRequest);
 }

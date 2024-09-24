@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -37,5 +38,10 @@ public class GithubAdapter implements GithubOutputPort {
         System.out.println(githubCommitResponse.getCommitter().getLogin());
 
         return null;
+    }
+
+    @Override
+    public Map<String, Object> createDockerFile(String token, String owner, String repo, String path, Map<String, Object> body) {
+        return githubFeignClient.createDockerFile(token, owner, repo, path, body);
     }
 }
