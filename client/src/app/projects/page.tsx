@@ -21,16 +21,15 @@ export default function ProjectsPage() {
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [searchKeyword, setSearchKeyword] = useState("");
-  const [sortOrder, setSortOrder] = useState("createdAt");
   const [direction, setDirection] = useState("desc");
   const [currentPage, setCurrentPage] = useState(0);
 
   const params: GetProjectsParams = {
     page: currentPage,
     size: 9,
-    sort: sortOrder,
+    sort: "createdAt",
     direction: direction.toUpperCase(),
-    userId: userInfo?.userId ?? 0, // 타입때문에 임시조치. 비로그인 접근을 막아야됨
+    userId: userInfo!.userId as number,
     searchKeyword,
   };
 
