@@ -1,0 +1,31 @@
+<configuration>
+    <springProperty scope="context" name="application_name" source="spring.application.name" />
+    <springProperty scope="context" name="LOGBACK_HOST" source="hosts.logstash" />
+
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+<!--            <pattern>%d{HH:mm:ss:SSS} [%thread] %-5level %logger{40} [traceId:%X{traceId:-}spanId:%X{spanId:-}]- %msg%n</pattern>-->
+            <pattern>%d{HH:mm:ss:SSS} [%thread] %-5level %logger{40} [%X{traceId:-} %X{spanId:-}] - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>logFile.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNmaePattern>logFile.%d{yyyy-MM-dd}.log</fileNmaePattern>
+            <maxHistory>30</maxHistory>
+            <totalSizeCap>3GB</totalSizeCap>
+        </rollingPolicy>
+        <append>true</append>
+    </appender>
+
+    <appender name="logstash" class="net.logstash.logback.appender.LogstashTcpSocketAppender">
+        <destination>${LOGBACK_HOST}:5000</destination>
+        <encoder class="net.logstash.logback.encoder.LogstashEncoder" />
+    </appender>
+
+    <root level="INFO">
+        <appender-ref ref="logstash" />
+        <appender-ref ref="STDOUT" />
+    </root>
+</configuration>

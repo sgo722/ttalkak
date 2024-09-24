@@ -1,0 +1,11 @@
+openapi: 3.0.1
+info:
+  title: TTALKAK 프로젝트 API 명세서 입니다.
+  description: |
+    - ./project-api-docs.yaml
+    - ./deployment-api-docs.yaml
+paths:
+  /ttalkak-project:
+    $ref: './project-api-docs.yaml'
+  /ttalkak-deployment:
+    $ref: './deployment-api-docs.yaml'
