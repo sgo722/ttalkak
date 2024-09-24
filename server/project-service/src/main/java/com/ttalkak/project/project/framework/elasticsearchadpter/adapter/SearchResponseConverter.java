@@ -3,6 +3,7 @@ package com.ttalkak.project.project.framework.elasticsearchadpter.adapter;
 import co.elastic.clients.elasticsearch.ml.Filter;
 import com.ttalkak.project.project.framework.web.response.MonitoringInfoResponse;
 import org.elasticsearch.action.search.SearchResponse;
+import org.elasticsearch.search.SearchHits;
 import org.elasticsearch.search.aggregations.bucket.filter.Filters;
 import org.elasticsearch.search.aggregations.bucket.filter.ParsedFilters;
 import org.elasticsearch.search.aggregations.bucket.terms.ParsedStringTerms;
@@ -16,6 +17,10 @@ import java.util.List;
 public class SearchResponseConverter {
 
     public static MonitoringInfoResponse toMonitoringInfoResponse (SearchResponse searchResponse) {
+
+        Long totalDocCount = 0L;
+        SearchHits hits = searchResponse.getHits();
+        totalDocCount = hits.getTotalHits().value;
 
         // ip 호출 집계쿼리
         ParsedStringTerms topIpsAgg = searchResponse.getAggregations()
@@ -82,7 +87,7 @@ public class SearchResponseConverter {
 
         // 평균 응답시간
         ParsedAvg avgResponseAgg = searchResponse.getAggregations()
-                .get("avg_response");
+                .get("avg_response_time");
         double avgResponseTime = 0;
         if (avgResponseAgg != null) {
             avgResponseTime = avgResponseAgg.getValue();
@@ -91,6 +96,7 @@ public class SearchResponseConverter {
 
         // 반환값
         MonitoringInfoResponse result = MonitoringInfoResponse.builder()
+                .totalDocCount(totalDocCount)
                 .avgResponseTime(avgResponseTime)
                 .totalErrors(totalErrors)
                 .accessIpInfos(accessIpInfoList)

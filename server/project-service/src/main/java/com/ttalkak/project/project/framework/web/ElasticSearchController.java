@@ -3,8 +3,10 @@ package com.ttalkak.project.project.framework.web;
 import com.ttalkak.project.common.ApiResponse;
 import com.ttalkak.project.common.WebAdapter;
 import com.ttalkak.project.project.application.usecase.GetElasticSearchUseCase;
+import com.ttalkak.project.project.application.usecase.GetLLMUseCase;
 import com.ttalkak.project.project.domain.model.LogEntryDocument;
 import com.ttalkak.project.project.framework.web.request.SearchLogRequest;
+import com.ttalkak.project.project.framework.web.response.AIMonitoringResponse;
 import com.ttalkak.project.project.framework.web.response.LogPageResponse;
 import com.ttalkak.project.project.framework.web.response.MonitoringInfoResponse;
 import lombok.RequiredArgsConstructor;
@@ -25,12 +27,21 @@ import java.util.List;
 public class ElasticSearchController {
 
     private final GetElasticSearchUseCase getElasticSearchUseCase;
+    private final GetLLMUseCase getLLMUseCase;
 
     /**
      * 페이징 처리한 로그 조회
      * @param userId
-     * @param searchLogRequest
+     * @param from
+     * @param to
+     * @param method
+     * @param status
+     * @param deploymentId
+     * @param page
+     * @param size
+     * @param sort
      * @return
+     * @throws Exception
      */
     @GetMapping("/search")
     @ResponseStatus(HttpStatus.OK)
@@ -59,12 +70,18 @@ public class ElasticSearchController {
         return ApiResponse.success(pages);
     }
 
-    @GetMapping("/test")
-    @ResponseStatus(HttpStatus.OK)
-    public ApiResponse<MonitoringInfoResponse> getMonitoringInfo() throws Exception {
+//    @GetMapping("/test")
+//    @ResponseStatus(HttpStatus.OK)
+//    public ApiResponse<MonitoringInfoResponse> getMonitoringInfo() throws Exception {
+//
+//        MonitoringInfoResponse m = getElasticSearchUseCase.getAIMonitoringInfo("42");
+//        return ApiResponse.success(m);
+//    }
 
-        MonitoringInfoResponse m = getElasticSearchUseCase.getAIMonitoringInfo("42");
-        return ApiResponse.success(m);
+    @GetMapping("/monitioring/{deploymentId}")
+    @ResponseStatus(HttpStatus.OK)
+    public ApiResponse<AIMonitoringResponse> getMonitoringInfo(@PathVariable String deploymentId) throws Exception {
+        return ApiResponse.success(getLLMUseCase.getMonitoringInfo(deploymentId));
     }
 
 }
