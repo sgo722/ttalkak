@@ -1,6 +1,7 @@
 # 1. 빌드 환경 설정잉
 FROM gradle:8.8-jdk17 AS build
 WORKDIR /app
+
 COPY . .
 
 
