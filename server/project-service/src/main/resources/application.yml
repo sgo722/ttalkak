@@ -29,6 +29,6 @@ consumers:
       name: update_hosting_status
 
 aws:
-  access-key:
-  secret-key:
+  access-key: dsdasd
+  secret-key: sadasd
 
