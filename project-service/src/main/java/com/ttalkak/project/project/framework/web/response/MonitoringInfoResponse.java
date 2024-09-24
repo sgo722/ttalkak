@@ -3,18 +3,16 @@ package com.ttalkak.project.project.framework.web.response;
 import lombok.Builder;
 import lombok.Getter;
 
-import java.util.Collections;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.Getter;
-import lombok.Builder;
-
-import java.util.List;
 
 @Getter
 @Builder
 public class MonitoringInfoResponse {
+    @JsonProperty("totalDocCount")
+    private final long totalDocCount;
+
     @JsonProperty("totalErrors")
     private final long totalErrors;
 

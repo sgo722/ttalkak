@@ -8,17 +8,12 @@ import com.ttalkak.project.project.framework.web.response.LogPageResponse;
 import com.ttalkak.project.project.framework.web.response.MonitoringInfoResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.transaction.annotation.Transactional;
-import software.amazon.awssdk.services.bedrockruntime.BedrockRuntimeClient;
 
 
 @Transactional
 @UseCase
 @RequiredArgsConstructor
 public class GetElasticSearchInputPort implements GetElasticSearchUseCase {
-
-    private final BedrockRuntimeClient client;
-
-    private final String modelId = "anthropic.claude-3-5-sonnet-20240620-v1:0";
 
     private final LoadElasticSearchOutputPort loadElasticSearchOutputPort;
 

@@ -103,7 +103,7 @@ public class ProjectElasticAdapter implements LoadElasticSearchOutputPort {
         }
 
         // 페이징
-        searchSourceBuilder.from(request.getPage());
+        searchSourceBuilder.from(request.getPage() * request.getSize());
         searchSourceBuilder.size(request.getSize());
 
         searchRequest.source(searchSourceBuilder);
