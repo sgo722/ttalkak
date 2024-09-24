@@ -8,3 +8,6 @@ consumer:
 
     command-deployment-status:
       name : command-deployment-status
+
+    rebuild-compute:
+      name : rebuild-compute
