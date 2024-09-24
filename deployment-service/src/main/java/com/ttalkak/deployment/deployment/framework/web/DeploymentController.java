@@ -6,6 +6,7 @@ import com.ttalkak.deployment.deployment.framework.web.request.*;
 import com.ttalkak.deployment.deployment.framework.web.response.DeploymentCreateResponse;
 import com.ttalkak.deployment.deployment.framework.web.response.DeploymentDetailResponse;
 import com.ttalkak.deployment.deployment.framework.web.response.DeploymentPreviewResponse;
+import com.ttalkak.deployment.deployment.framework.web.response.DockerFileResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -19,6 +20,8 @@ public class DeploymentController {
 
     private final CreateDeploymentUsecase createDeploymentUsecase;
 
+    private final CreateDockerFileUsecase createDockerFileUsecase;
+
     private final UpdateDeploymentUsecase updateDeploymentUsecase;
 
     private final DeleteDeploymentUsecase deleteDeploymentUsecase;
@@ -26,6 +29,14 @@ public class DeploymentController {
     private final CommandDeploymentStatusUsecase commandDeploymentStatusUsecase;
 
     private final InquiryUsecase inquiryUsecase;
+
+    // 도커 파일 생성
+    @PostMapping("/dockerfile")
+    @ResponseStatus(HttpStatus.OK)
+    public ApiResponse<DockerFileResponse> createDockerFile(@RequestBody DockerfileCreateRequest dockerfileCreateRequest){
+        DockerFileResponse dockerFile = createDockerFileUsecase.createDockerFile(dockerfileCreateRequest);
+        return ApiResponse.success(dockerFile);
+    }
 
     // 배포 등록
     @PostMapping("")

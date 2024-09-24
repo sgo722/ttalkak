@@ -47,6 +47,9 @@ class DeploymentControllerTest extends RestDocsSupport {
     private CreateDeploymentUsecase createDeploymentUsecase;
 
     @MockBean
+    private CreateDockerFileUsecase createDockerFileUsecase;
+
+    @MockBean
     private UpdateDeploymentUsecase updateDeploymentUsecase;
 
     @MockBean
