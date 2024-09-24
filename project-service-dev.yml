@@ -14,3 +14,6 @@ eureka:
 hosts:
   logstash: localhost
 
+openai:
+  api:
+    key: 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
