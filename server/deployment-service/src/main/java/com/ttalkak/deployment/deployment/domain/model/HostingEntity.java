@@ -71,4 +71,9 @@ public class HostingEntity {
     public void updateDomainName(String domainName, String serviceType) {
         this.detailSubDomainName = changeDetailDomainName(domainName, serviceType);
     }
+
+
+    public void delete() {
+        this.serviceType = null;
+    }
 }
