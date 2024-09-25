@@ -92,7 +92,6 @@ const DoughnutChart = ({
         logsContainerRef.current;
 
       const percentage = (scrollTop / (scrollHeight - clientHeight)) * 100;
-      console.log("스크롤 정도", percentage, "페이지 여분", hasMoreLogs);
 
       if (percentage >= 80) {
         setIsFetching(true);
