@@ -2,9 +2,9 @@
 
 pragma solidity ^0.8.0;
 
-import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
+import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
 
-contract SourceCodeToken is ERC20 {
+contract SourceCodeToken is ERC721URIStorage {
     struct SourceCodeMetadata {
         string name;
         string commit;
@@ -13,24 +13,27 @@ contract SourceCodeToken is ERC20 {
         uint256 timestamp;
     }
 
-    uint256 public totalMintedTokens = 0;
-
+    // Mapping from token ID to SourceCodeMetadata
     mapping(uint256 => SourceCodeMetadata) public metadataMapping;
 
-    constructor() ERC20("SourceCodeToken", "SCT") {}
+    // Variable to keep track of the next token ID
+    uint256 private _nextTokenId;
 
+    constructor() ERC721("SourceCodeToken", "SCT") {}
+
+    // Mint a new NFT representing a source code
     function mintSourceCodeToken(
         string memory name,
         string memory commit,
         string memory version,
         string[] memory fileHashes,
-        uint256 amount
+        string memory tokenURI
     ) public returns (uint256) {
-        // Increment the token ID
-        totalMintedTokens += 1;
+        // Assign the next token ID
+        uint256 newTokenId = _nextTokenId;
 
-        // Store the metadata associated with this minting
-        metadataMapping[totalMintedTokens] = SourceCodeMetadata({
+        // Store metadata for the token
+        metadataMapping[newTokenId] = SourceCodeMetadata({
             name: name,
             commit: commit,
             version: version,
@@ -38,12 +41,19 @@ contract SourceCodeToken is ERC20 {
             timestamp: block.timestamp
         });
 
-        // Mint the specified amount of tokens to the sender
-        _mint(msg.sender, amount);
+        // Mint the NFT to the caller
+        _safeMint(msg.sender, newTokenId);
 
-        return totalMintedTokens;
+        // Set the token URI (typically used for metadata like image, description, etc.)
+        _setTokenURI(newTokenId, tokenURI);
+
+        // Increment the next token ID for future mints
+        _nextTokenId++;
+
+        return newTokenId;
     }
 
+    // Retrieve metadata for a specific token ID
     function getMetadata(uint256 tokenId)
         public
         view

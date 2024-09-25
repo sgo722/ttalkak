@@ -137,7 +137,10 @@ export class PaymentService {
       console.log('트랜잭션이 성공적으로 전송되었습니다.');
     } catch (error) {
       // TODO: 만약, 결제에 실패한 경우 Instance를 삭제하고, 사용자에게 알림을 보내야 합니다.
-      console.error(error);
+      console.log(error)
+      if (error.data) {
+        console.error(this.web3.utils.hexToUtf8(error.data));
+      }
       throw new CustomException(
         INVALID_PAYMENT_CONTRACT,
         '결제가 정상적으로 이루어지지 않았습니다.',
