@@ -1,26 +1,19 @@
-export const getISODate = (daysAgo: number = 0): string => {
-  const date = new Date();
-  date.setDate(date.getDate() - daysAgo);
-  date.setHours(0, 0, 0, 0);
-
-  const koreaTimeInMs = date.getTime() + 9 * 60 * 60 * 1000;
-  const koreaDate = new Date(koreaTimeInMs);
-
-  return koreaDate.toISOString();
+export const getNowDate = (): string => {
+  const now = new Date();
+  return formatTimestamp(now.toISOString());
 };
 
-export const getWeekStartDate = (): string => {
+export const getStartDate = (type?: string): string => {
   const date = new Date();
-  const day = date.getDay(); // 0 (일요일) ~ 6 (토요일)
-  const diff = date.getDate() - day; // 해당 주의 일요일로 이동
-  const sunday = new Date(date.setDate(diff));
 
-  sunday.setHours(0, 0, 0, 0);
+  if (type === "week") {
+    const day = date.getDay();
+    const diff = date.getDate() - day;
+    date.setDate(diff);
+  }
 
-  const koreaTimeInMs = sunday.getTime() + 9 * 60 * 60 * 1000;
-  const koreaSunday = new Date(koreaTimeInMs);
-
-  return koreaSunday.toISOString();
+  date.setHours(0, 0, 0, 0); // 시간을 00:00:00으로 설정
+  return formatTimestamp(date.toISOString()); // 변환된 시간을 반환
 };
 
 export const formatTimestamp = (isoString: string): string => {
@@ -33,4 +26,9 @@ export const formatTimestamp = (isoString: string): string => {
   const seconds = String(date.getSeconds()).padStart(2, "0");
 
   return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+};
+
+export const toISOWithTimezone = (isoString: string): string => {
+  const date = new Date(isoString);
+  return date.toISOString();
 };

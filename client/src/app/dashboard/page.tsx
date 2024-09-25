@@ -5,7 +5,12 @@ import DoughnutChart from "./components/DoughnutChart";
 import useGetProjectToLog from "@/apis/project/useGetProjectToLog";
 import useGetProjects from "@/apis/project/useGetProjects";
 import useGetLog from "@/apis/project/useGetLog";
-import { getISODate, getWeekStartDate } from "@/utils/getDate";
+import {
+  getNowDate,
+  getStartDate,
+  formatTimestamp,
+  toISOWithTimezone,
+} from "@/utils/getDate";
 import useAuthStore from "@/store/useAuthStore";
 import { GetProjectsParams, Project, Deployment } from "@/types/project";
 import { DeploymentLogParams, DeploymentLog } from "@/types/dashboard";
@@ -21,6 +26,8 @@ export default function CallbackPage() {
   const [selectedDeployId, setSelectedDeployId] = useState<number | null>(null);
   const [selectedDate, setSelectedDate] = useState<string>("today");
   const [selectedType, setSelectedType] = useState<string>("method");
+  const [fromDate, setFromDate] = useState<string>(getStartDate());
+  const [toDate, setToDate] = useState<string>(getNowDate());
   const [logParams, setLogParams] = useState<DeploymentLogParams | null>(null);
   const [logData, setLogData] = useState<DeploymentLog | null>(null);
   const [currentPage, setCurrentPage] = useState<number>(0);
@@ -55,7 +62,7 @@ export default function CallbackPage() {
   );
   const { data: deployLog } = useGetLog(
     logParams as DeploymentLogParams,
-    !!logParams && !!selectedDeployId && !!selectedDate
+    !!logParams && !!selectedDeployId
   );
 
   // Project 선택
@@ -96,25 +103,9 @@ export default function CallbackPage() {
   // 로그 파라미터 업데이트 함수
   const updateLogParams = (page: number = 0) => {
     if (selectedProjectId && selectedDeployId && project) {
-      const createdAt = project.createdAt.slice(0, 23) + "Z";
-      let from = "";
-      let to = new Date();
-
-      to.setTime(to.getTime() + 9 * 60 * 60 * 1000); // 한국 시간으로 변환
-
-      const toISOString = to.toISOString();
-
-      if (selectedDate === "today") {
-        from = getISODate(); // 오늘 자정부터 현재까지
-      } else if (selectedDate === "week") {
-        from = getWeekStartDate(); // 이번 주 시작(일요일)부터
-      } else if (selectedDate === "total" && createdAt) {
-        from = createdAt; // 프로젝트 생성일부터
-      }
-
       setLogParams({
-        from,
-        to: toISOString,
+        from: toISOWithTimezone(fromDate),
+        to: toISOWithTimezone(toDate),
         method: selectedMethod,
         status: selectedStatus,
         deploymentId: selectedDeployId,
@@ -155,7 +146,21 @@ export default function CallbackPage() {
 
   // 날짜 선택
   const handleDateChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setSelectedDate(e.target.value);
+    const selected = e.target.value;
+    setSelectedDate(selected);
+    setSelectedStatus(["2", "3", "4", "5"]);
+    setSelectedMethod(["GET", "POST", "PUT", "PATCH", "DELETE"]);
+
+    if (selected === "today") {
+      setFromDate(getStartDate());
+      setToDate(getNowDate());
+    } else if (selected === "week") {
+      setFromDate(getStartDate("week"));
+      setToDate(getNowDate());
+    } else if (selected === "total") {
+      setToDate(getNowDate());
+    }
+
     resetData();
   };
 
@@ -254,10 +259,29 @@ export default function CallbackPage() {
         </div>
         <div className={flexClass}>
           <select onChange={handleDateChange} value={selectedDate}>
+            <option value="">직접 선택</option>
             <option value="today">오늘</option>
             <option value="week">이번 주</option>
             <option value="total">전체</option>
           </select>
+
+          <div className="flex">
+            <input
+              type="datetime-local"
+              value={fromDate}
+              onChange={(e) => setFromDate(formatTimestamp(e.target.value))}
+              onBlur={() => updateLogParams(0)}
+              disabled={!!selectedDate}
+            />
+            <span> ~ </span>
+            <input
+              type="datetime-local"
+              value={toDate}
+              onChange={(e) => setToDate(formatTimestamp(e.target.value))}
+              onBlur={() => updateLogParams(0)}
+              disabled={!!selectedDate}
+            />
+          </div>
 
           <IoRefresh onClick={handleRefresh} className="cursor-pointer" />
         </div>

@@ -81,7 +81,6 @@ export default function GitHubRepos() {
           ...prev,
           [path]: latestCommit,
         }));
-        console.log("커밋정보", latestCommit.commit);
       } catch (error) {
         console.error("Error fetching commit information:", error);
       } finally {
@@ -255,13 +254,90 @@ export default function GitHubRepos() {
     });
   };
 
+  // 부수효과 없이 파일 내용만 조회하는 함수
+  const getFileContent = async (
+    repo: Repository,
+    path: string,
+    branch: string
+  ) => {
+    try {
+      const response = await fetch(
+        `https://api.github.com/repos/${repo.full_name}/contents/${path}?ref=${branch}`,
+        {
+          headers: {
+            Authorization: `Bearer ${githubApiKey}`,
+            Accept: "application/vnd.github.v3.raw",
+          },
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("파일 내용 가져오기 실패");
+      }
+
+      return await response.text();
+    } catch (error) {
+      console.error("파일 내용 가져오기 실패:", error);
+      return null;
+    }
+  };
+
+  // 도커파일 존재 여부 확인 함수
+  const checkDockerfileExists = useCallback(() => {
+    return repoContents.some(
+      (item) => item.name.toLowerCase() === "dockerfile"
+    );
+  }, [repoContents]);
+
+  // 프론트엔드 패키지매니저, 빌드 도구 확인 함수
+  const checkFrontendProject = async () => {
+    const hasYarnLock = repoContents.some((item) => item.name === "yarn.lock");
+    const hasPackageLock = repoContents.some(
+      (item) => item.name === "package-lock.json"
+    );
+    const hasViteConfig = repoContents.some(
+      (item) => item.name === "vite.config.js" || "vite.config.ts"
+    );
+    const packageManager = hasYarnLock
+      ? "yarn"
+      : hasPackageLock
+        ? "npm"
+        : "unknown";
+    let buildTool = "unknown";
+
+    const packageJsonFile = repoContents.find(
+      (item) => item.name === "package.json"
+    );
+    if (packageJsonFile && selectedRepo) {
+      const content = await getFileContent(
+        selectedRepo,
+        packageJsonFile.path,
+        selectedBranch
+      );
+      if (content) {
+        const packageJson = JSON.parse(content);
+        console.log(packageJson);
+        if (packageJson.dependencies?.["react-scripts"]) {
+          buildTool = "cra";
+        } else if (hasViteConfig) {
+          buildTool = "vite";
+        }
+      }
+    }
+
+    return {
+      packageManager,
+      buildTool,
+    };
+  };
+
   // 선택완료 버튼 클릭 핸들러
   const handleSelectComplete = () => {
     if (selectedRepo && projectId && deployType) {
       const pathToUse = currentPath || "/";
       const latestCommit = commits[pathToUse] || commits[""];
 
-      let commitMessage = "No commit message available";
+      let commitMessage = "커밋메시지가 존재하지 않습니다.";
       let commitUserName = selectedRepo.owner.login;
       let commitUserProfile = selectedRepo.owner.avatar_url;
 
@@ -271,6 +347,8 @@ export default function GitHubRepos() {
         commitUserProfile =
           latestCommit.author?.avatar_url || selectedRepo.owner.avatar_url;
       }
+
+      const dockerfileExists = checkDockerfileExists();
 
       setGithubRepositoryRequest({
         repositoryOwner: selectedRepo.owner.login,
@@ -285,6 +363,10 @@ export default function GitHubRepos() {
         repositoryLastCommitUserProfile: commitUserProfile,
         repositoryLastCommitUserName: commitUserName,
       });
+
+      if (!dockerfileExists) {
+        console.log(checkFrontendProject());
+      }
 
       router.push(`/deploy/form?projectId=${projectId}&type=${deployType}`);
     }
