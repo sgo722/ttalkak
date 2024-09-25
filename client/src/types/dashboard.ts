@@ -5,6 +5,7 @@ export interface DeploymentLogParams {
   status: string[];
   deploymentId: number;
   sort: string;
+  page: number;
 }
 
 export interface Log {

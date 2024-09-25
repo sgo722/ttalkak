@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import { Repository, FileContent, Commit, DeployType } from "@/types/repo";
 import useDeployStore from "@/store/useDeployStore";
@@ -35,6 +35,7 @@ export default function GitHubRepos() {
   const [branches, setBranches] = useState<string[]>([]); // 브랜치 목록
   const [selectedBranch, setSelectedBranch] = useState<string>(""); // 선택된 브랜치
   const [isFileSelected, setIsFileSelected] = useState(false); // 파일을 볼때 선택완료 버튼 disable
+  const [isCommitLoading, setIsCommitLoading] = useState(false);
 
   // 검색어 변경시 레포지토리 필터링
   useEffect(() => {
@@ -56,32 +57,39 @@ export default function GitHubRepos() {
   }, [repos]);
 
   // 커밋 정보
-  const fetchCommits = async (repo: Repository, path: string) => {
-    try {
-      const response = await fetch(
-        `https://api.github.com/repos/${repo.full_name}/commits?path=${path}`,
-        {
-          headers: {
-            Authorization: `Bearer ${githubApiKey}`,
-          },
+  const fetchCommits = useCallback(
+    async (repo: Repository, path: string) => {
+      setIsCommitLoading(true);
+      try {
+        const response = await fetch(
+          `https://api.github.com/repos/${repo.full_name}/commits?path=${path}`,
+          {
+            headers: {
+              Authorization: `Bearer ${githubApiKey}`,
+            },
+          }
+        );
+
+        if (!response.ok) {
+          throw new Error("Failed to fetch commit information");
         }
-      );
 
-      if (!response.ok) {
-        throw new Error("Failed to fetch commit information");
+        const commitsData: Commit[] = await response.json();
+        const latestCommit = commitsData[0];
+
+        setCommits((prev) => ({
+          ...prev,
+          [path]: latestCommit,
+        }));
+        console.log("커밋정보", latestCommit.commit);
+      } catch (error) {
+        console.error("Error fetching commit information:", error);
+      } finally {
+        setIsCommitLoading(false);
       }
-
-      const commitsData: Commit[] = await response.json();
-      const latestCommit = commitsData[0];
-
-      setCommits((prev) => ({
-        ...prev,
-        [path]: latestCommit,
-      }));
-    } catch (error) {
-      console.error("Error fetching commit information:", error);
-    }
-  };
+    },
+    [githubApiKey]
+  );
 
   // 브랜치 목록 가져오기
   const fetchBranches = async (repo: Repository) => {
@@ -119,59 +127,6 @@ export default function GitHubRepos() {
     }
   };
 
-  // 레포지토리 내용 조회 함수
-  const fetchRepoContents = async (
-    repo: Repository,
-    path: string = "",
-    branch: string = "main"
-  ) => {
-    setIsLoading(true);
-    setError(null);
-    setFileContent(null);
-
-    try {
-      const response = await fetch(
-        `https://api.github.com/repos/${repo.full_name}/contents/${path}?ref=${branch}`,
-        {
-          headers: {
-            Authorization: `Bearer ${githubApiKey}`,
-          },
-        }
-      );
-
-      if (!response.ok) {
-        throw new Error("Failed to fetch repository contents");
-      }
-
-      const data: FileContent | FileContent[] = await response.json();
-
-      if (Array.isArray(data)) {
-        const sortedData = data.sort((a, b) => {
-          if (a.type === b.type) {
-            return a.name.localeCompare(b.name);
-          }
-          return a.type === "dir" ? -1 : 1;
-        });
-
-        setRepoContents(sortedData);
-        setSelectedRepo(repo);
-        setCurrentPath(path);
-
-        sortedData.forEach((item) => {
-          fetchCommits(repo, item.path);
-        });
-      } else {
-        await fetchFileContent(data);
-        fetchCommits(repo, data.path);
-      }
-    } catch (error) {
-      setError("레포지토리 내용 조회 에러.");
-      console.error("Error fetching repository contents:", error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
   // 파일 내용 가져오기 함수
   const fetchFileContent = async (file: FileContent) => {
     setIsLoading(true);
@@ -202,6 +157,61 @@ export default function GitHubRepos() {
       setIsLoading(false);
     }
   };
+
+  // 레포지토리 내용 조회 함수
+  const fetchRepoContents = useCallback(
+    async (repo: Repository, path: string = "", branch: string = "main") => {
+      setIsLoading(true);
+      setError(null);
+      setFileContent(null);
+
+      try {
+        const response = await fetch(
+          `https://api.github.com/repos/${repo.full_name}/contents/${path}?ref=${branch}`,
+          {
+            headers: {
+              Authorization: `Bearer ${githubApiKey}`,
+            },
+          }
+        );
+
+        if (!response.ok) {
+          throw new Error("Failed to fetch repository contents");
+        }
+
+        const data: FileContent | FileContent[] = await response.json();
+
+        if (Array.isArray(data)) {
+          const sortedData = data.sort((a, b) => {
+            if (a.type === b.type) {
+              return a.name.localeCompare(b.name);
+            }
+            return a.type === "dir" ? -1 : 1;
+          });
+
+          setRepoContents(sortedData);
+          setSelectedRepo(repo);
+          setCurrentPath(path);
+
+          const fetchCommitsForItems = async () => {
+            for (const item of sortedData) {
+              await fetchCommits(repo, item.path);
+            }
+          };
+          fetchCommitsForItems();
+        } else {
+          await fetchFileContent(data);
+          fetchCommits(repo, data.path);
+        }
+      } catch (error) {
+        setError("레포지토리 내용 조회 에러.");
+        console.error("Error fetching repository contents:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    },
+    [githubApiKey, fetchCommits, fetchFileContent]
+  );
 
   // 브랜치 변경
   const handleBranchChange = (branch: string) => {
@@ -378,7 +388,7 @@ export default function GitHubRepos() {
           size="medium"
           primary
           onClick={handleSelectComplete}
-          disabled={isFileSelected}
+          disabled={isFileSelected || isCommitLoading}
         />
       </div>
     </div>

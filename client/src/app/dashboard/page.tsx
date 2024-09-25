@@ -20,9 +20,24 @@ export default function CallbackPage() {
   );
   const [selectedDeployId, setSelectedDeployId] = useState<number | null>(null);
   const [selectedDate, setSelectedDate] = useState<string>("today");
-  const [selectedType, setSelectedType] = useState<string>("method"); // method or status 선택
+  const [selectedType, setSelectedType] = useState<string>("method");
   const [logParams, setLogParams] = useState<DeploymentLogParams | null>(null);
   const [logData, setLogData] = useState<DeploymentLog | null>(null);
+  const [currentPage, setCurrentPage] = useState<number>(0);
+  const [hasMoreLogs, setHasMoreLogs] = useState<boolean>(true);
+  const [selectedMethod, setSelectedMethod] = useState<string[]>([
+    "GET",
+    "POST",
+    "PUT",
+    "PATCH",
+    "DELETE",
+  ]);
+  const [selectedStatus, setSelectedStatus] = useState<string[]>([
+    "2",
+    "3",
+    "4",
+    "5",
+  ]);
 
   const params: GetProjectsParams = {
     page: 0,
@@ -34,12 +49,10 @@ export default function CallbackPage() {
   };
 
   const { data: projectData } = useGetProjects(params);
-
   const { data: selectedProjectData, isLoading } = useGetProjectToLog(
     selectedProjectId || 0,
     !!selectedProjectId
   );
-
   const { data: deployLog } = useGetLog(
     logParams as DeploymentLogParams,
     !!logParams && !!selectedDeployId && !!selectedDate
@@ -47,9 +60,7 @@ export default function CallbackPage() {
 
   // Project 선택
   useEffect(() => {
-    if (projectData) {
-      setProjects(projectData.content);
-    }
+    if (projectData) setProjects(projectData.content);
   }, [projectData]);
 
   // Deploy 선택
@@ -61,16 +72,29 @@ export default function CallbackPage() {
     }
   }, [selectedProjectData]);
 
-  // LogData 저장
+  // LogData 저장 및 추가 로드 시 데이터 병합
   useEffect(() => {
-    if (deployLog) {
+    if (deployLog && logParams) {
       console.log("로그 데이터", deployLog);
-      setLogData(deployLog);
+      console.log("로그 파람스", logParams);
+
+      setLogData((prevLogData) => {
+        const updatedContent =
+          logParams.page === 0
+            ? deployLog.content // 새로고침일 경우 덮어쓰기
+            : [...(prevLogData?.content || []), ...deployLog.content]; // 페이지가 0이 아닐 경우 데이터 병합
+
+        if (deployLog.content.length < 50) {
+          setHasMoreLogs(false); // 로그가 50개 미만일 경우 더 이상 로드하지 않음
+        }
+
+        return { ...deployLog, content: updatedContent };
+      });
     }
   }, [deployLog]);
 
-  // 로그 파라미터 설정 함수
-  const updateLogParams = () => {
+  // 로그 파라미터 업데이트 함수
+  const updateLogParams = (page: number = 0) => {
     if (selectedProjectId && selectedDeployId && project) {
       const createdAt = project.createdAt.slice(0, 23) + "Z";
       let from = "";
@@ -91,47 +115,96 @@ export default function CallbackPage() {
       setLogParams({
         from,
         to: toISOString,
-        method: ["GET", "POST", "PUT", "PATCH", "DELETE"],
-        status: ["2", "3", "4", "5"],
+        method: selectedMethod,
+        status: selectedStatus,
         deploymentId: selectedDeployId,
         sort: "DESC",
+        page: page,
       });
     }
   };
 
+  const resetData = () => {
+    setCurrentPage(0);
+    setHasMoreLogs(true);
+  };
+
+  // 초기 데이터 요청
   useEffect(() => {
     updateLogParams();
-  }, [selectedProjectId, selectedDeployId, selectedDate, project]);
+  }, [
+    selectedProjectId,
+    selectedDeployId,
+    selectedDate,
+    project,
+    selectedStatus,
+    selectedMethod,
+  ]);
 
   // Project 선택
   const handleProjectChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const projectId = Number(e.target.value);
-    setSelectedProjectId(projectId);
+    setSelectedProjectId(Number(e.target.value));
+    resetData();
   };
 
   // Deploy 선택
   const handleDeployChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const deployId = Number(e.target.value);
-    setSelectedDeployId(deployId);
+    setSelectedDeployId(Number(e.target.value));
+    resetData();
   };
 
   // 날짜 선택
   const handleDateChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setSelectedDate(e.target.value);
+    resetData();
   };
 
   // Type 선택 (method 또는 status)
   const handleTypeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setSelectedType(e.target.value);
+
+    if (e.target.value === "status") {
+      setSelectedMethod(["GET", "POST", "PUT", "PATCH", "DELETE"]);
+    } else if (e.target.value === "method") {
+      setSelectedStatus(["2", "3", "4", "5"]);
+    }
+  };
+
+  // 무한 스크롤을 위한 추가 로그 요청
+  const fetchMoreLogs = () => {
+    if (hasMoreLogs) {
+      const nextPage = currentPage + 1;
+      setCurrentPage(nextPage);
+      updateLogParams(nextPage);
+    }
   };
 
   // 새로고침
   const handleRefresh = () => {
-    updateLogParams();
+    setSelectedStatus(["2", "3", "4", "5"]);
+    setSelectedMethod(["GET", "POST", "PUT", "PATCH", "DELETE"]);
+    resetData();
+    updateLogParams(0);
   };
 
-  const chartTitle =
-    selectedType === "method" ? "Method Counts" : "Status Counts";
+  // Status 토글
+  const handleStatusToggle = (status: string) => {
+    setSelectedStatus((prevStatus) =>
+      prevStatus.includes(status)
+        ? prevStatus.filter((s) => s !== status)
+        : [...prevStatus, status]
+    );
+  };
+
+  // Method 토글
+  const handleMethodToggle = (method: string) => {
+    setSelectedMethod((prevMethod) =>
+      prevMethod.includes(method)
+        ? prevMethod.filter((m) => m !== method)
+        : [...prevMethod, method]
+    );
+  };
+
   const chartData =
     selectedType === "method"
       ? Object.entries(logData?.methodCounts || {}).reduce(
@@ -147,7 +220,6 @@ export default function CallbackPage() {
 
   return (
     <>
-      <div>대시보드</div>
       <div className={flexClass}>
         <div className={flexClass}>
           <select
@@ -181,11 +253,7 @@ export default function CallbackPage() {
           </select>
         </div>
         <div className={flexClass}>
-          <select
-            onChange={handleDateChange}
-            value={selectedDate}
-            disabled={!selectedProjectId || !selectedDeployId}
-          >
+          <select onChange={handleDateChange} value={selectedDate}>
             <option value="today">오늘</option>
             <option value="week">이번 주</option>
             <option value="total">전체</option>
@@ -202,9 +270,16 @@ export default function CallbackPage() {
         </select>
 
         <DoughnutChart
-          title={chartTitle}
+          selectedType={selectedType}
           counts={chartData || {}}
           logs={logData?.content || []}
+          fetchMoreLogs={fetchMoreLogs}
+          hasMoreLogs={hasMoreLogs}
+          isRefresh={currentPage === 0}
+          selectedStatus={selectedStatus}
+          selectedMethod={selectedMethod}
+          handleStatusToggle={handleStatusToggle}
+          handleMethodToggle={handleMethodToggle}
         />
       </div>
     </>
