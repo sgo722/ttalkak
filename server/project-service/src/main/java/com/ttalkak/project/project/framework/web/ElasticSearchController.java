@@ -6,9 +6,7 @@ import com.ttalkak.project.project.application.usecase.GetElasticSearchUseCase;
 import com.ttalkak.project.project.application.usecase.GetLLMUseCase;
 import com.ttalkak.project.project.domain.model.LogEntryDocument;
 import com.ttalkak.project.project.framework.web.request.SearchLogRequest;
-import com.ttalkak.project.project.framework.web.response.AIMonitoringResponse;
-import com.ttalkak.project.project.framework.web.response.LogPageResponse;
-import com.ttalkak.project.project.framework.web.response.MonitoringInfoResponse;
+import com.ttalkak.project.project.framework.web.response.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -17,7 +15,9 @@ import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 import java.time.Instant;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @RestController
@@ -68,6 +68,18 @@ public class ElasticSearchController {
 
         LogPageResponse pages = getElasticSearchUseCase.getLogsByPageable(searchLogRequest);
         return ApiResponse.success(pages);
+    }
+
+    @GetMapping("/histogram")
+    @ResponseStatus(HttpStatus.OK)
+    public ApiResponse<List<LogHistogramResponse>> getLogHistogram(
+            @RequestHeader("X-USER-ID") Long userId,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Instant from,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Instant to,
+            @RequestParam(required = false) Long deploymentId
+    ) throws Exception {
+
+        return ApiResponse.success(getElasticSearchUseCase.getLogHistogram(from, to, deploymentId));
     }
 
 //    @GetMapping("/test")

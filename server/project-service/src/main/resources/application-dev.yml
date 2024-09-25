@@ -13,3 +13,5 @@ eureka:
 
 hosts:
   logstash: localhost
+
+

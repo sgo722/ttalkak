@@ -31,6 +31,13 @@ public class GetLLInputPort implements GetLLMUseCase {
     public AIMonitoringResponse getMonitoringInfo(String deploymentId) throws Exception {
 
         MonitoringInfoResponse monitoring = loadElasticSearchOutputPort.getAIMonitoringInfo(deploymentId);
+        if(monitoring == null || monitoring.getTotalDocCount() == 0) {
+            return AIMonitoringResponse.builder()
+                    .monitoringInfoResponse(monitoring)
+                    .answer("집계된 데이터가 없습니다.")
+                    .build();
+        }
+
         String ipInfo = monitoring.getAccessIpInfos().stream()
                 .map(ip -> String.format("%s: %d times", ip.getIp(), ip.getCount()))
                 .collect(Collectors.joining(", "));

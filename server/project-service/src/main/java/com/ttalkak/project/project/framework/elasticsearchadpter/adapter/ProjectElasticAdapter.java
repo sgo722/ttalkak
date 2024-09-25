@@ -4,6 +4,7 @@ import com.ttalkak.project.common.PersistenceAdapter;
 import com.ttalkak.project.project.application.outputport.LoadElasticSearchOutputPort;
 import com.ttalkak.project.project.framework.jpaadapter.repository.LogRepository;
 import com.ttalkak.project.project.framework.web.request.SearchLogRequest;
+import com.ttalkak.project.project.framework.web.response.LogHistogramResponse;
 import com.ttalkak.project.project.framework.web.response.LogPageResponse;
 import com.ttalkak.project.project.framework.web.response.LogResponse;
 import com.ttalkak.project.project.framework.web.response.MonitoringInfoResponse;
@@ -19,14 +20,18 @@ import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.aggregations.AggregationBuilders;
 import org.elasticsearch.search.aggregations.bucket.filter.Filters;
 import org.elasticsearch.search.aggregations.bucket.filter.FiltersAggregator;
+import org.elasticsearch.search.aggregations.bucket.histogram.DateHistogramAggregationBuilder;
+import org.elasticsearch.search.aggregations.bucket.histogram.DateHistogramInterval;
 import org.elasticsearch.search.aggregations.bucket.terms.TermsAggregationBuilder;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.elasticsearch.search.sort.SortOrder;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
+import java.time.Instant;
 import java.util.*;
 
+import static com.ttalkak.project.project.framework.elasticsearchadpter.adapter.SearchResponseConverter.toLogHistogramResponse;
 import static com.ttalkak.project.project.framework.elasticsearchadpter.adapter.SearchResponseConverter.toMonitoringInfoResponse;
 
 @PersistenceAdapter
@@ -46,7 +51,6 @@ public class ProjectElasticAdapter implements LoadElasticSearchOutputPort {
      */
     @Override
     public LogPageResponse getLogsByPageable(SearchLogRequest request) throws IOException {
-
         SearchRequest searchRequest = new SearchRequest("pgrok");
         SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
 
@@ -110,6 +114,43 @@ public class ProjectElasticAdapter implements LoadElasticSearchOutputPort {
         SearchResponse searchResponse = client.search(searchRequest, RequestOptions.DEFAULT);
 
         return convertSearchResponseToDocuments(searchResponse);
+    }
+
+    /**
+     * 히스토그램 로그 조회
+     * @param from
+     * @param to
+     * @param deploymentId
+     * @param interval
+     * @return
+     * @throws IOException
+     */
+    @Override
+    public List<LogHistogramResponse> getLogHistogram(Instant from, Instant to, Long deploymentId, DateHistogramInterval interval) throws IOException {
+        SearchRequest searchRequest = new SearchRequest("pgrok");
+        SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
+
+        BoolQueryBuilder mainQuery = QueryBuilders.boolQuery();
+
+        // 시간 범위 쿼리 추가
+        RangeQueryBuilder timestampRange = QueryBuilders.rangeQuery("@timestamp")
+                .gte(from)
+                .lte(to);
+        mainQuery.must(timestampRange);
+
+        if(deploymentId != null) {
+            mainQuery.must(QueryBuilders.termQuery("deploymentId", String.valueOf(deploymentId) ));
+        }
+        searchSourceBuilder.query(mainQuery);
+        searchSourceBuilder.aggregation(AggregationBuilders.dateHistogram("daily_request_count")
+                .field("@timestamp")
+                .fixedInterval(interval));
+
+        searchSourceBuilder.size(0);
+        searchRequest.source(searchSourceBuilder);
+        SearchResponse searchResponse = client.search(searchRequest, RequestOptions.DEFAULT);
+
+        return toLogHistogramResponse(searchResponse);
     }
 
     /**

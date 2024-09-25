@@ -13,11 +13,6 @@ public class LogPageResponse {
     private Map<String, Long> methodCounts;
     private Map<String, Long> statusCounts;
 
-//    private int pageNumber;
-//    private int pageSize;
-//    private long totalElements;
-//    private int totalPages;
-
     @Builder
     public LogPageResponse(List<LogResponse> content, Map<String, Long> methodCounts, Map<String, Long> statusCounts) {
         this.content = content;
