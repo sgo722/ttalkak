@@ -61,7 +61,7 @@ public class GetLLInputPort implements GetLLMUseCase {
         }
 
         // 캐시데이터가 비어있지 않고 캐시데이터와 모니터링 전체 조회수를 비교하여 동일한 경우 캐시데이터와 새로운 데이터가 일주일 사이라면 캐시 데이터를 반환
-        if(cacheData != null || cacheData.getDocCount() == monitoring.getTotalDocCount()) {
+        if(cacheData != null && cacheData.getDocCount() == monitoring.getTotalDocCount()) {
             Duration timeDifference = Duration.between(cacheData.getTimestamp(), Instant.now());
             if(timeDifference.compareTo(Duration.ofDays(7)) < 0) {
                 return AIMonitoringResponse.builder()
