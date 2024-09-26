@@ -28,6 +28,22 @@ export interface GetMonitoring {
   answer: string;
 }
 
+export interface HistogramParams {
+  from: string;
+  to: string;
+  deploymentId: number;
+}
+
+export interface Histogram {
+  timestamp: string;
+  docCount: number;
+}
+
+export interface HistogramResponse {
+  histograms: Histogram[];
+  intervalMinute: number;
+}
+
 export interface DeploymentLogParams {
   from: string;
   to: string;
