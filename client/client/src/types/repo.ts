@@ -41,5 +41,12 @@ export interface Commit {
   } | null;
 }
 
-// 배포 유형을 위한 타입
-export type DeployType = "FRONTEND" | "BACKEND" | null;
+export enum ProjectFile {
+  YARN_LOCK = "yarn.lock",
+  PACKAGE_JSON = "package.json",
+  PACKAGE_LOCK = "package-lock.json",
+  VITE_CONFIG_JS = "vite.config.js",
+  VITE_CONFIG_TS = "vite.config.ts",
+  GRADLE_BUILD = "build.gradle",
+  MAVEN_POM = "pom.xml",
+}

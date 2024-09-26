@@ -2,7 +2,9 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { useSearchParams, useRouter, usePathname } from "next/navigation";
-import { Repository, FileContent, Commit, DeployType } from "@/types/repo";
+import { toast } from "react-toastify";
+import { Repository, FileContent, Commit, ProjectFile } from "@/types/repo";
+import { ServiceType, BuildTool, PackageManager } from "@/types/deploy";
 import useDeployStore from "@/store/useDeployStore";
 import useAuthStore from "@/store/useAuthStore";
 import Button from "@/components/Button";
@@ -19,7 +21,11 @@ export default function GitHubRepos() {
   const router = useRouter();
 
   const githubApiKey = useAuthStore((state) => state.userInfo?.accessToken);
-  const { setGithubRepositoryRequest, setVersionRequest } = useDeployStore();
+  const {
+    setGithubRepositoryRequest,
+    setVersionRequest,
+    setDockerfileCreateRequest,
+  } = useDeployStore();
 
   const { data: repos } = useGetRepos();
 
@@ -282,31 +288,67 @@ export default function GitHubRepos() {
     }
   };
 
+  // 루트 디렉토리인지 검증하는 함수
+  const checkIfRootDirectory = () => {
+    const hasFrontendMarker = repoContents.some(
+      (item) => item.name === "package.json"
+    );
+    const hasBackendMarker = repoContents.some(
+      (item) => item.name === "build.gradle" || item.name === "pom.xml"
+    );
+
+    if (deployType === ServiceType.FRONTEND) {
+      if (hasFrontendMarker) {
+        return null;
+      }
+      if (hasBackendMarker) {
+        return "프론트엔드 레포지토리를 선택해주세요.";
+      }
+    }
+
+    if (deployType === ServiceType.BACKEND) {
+      if (hasBackendMarker) {
+        return null;
+      }
+      if (hasFrontendMarker) {
+        return "백엔드 레포지토리를 선택해주세요.";
+      }
+    }
+    return "루트 디렉토리를 선택해주세요.";
+  };
+
   // 도커파일 존재 여부 확인 함수
-  const checkDockerfileExists = useCallback(() => {
+  const checkDockerfileExists = () => {
     return repoContents.some(
       (item) => item.name.toLowerCase() === "dockerfile"
     );
-  }, [repoContents]);
+  };
 
   // 프론트엔드 패키지매니저, 빌드 도구 확인 함수
-  const checkFrontendProject = async () => {
-    const hasYarnLock = repoContents.some((item) => item.name === "yarn.lock");
+  const checkFrontendProject = async (): Promise<{
+    packageManager: PackageManager;
+    buildTool: BuildTool;
+  }> => {
+    const hasYarnLock = repoContents.some(
+      (item) => item.name === ProjectFile.YARN_LOCK
+    );
     const hasPackageLock = repoContents.some(
-      (item) => item.name === "package-lock.json"
+      (item) => item.name === ProjectFile.PACKAGE_LOCK
     );
     const hasViteConfig = repoContents.some(
-      (item) => item.name === "vite.config.js" || "vite.config.ts"
+      (item) =>
+        item.name === ProjectFile.VITE_CONFIG_JS || ProjectFile.VITE_CONFIG_TS
     );
     const packageManager = hasYarnLock
-      ? "yarn"
+      ? PackageManager.YARN
       : hasPackageLock
-        ? "npm"
-        : "unknown";
-    let buildTool = "unknown";
+        ? PackageManager.NPM
+        : PackageManager.NPM;
+
+    let buildTool: BuildTool = BuildTool.CRA;
 
     const packageJsonFile = repoContents.find(
-      (item) => item.name === "package.json"
+      (item) => item.name === ProjectFile.PACKAGE_JSON
     );
     if (packageJsonFile && selectedRepo) {
       const content = await getFileContent(
@@ -316,11 +358,10 @@ export default function GitHubRepos() {
       );
       if (content) {
         const packageJson = JSON.parse(content);
-        console.log(packageJson);
         if (packageJson.dependencies?.["react-scripts"]) {
-          buildTool = "cra";
+          buildTool = BuildTool.CRA;
         } else if (hasViteConfig) {
-          buildTool = "vite";
+          buildTool = BuildTool.VITE;
         }
       }
     }
@@ -331,9 +372,33 @@ export default function GitHubRepos() {
     };
   };
 
+  // 백엔드 빌드도구 확인 함수
+  const checkBackendProject = () => {
+    const hasGradle = repoContents.some(
+      (item) => item.name === ProjectFile.GRADLE_BUILD
+    );
+    const hasMaven = repoContents.some(
+      (item) => item.name === ProjectFile.MAVEN_POM
+    );
+    return hasGradle
+      ? BuildTool.GRADLE
+      : hasMaven
+        ? BuildTool.MAVEN
+        : BuildTool.GRADLE;
+  };
+
   // 선택완료 버튼 클릭 핸들러
   const handleSelectComplete = () => {
+    const rootDirCheckResult = checkIfRootDirectory();
+    if (rootDirCheckResult !== null) {
+      toast.error(rootDirCheckResult, {
+        position: "top-center",
+      });
+      return;
+    }
+
     if (selectedRepo && projectId && deployType) {
+      const dockerfileExists = checkDockerfileExists();
       const pathToUse = currentPath || "/";
       const latestCommit = commits[pathToUse] || commits[""];
 
@@ -347,8 +412,24 @@ export default function GitHubRepos() {
         commitUserProfile =
           latestCommit.author?.avatar_url || selectedRepo.owner.avatar_url;
       }
-
-      const dockerfileExists = checkDockerfileExists();
+      if (!dockerfileExists) {
+        if (deployType === ServiceType.FRONTEND) {
+          checkFrontendProject().then((res) => {
+            setDockerfileCreateRequest({
+              exist: false,
+              buildTool: res.buildTool,
+              packageManager: res.packageManager,
+            });
+          });
+        }
+        if (deployType === ServiceType.BACKEND) {
+          const backendBuildTool = checkBackendProject();
+          setDockerfileCreateRequest({
+            exist: false,
+            buildTool: backendBuildTool,
+          });
+        }
+      }
 
       setGithubRepositoryRequest({
         repositoryOwner: selectedRepo.owner.login,
@@ -364,10 +445,6 @@ export default function GitHubRepos() {
         repositoryLastCommitUserName: commitUserName,
       });
 
-      if (!dockerfileExists) {
-        console.log(checkFrontendProject());
-      }
-
       router.push(`/deploy/form?projectId=${projectId}&type=${deployType}`);
     }
   };
@@ -376,8 +453,8 @@ export default function GitHubRepos() {
   const deployTypeMatch = pathname.match(
     /\/deploy\/create\/(frontend|backend)/
   );
-  const deployType: DeployType = deployTypeMatch
-    ? (deployTypeMatch[1].toUpperCase() as DeployType)
+  const deployType: ServiceType | null = deployTypeMatch
+    ? (deployTypeMatch[1].toUpperCase() as ServiceType)
     : null;
 
   if (error) {

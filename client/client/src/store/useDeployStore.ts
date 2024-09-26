@@ -6,6 +6,7 @@ import {
   GithubRepositoryRequest,
   DatabaseCreateRequest,
   VersionRequest,
+  DockerfileCreateRequest,
 } from "@/types/deploy";
 
 interface DeployStoreState extends DeployData {
@@ -17,6 +18,9 @@ interface DeployStoreState extends DeployData {
   setVersionRequest: (data: Partial<VersionRequest>) => void;
   setHostingPort: (hostingPort: number | null) => void;
   setEnvironment: (env: string | null) => void;
+  setDockerfileCreateRequest: (
+    data: Partial<DockerfileCreateRequest> | undefined
+  ) => void;
   reset: () => void;
 }
 
@@ -71,6 +75,17 @@ const useDeployStore = create(
           versionRequest: state.versionRequest
             ? { ...state.versionRequest, ...data }
             : (data as VersionRequest),
+        })),
+      setDockerfileCreateRequest: (
+        data: Partial<DockerfileCreateRequest> | undefined
+      ) =>
+        set((state) => ({
+          dockerfileCreateRequest: data
+            ? ({
+                ...state.dockerfileCreateRequest,
+                ...data,
+              } as DockerfileCreateRequest)
+            : undefined,
         })),
       setHostingPort: (hostingPort) => set({ hostingPort }),
       setEnvironment: (env) => set({ env }),
