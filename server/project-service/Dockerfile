@@ -2,7 +2,8 @@
 FROM gradle:8.8-jdk17 AS build
 WORKDIR /app
 
-COPY . .
+COPY build.gradle settings.gradle gradle.properties ./
+COPY gradle ./gradle
 
 # 2. Gradle 빌드
 RUN gradle clean build --no-daemon
