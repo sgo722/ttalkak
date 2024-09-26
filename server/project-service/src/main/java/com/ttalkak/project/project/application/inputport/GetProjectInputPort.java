@@ -43,7 +43,7 @@ public class GetProjectInputPort implements GetProjectUseCase {
         ProjectEntity result = loadProjectOutputPort.findById(projectId);
 
         // 유저 프로젝트가 아닌 경우 예외 발생
-        if(result.getUserId() != projectId) throw new BusinessException(ErrorCode.ACCESS_PROJECT_DENIED);
+        if(result.getUserId() != userId) throw new BusinessException(ErrorCode.ACCESS_PROJECT_DENIED);
 
         ProjectDetailResponse projectDetailResponse = ProjectDetailResponse.mapToResponse(result);
         List<DeploymentResponse> deployments = deploymentOutputPort.getDeployments(projectId);
