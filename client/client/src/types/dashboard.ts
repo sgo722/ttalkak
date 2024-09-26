@@ -1,3 +1,33 @@
+type CountInfo<field extends string> = {
+  [key in field]: string;
+} & {
+  count: number;
+};
+
+export type AccessIp = CountInfo<"ip">;
+export type UseMethod = CountInfo<"method">;
+export type TopPath = CountInfo<"path">;
+
+export interface ErrorCategory {
+  category: string;
+  count: number;
+  topPaths: TopPath[];
+}
+
+export interface MonitoringInfo {
+  totalDocCount: number;
+  totalErrors: number;
+  avgResponseTime: number;
+  accessIpInfos: AccessIp[];
+  usedMethodInfos: UseMethod[];
+  errorCategories: ErrorCategory;
+}
+
+export interface GetMonitoring {
+  monitoringInfoResponse: MonitoringInfo;
+  answer: string;
+}
+
 export interface DeploymentLogParams {
   from: string;
   to: string;

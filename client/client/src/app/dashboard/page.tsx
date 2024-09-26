@@ -15,6 +15,7 @@ import useAuthStore from "@/store/useAuthStore";
 import { GetProjectsParams, Project, Deployment } from "@/types/project";
 import { DeploymentLogParams, DeploymentLog } from "@/types/dashboard";
 import { IoRefresh } from "react-icons/io5";
+import Monitoring from "./components/Monitoring";
 
 export default function CallbackPage() {
   const { userInfo } = useAuthStore();
@@ -60,6 +61,7 @@ export default function CallbackPage() {
     selectedProjectId || 0,
     !!selectedProjectId
   );
+
   const { data: deployLog } = useGetLog(
     logParams as DeploymentLogParams,
     !!logParams && !!selectedDeployId
@@ -285,6 +287,10 @@ export default function CallbackPage() {
 
           <IoRefresh onClick={handleRefresh} className="cursor-pointer" />
         </div>
+      </div>
+
+      <div className="border">
+        <Monitoring selectedDeployId={selectedDeployId} />
       </div>
 
       <div className="border">
