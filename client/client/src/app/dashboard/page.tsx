@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import DoughnutChart from "./components/DoughnutChart";
 import useGetProjectToLog from "@/apis/project/useGetProjectToLog";
 import useGetProjects from "@/apis/project/useGetProjects";
+import useGetHistogram from "@/apis/deploy/useGetHistogram";
 import useGetLog from "@/apis/project/useGetLog";
 import {
   getNowDate,
@@ -13,9 +14,14 @@ import {
 } from "@/utils/getDate";
 import useAuthStore from "@/store/useAuthStore";
 import { GetProjectsParams, Project, Deployment } from "@/types/project";
-import { DeploymentLogParams, DeploymentLog } from "@/types/dashboard";
+import {
+  HistogramParams,
+  DeploymentLogParams,
+  DeploymentLog,
+} from "@/types/dashboard";
 import { IoRefresh } from "react-icons/io5";
 import Monitoring from "./components/Monitoring";
+import { Histogram } from "perf_hooks";
 
 export default function CallbackPage() {
   const { userInfo } = useAuthStore();
@@ -29,6 +35,9 @@ export default function CallbackPage() {
   const [selectedType, setSelectedType] = useState<string>("method");
   const [fromDate, setFromDate] = useState<string>(getStartDate());
   const [toDate, setToDate] = useState<string>(getNowDate());
+  const [histogramParams, setHistogramParams] =
+    useState<HistogramParams | null>(null);
+  const [histogramData, setHistogramData] = useState<Histogram[] | null>(null);
   const [logParams, setLogParams] = useState<DeploymentLogParams | null>(null);
   const [logData, setLogData] = useState<DeploymentLog | null>(null);
   const [currentPage, setCurrentPage] = useState<number>(0);
@@ -61,6 +70,10 @@ export default function CallbackPage() {
     selectedProjectId || 0,
     !!selectedProjectId
   );
+  const { data: histogram } = useGetHistogram(
+    histogramParams as HistogramParams,
+    !!histogramParams && !!selectedDeployId
+  );
 
   const { data: deployLog } = useGetLog(
     logParams as DeploymentLogParams,
@@ -80,6 +93,13 @@ export default function CallbackPage() {
       setProject(null);
     }
   }, [selectedProjectData]);
+
+  useEffect(() => {
+    if (histogram && histogramParams) {
+      console.log(histogram);
+      // setHistogramData(histogram)
+    }
+  }, [histogram]);
 
   // LogData 저장 및 추가 로드 시 데이터 병합
   useEffect(() => {
@@ -117,6 +137,16 @@ export default function CallbackPage() {
     }
   };
 
+  const updateHitogramParams = () => {
+    if (selectedDeployId) {
+      setHistogramParams({
+        from: toISOWithTimezone(fromDate),
+        to: toISOWithTimezone(toDate),
+        deploymentId: selectedDeployId,
+      });
+    }
+  };
+
   const resetData = () => {
     setCurrentPage(0);
     setHasMoreLogs(true);
@@ -133,6 +163,10 @@ export default function CallbackPage() {
     selectedStatus,
     selectedMethod,
   ]);
+
+  useEffect(() => {
+    updateHitogramParams();
+  }, [selectedDeployId, selectedDate]);
 
   // Project 선택
   const handleProjectChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -272,7 +306,9 @@ export default function CallbackPage() {
               type="datetime-local"
               value={fromDate}
               onChange={(e) => setFromDate(formatTimestamp(e.target.value))}
-              onBlur={() => updateLogParams(0)}
+              onBlur={() => {
+                updateLogParams(0), updateHitogramParams();
+              }}
               disabled={!!selectedDate}
             />
             <span> ~ </span>
@@ -280,7 +316,9 @@ export default function CallbackPage() {
               type="datetime-local"
               value={toDate}
               onChange={(e) => setToDate(formatTimestamp(e.target.value))}
-              onBlur={() => updateLogParams(0)}
+              onBlur={() => {
+                updateLogParams(0), updateHitogramParams();
+              }}
               disabled={!!selectedDate}
             />
           </div>
@@ -289,8 +327,9 @@ export default function CallbackPage() {
         </div>
       </div>
 
-      <div className="border">
+      <div className="border flex">
         <Monitoring selectedDeployId={selectedDeployId} />
+        <div className="w-full h-48 border overflow-x-auto"></div>
       </div>
 
       <div className="border">
