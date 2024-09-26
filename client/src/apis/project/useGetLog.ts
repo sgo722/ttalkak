@@ -2,9 +2,7 @@ import { useQuery, UseQueryResult } from "@tanstack/react-query";
 import { DeploymentLogParams, DeploymentLog } from "@/types/dashboard";
 import client from "@/apis/core/client";
 
-const getLog = async (
-  params: DeploymentLogParams
-): Promise<DeploymentLog> => {
+const getLog = async (params: DeploymentLogParams): Promise<DeploymentLog> => {
   const response = await client.get<DeploymentLog>({
     url: "/log/search",
     params,
@@ -22,7 +20,7 @@ const useGetLog = (
   enabled: boolean = true
 ): UseQueryResult<DeploymentLog, Error> => {
   return useQuery({
-    queryKey: ["deploy", params] as const,
+    queryKey: ["log", params] as const,
     queryFn: () => getLog(params),
     enabled,
   });
