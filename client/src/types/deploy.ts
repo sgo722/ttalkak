@@ -29,6 +29,18 @@ export enum Framework {
   SPRINGBOOT = "SPRINGBOOT",
 }
 
+export enum BuildTool {
+  GRADLE = "gradle",
+  MAVEN = "maven",
+  CRA = "cra",
+  VITE = "vite",
+}
+
+export enum PackageManager {
+  NPM = "npm",
+  YARN = "yarn",
+}
+
 export interface Deployment {
   deploymentId: number;
   projectId: number;
@@ -70,21 +82,29 @@ export interface DatabaseCreateRequest {
   password: string;
 }
 
-export interface DeployData {
-  hostingPort: number | null;
-  githubRepositoryRequest: GithubRepositoryRequest;
-  versionRequest: VersionRequest | null;
-  databaseCreateRequests: DatabaseCreateRequest[] | null;
-  env: string | null;
-  framework: Framework;
-}
-
 export interface GithubRepositoryRequest {
   repositoryOwner: string;
   repositoryName: string;
   repositoryUrl: string;
   rootDirectory: string;
   branch: string;
+}
+
+export interface DockerfileCreateRequest {
+  exist: boolean;
+  buildTool: BuildTool;
+  packageManager?: PackageManager;
+  languageVersion: number;
+}
+
+export interface DeployData {
+  hostingPort: number | null;
+  githubRepositoryRequest: GithubRepositoryRequest;
+  versionRequest: VersionRequest | null;
+  databaseCreateRequests?: DatabaseCreateRequest[] | null;
+  dockerfileCreateRequest?: DockerfileCreateRequest;
+  env: string | null;
+  framework: Framework;
 }
 
 export interface CreateDeployRequest extends DeployData {
