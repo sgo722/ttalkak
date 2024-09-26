@@ -16,6 +16,7 @@ interface DatabaseForm {
 }
 
 interface FormData {
+  javaVersion: string;
   port: string;
   rootDir: string;
   useDatabase: boolean;
@@ -31,6 +32,8 @@ export default function BackendForm() {
   const {
     githubRepositoryRequest,
     versionRequest,
+    dockerfileCreateRequest,
+    setDockerfileCreateRequest,
     reset: resetDeployStore,
   } = useDeployStore();
 
@@ -42,6 +45,7 @@ export default function BackendForm() {
     formState: { errors },
   } = useForm<FormData>({
     defaultValues: {
+      javaVersion: "",
       port: "8080",
       useDatabase: false,
       databases: [{ databaseType: DatabaseType.MYSQL, databasePort: "" }],
@@ -83,6 +87,11 @@ export default function BackendForm() {
         }))
       : null;
 
+    setDockerfileCreateRequest({
+      ...dockerfileCreateRequest,
+      languageVersion: data.javaVersion,
+    });
+
     createDeploy(
       {
         projectId: Number(projectId),
@@ -91,6 +100,7 @@ export default function BackendForm() {
         githubRepositoryRequest,
         versionRequest,
         databaseCreateRequests,
+        dockerfileCreateRequest,
         env: null,
         framework: Framework.SPRINGBOOT,
       },
@@ -122,6 +132,39 @@ export default function BackendForm() {
         className="w-full mx-auto p-6 bg-white rounded-lg border"
       >
         <div className="space-y-6">
+          <Controller
+            name="javaVersion"
+            control={control}
+            rules={{
+              required: "자바 버전을 입력해주세요.",
+              pattern: {
+                value: /^[0-9]+$/,
+                message: "숫자만 입력 가능합니다.",
+              },
+            }}
+            render={({ field }) => (
+              <div>
+                <label
+                  htmlFor="javaVersion"
+                  className="block text-md font-semibold text-gray-700 mb-1"
+                >
+                  자바 버전
+                </label>
+                <input
+                  {...field}
+                  id="javaVersion"
+                  type="text"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+                {errors.javaVersion && (
+                  <p className="text-red-500 text-sm mt-2">
+                    {errors.javaVersion.message}
+                  </p>
+                )}
+              </div>
+            )}
+          ></Controller>
+
           <div>
             <label className="block text-md font-semibold text-gray-700 mb-1">
               백엔드 프레임워크

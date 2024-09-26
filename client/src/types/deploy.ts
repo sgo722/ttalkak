@@ -94,7 +94,7 @@ export interface DockerfileCreateRequest {
   exist: boolean;
   buildTool: BuildTool;
   packageManager?: PackageManager;
-  languageVersion: number;
+  languageVersion: string;
 }
 
 export interface DeployData {

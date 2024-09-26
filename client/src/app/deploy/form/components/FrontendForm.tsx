@@ -11,6 +11,7 @@ import { MdAdd } from "react-icons/md";
 
 interface FormData {
   framework: Framework;
+  nodeVersion: string;
   port: number;
   envVars: { key: string; value: string }[];
 }
@@ -28,6 +29,7 @@ export default function FrontendForm() {
   } = useForm<FormData>({
     defaultValues: {
       framework: Framework.REACT,
+      nodeVersion: "",
       port: 3000,
       envVars: [],
     },
@@ -44,6 +46,8 @@ export default function FrontendForm() {
   const {
     githubRepositoryRequest,
     versionRequest,
+    setDockerfileCreateRequest,
+    dockerfileCreateRequest,
     reset: resetDelpoyStore,
   } = useDeployStore();
 
@@ -51,6 +55,11 @@ export default function FrontendForm() {
     const envString = data.envVars
       .map(({ key, value }) => `${key}=${value}`)
       .join("\n");
+
+    setDockerfileCreateRequest({
+      ...dockerfileCreateRequest,
+      languageVersion: data.nodeVersion,
+    });
 
     createDeploy(
       {
@@ -60,6 +69,7 @@ export default function FrontendForm() {
         githubRepositoryRequest,
         versionRequest,
         databaseCreateRequests: null,
+        dockerfileCreateRequest,
         env: envString,
         framework: data.framework,
       },
@@ -115,6 +125,42 @@ export default function FrontendForm() {
               </div>
             )}
           />
+
+          <Controller
+            name="nodeVersion"
+            control={control}
+            rules={{
+              required: "Node.js 버전을 입력해주세요.",
+              pattern: {
+                value: /^\d+(\.\d+)?(\.\d+)?$/,
+                message:
+                  "유효한 Node.js 버전을 입력해주세요 (예: 16.x, 18.12.1)",
+              },
+            }}
+            render={({ field }) => (
+              <div>
+                <label
+                  htmlFor="nodeVersion"
+                  className="block text-md font-semibold text-gray-700 mb-1"
+                >
+                  Node.js 버전
+                </label>
+                <input
+                  {...field}
+                  id="nodeVersion"
+                  type="text"
+                  placeholder="예: 18.21.1"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+                {errors.nodeVersion && (
+                  <p className="text-red-500 text-sm mt-2">
+                    {errors.nodeVersion.message}
+                  </p>
+                )}
+              </div>
+            )}
+          ></Controller>
+
           <Controller
             name="port"
             control={control}
