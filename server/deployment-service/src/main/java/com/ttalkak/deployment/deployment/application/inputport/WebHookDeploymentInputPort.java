@@ -41,8 +41,13 @@ public class WebHookDeploymentInputPort implements WebHookDeploymentUsecase {
                 () -> new BusinessException(ErrorCode.NOT_EXISTS_DEPLOYMENT)
         );
 
-        ProjectInfoResponse projectInfo = projectOutputPort.getProjectInfo(deployment.getProjectId());
-        String expirationDate = projectInfo.getExpirationDate();
+        String expirationDate = null;
+        try {
+            ProjectInfoResponse projectInfo = projectOutputPort.getProjectInfo(deployment.getProjectId());
+            expirationDate = projectInfo.getExpirationDate();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
         // 배포 상태 변환
         deployment.setStatus(DeploymentStatus.PENDING);
 

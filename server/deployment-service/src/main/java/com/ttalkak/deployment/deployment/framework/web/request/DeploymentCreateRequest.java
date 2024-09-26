@@ -35,8 +35,6 @@ public class DeploymentCreateRequest {
 
     private String framework;
 
-
-    @Nullable
     private DockerfileCreateRequest dockerfileCreateRequest;
 
     @Builder

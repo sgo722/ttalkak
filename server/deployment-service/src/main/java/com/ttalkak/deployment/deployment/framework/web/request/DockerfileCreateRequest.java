@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 @Getter
 public class DockerfileCreateRequest {
     // 도커 파일 존재 여부
-    private boolean exist;
+    private boolean exist = true;
 
     // 빌드도구
     private String buildTool;
