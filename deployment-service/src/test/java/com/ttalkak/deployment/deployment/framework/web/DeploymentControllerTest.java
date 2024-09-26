@@ -2,7 +2,6 @@ package com.ttalkak.deployment.deployment.framework.web;
 
 import com.epages.restdocs.apispec.ResourceSnippetParameters;
 import com.ttalkak.deployment.deployment.application.usecase.*;
-import com.ttalkak.deployment.deployment.domain.event.CommandEvent;
 import com.ttalkak.deployment.deployment.domain.model.vo.DatabaseType;
 import com.ttalkak.deployment.deployment.domain.model.vo.DeploymentStatus;
 import com.ttalkak.deployment.deployment.domain.model.vo.ServiceType;
@@ -11,17 +10,12 @@ import com.ttalkak.deployment.deployment.framework.web.response.*;
 import com.ttalkak.deployment.deployment.support.RestDocsSupport;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
-import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureWebMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.restdocs.payload.JsonFieldType;
 import org.springframework.test.web.servlet.ResultActions;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -47,7 +41,7 @@ class DeploymentControllerTest extends RestDocsSupport {
     private CreateDeploymentUsecase createDeploymentUsecase;
 
     @MockBean
-    private CreateDockerFileUsecase createDockerFileUsecase;
+    private CreateDockerFileUsecaseRegacy createDockerFileUsecaseRegacy;
 
     @MockBean
     private UpdateDeploymentUsecase updateDeploymentUsecase;

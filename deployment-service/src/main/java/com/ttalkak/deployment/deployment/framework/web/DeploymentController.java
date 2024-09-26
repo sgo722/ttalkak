@@ -6,7 +6,6 @@ import com.ttalkak.deployment.deployment.framework.web.request.*;
 import com.ttalkak.deployment.deployment.framework.web.response.DeploymentCreateResponse;
 import com.ttalkak.deployment.deployment.framework.web.response.DeploymentDetailResponse;
 import com.ttalkak.deployment.deployment.framework.web.response.DeploymentPreviewResponse;
-import com.ttalkak.deployment.deployment.framework.web.response.DockerFileResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -20,7 +19,7 @@ public class DeploymentController {
 
     private final CreateDeploymentUsecase createDeploymentUsecase;
 
-    private final CreateDockerFileUsecase createDockerFileUsecase;
+    private final CreateDockerFileUsecaseRegacy createDockerFileUsecaseRegacy;
 
     private final UpdateDeploymentUsecase updateDeploymentUsecase;
 
@@ -33,8 +32,8 @@ public class DeploymentController {
     // 도커 파일 생성
     @PostMapping("/dockerfile")
     @ResponseStatus(HttpStatus.CREATED)
-    public ApiResponse<Void> createDockerFile(@RequestHeader("X-USER-ID") Long userId, @RequestBody DockerfileCreateRequest dockerfileCreateRequest){
-        createDockerFileUsecase.createDockerFile(userId, dockerfileCreateRequest);
+    public ApiResponse<Void> createDockerFile(@RequestHeader("X-USER-ID") Long userId, @RequestBody DockerfileCreateRequestRegacy dockerfileCreateRequestRegacy){
+        createDockerFileUsecaseRegacy.createDockerFile(userId, dockerfileCreateRequestRegacy);
         return ApiResponse.success();
     }
 

@@ -3,6 +3,7 @@ package com.ttalkak.deployment.deployment.application.inputport;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.ttalkak.deployment.deployment.application.outputport.*;
 import com.ttalkak.deployment.deployment.application.usecase.CreateDeploymentUsecase;
+import com.ttalkak.deployment.deployment.application.usecase.CreateDockerfileUseCase;
 import com.ttalkak.deployment.deployment.domain.event.CreateInstanceEvent;
 import com.ttalkak.deployment.deployment.domain.event.DatabaseEvent;
 import com.ttalkak.deployment.deployment.domain.event.DeploymentEvent;
@@ -16,13 +17,13 @@ import com.ttalkak.deployment.deployment.framework.domainadapter.dto.DomainReque
 import com.ttalkak.deployment.deployment.framework.projectadapter.dto.ProjectInfoResponse;
 import com.ttalkak.deployment.deployment.framework.web.request.DatabaseCreateRequest;
 import com.ttalkak.deployment.deployment.framework.web.request.DeploymentCreateRequest;
+import com.ttalkak.deployment.deployment.framework.web.request.DockerfileCreateRequest;
 import com.ttalkak.deployment.deployment.framework.web.request.EnvCreateRequest;
 import com.ttalkak.deployment.deployment.framework.web.response.DeploymentCreateResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -30,6 +31,8 @@ import java.util.List;
 @RequiredArgsConstructor
 @Transactional
 public class CreateDeploymentInputPort implements CreateDeploymentUsecase {
+
+    private final CreateDockerfileUseCase createDockerfileUseCase;
 
     private final DeploymentOutputPort deploymentOutputPort;
 
@@ -64,6 +67,18 @@ public class CreateDeploymentInputPort implements CreateDeploymentUsecase {
         // 배포 객체 저장
         DeploymentEntity savedDeployment = deploymentOutputPort.save(deployment);
 
+        DockerfileCreateRequest dockerfileCreateRequest = deploymentCreateRequest.getDockerfileCreateRequest();
+
+        boolean dockerfileExist = dockerfileCreateRequest.isExist();
+        if(dockerfileExist){
+            String dockerFileScript = createDockerfileUseCase.generateDockerfileScript(deployment.getServiceType(),
+                    dockerfileCreateRequest.getBuildTool(),
+                    dockerfileCreateRequest.getPackageManager(),
+                    dockerfileCreateRequest.getLanguageVersion()
+            );
+            deployment.setDockerfileScript(dockerFileScript);
+        }
+
         // 배포 버전 객체 생성
         VersionEntity versionEntity = createVersion(deploymentCreateRequest, 1L, savedDeployment);
 
@@ -71,7 +86,6 @@ public class CreateDeploymentInputPort implements CreateDeploymentUsecase {
 
         // 배포 버전 저장
         savedDeployment.addVersion(savedVersionEntity);
-
 
         // 호스팅 객체 생성
         HostingEntity hosting = createHosting(deploymentCreateRequest, savedDeployment, domainName);
@@ -88,13 +102,14 @@ public class CreateDeploymentInputPort implements CreateDeploymentUsecase {
         // 백엔드 서버면? =>  데이터베이스가 존재한다.
         List<DatabaseEvent> databaseEvents = createDatabaseEvents(deploymentCreateRequest, savedDeployment);
 
+
         // 환경변수 생성
         List<EnvEvent> envs = createEnvs(deploymentCreateRequest, deployment, savedDeployment);
         // Kafka Event 객체 생성
         HostingEvent hostingEvent = new HostingEvent(savedDeployment.getId(), savedHostingEntity.getId(), savedHostingEntity.getHostingPort(), null,projectInfo.getDomainName(), hosting.getDetailSubDomainKey());
         DeploymentEvent deploymentEvent = new DeploymentEvent(savedDeployment.getId(), savedDeployment.getProjectId(), envs, savedDeployment.getServiceType().toString());
         GithubInfoEvent githubInfoEvent = new GithubInfoEvent(deployment.getGithubInfo().getRepositoryUrl(), deployment.getGithubInfo().getRootDirectory(), deployment.getGithubInfo().getBranch());
-        CreateInstanceEvent createInstanceEvent = new CreateInstanceEvent(deploymentEvent, hostingEvent, githubInfoEvent, envs, databaseEvents, versionEntity.getVersion(), expirationDate);
+        CreateInstanceEvent createInstanceEvent = new CreateInstanceEvent(deploymentEvent, hostingEvent, githubInfoEvent, envs, databaseEvents, versionEntity.getVersion(), expirationDate, dockerfileExist, deployment.getDockerfileScript());
         try {
             eventOutputPort.occurCreateInstance(createInstanceEvent);
         } catch (JsonProcessingException e) {

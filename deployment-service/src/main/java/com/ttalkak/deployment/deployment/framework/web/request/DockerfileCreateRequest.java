@@ -3,19 +3,18 @@ package com.ttalkak.deployment.deployment.framework.web.request;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-@Getter
 @NoArgsConstructor
+@Getter
 public class DockerfileCreateRequest {
+    // 도커 파일 존재 여부
+    private boolean exist;
 
-    private String buildEnv;
+    // 빌드도구
+    private String buildTool;
 
-    private String gitTree;
+    // 프론트엔드
+    private String packageManager;
 
-    private String owner;
-
-    private String repo;
-
-    private String rootDirectory;
-
-    private String branch;
+    // 프론트엔드, 백엔드 (node or java version)
+    private String languageVersion;
 }
