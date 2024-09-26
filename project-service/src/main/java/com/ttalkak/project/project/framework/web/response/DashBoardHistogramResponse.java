@@ -7,8 +7,8 @@ import java.util.List;
 
 @Getter
 @Builder
-public class DashBoardResponse {
+public class DashBoardHistogramResponse {
 
-    private final LogPageResponse pages;
     private final List<LogHistogramResponse> histograms;
+    private final long intervalMinute;
 }

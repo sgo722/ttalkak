@@ -12,7 +12,9 @@ import com.ttalkak.project.project.domain.model.vo.ProjectEditor;
 import com.ttalkak.project.project.domain.model.ProjectEntity;
 import com.ttalkak.project.project.framework.web.request.ProjectUpdateRequest;
 import com.ttalkak.project.project.framework.web.response.ProjectDetailResponse;
+import com.ttalkak.project.project.framework.web.response.ProjectSearchResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.transaction.annotation.Transactional;
 
 @Transactional
@@ -33,8 +35,11 @@ public class UpdateProjectInputPort implements UpdateProjectUseCase {
      * @return
      */
     @Override
-    public ProjectDetailResponse updateProject(Long projectId, ProjectUpdateRequest projectUpdateRequest) {
+    public ProjectDetailResponse updateProject(Long userId, Long projectId, ProjectUpdateRequest projectUpdateRequest) {
         ProjectEntity projectEntity = loadProjectOutputPort.findById(projectId);
+
+        // 유저 프로젝트가 아닌 경우 예외 발생
+        if(userId != projectEntity.getUserId()) throw new BusinessException(ErrorCode.ACCESS_PROJECT_DENIED);
 
         // 도메인명 중복 체크
         if(projectUpdateRequest.getDomainName() != null && !"".equals(projectUpdateRequest.getDomainName())) {
