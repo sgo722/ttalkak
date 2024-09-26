@@ -53,7 +53,7 @@ public class CreateDockerFileInputPort implements CreateDockerfileUseCase {
                 dockerfileBuilder.append("COPY package*.json ./\n")
                         .append("RUN npm ci\n")
                         .append("COPY . .\n")
-                        .append("RUN ").append(packageManager).append("run build\n");
+                        .append("RUN ").append(packageManager).append(" run build\n");
             } else if("yarn".equalsIgnoreCase(packageManager)) {
                 dockerfileBuilder.append("COPY package.json yarn.lock ./\n")
                         .append("RUN yarn install --frozen-lockfile\n")
@@ -63,9 +63,9 @@ public class CreateDockerFileInputPort implements CreateDockerfileUseCase {
 
             dockerfileBuilder.append("FROM nginx:stable-alpine\n");
 
-            if("CRA".equalsIgnoreCase(buildTool)) {
+            if("cra".equalsIgnoreCase(buildTool)) {
                 dockerfileBuilder.append("COPY --from=build /app/build /usr/share/nginx/html\n");
-            } else if("Vite".equalsIgnoreCase(buildTool)) {
+            } else if("vite".equalsIgnoreCase(buildTool)) {
                 dockerfileBuilder.append("COPY --from=build /app/dist /usr/share/nginx/html\n");
             }
 
