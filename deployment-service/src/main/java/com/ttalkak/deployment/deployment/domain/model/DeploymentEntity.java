@@ -53,6 +53,7 @@ public class DeploymentEntity extends BaseEntity {
 
     @Setter
     private String dockerfileScript;
+
     @Builder
     private DeploymentEntity(Long id, Long projectId, DeploymentStatus status, ServiceType serviceType, GithubInfo githubInfo, String framework, String payloadURL, String dockerfileScript) {
         this.id = id;
