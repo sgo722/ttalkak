@@ -10,12 +10,14 @@ import com.ttalkak.deployment.deployment.domain.model.DeploymentEntity;
 import com.ttalkak.deployment.deployment.domain.model.HostingEntity;
 import com.ttalkak.deployment.deployment.domain.model.VersionEntity;
 import com.ttalkak.deployment.deployment.domain.model.vo.DeploymentStatus;
+import com.ttalkak.deployment.deployment.framework.projectadapter.dto.ProjectInfoResponse;
 import com.ttalkak.deployment.deployment.framework.web.request.DeploymentUpdateStatusRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static com.ttalkak.deployment.deployment.domain.model.vo.DeploymentStatus.*;
 
@@ -33,6 +35,8 @@ public class UpdateDeploymentStatusInputPort implements UpdateDeploymentStatusUs
     private final EventOutputPort eventOutputPort;
 
     private final VersionOutputPort versionOutputPort;
+
+    private final ProjectOutputPort projectOutputPort;
 
     @Override
     public void updateDeploymentStatus(DeploymentUpdateStatusRequest deploymentUpdateStatusRequest){
@@ -67,6 +71,10 @@ public class UpdateDeploymentStatusInputPort implements UpdateDeploymentStatusUs
     private void reAllocateInstance(DeploymentEntity deploymentEntity) {
         VersionEntity versionEntity = versionOutputPort.findLastVersionByDeploymentId(deploymentEntity.getId());
 
+
+        ProjectInfoResponse projectInfo = projectOutputPort.getProjectInfo(deploymentEntity.getProjectId());
+        String expirationDate = projectInfo.getExpirationDate();
+
         HostingEntity hosting = hostingOutputPort.findByProjectIdAndServiceType(deploymentEntity.getProjectId(), deploymentEntity.getServiceType());
 
         List<EnvEvent> envEvents = deploymentEntity.getEnvs().stream().map(env -> new EnvEvent(env.getKey(), env.getValue())).toList();
@@ -78,15 +86,19 @@ public class UpdateDeploymentStatusInputPort implements UpdateDeploymentStatusUs
                 hosting.getDetailSubDomainName(),
                 hosting.getDetailSubDomainKey()
         );
+
+        List<DatabaseEvent> databaseEvents = deploymentEntity.getDataBaseEntities().stream()
+                .map(databaseEntity -> new DatabaseEvent(databaseEntity.getId(), databaseEntity.getDatabaseType().toString(), databaseEntity.getUsername(), databaseEntity.getPassword(), databaseEntity.getPort()))
+                .collect(Collectors.toList());
+
         DeploymentEvent deploymentEvent = new DeploymentEvent(deploymentEntity.getId(), deploymentEntity.getProjectId(), envEvents, deploymentEntity.getServiceType().toString());
         GithubInfoEvent githubInfoEvent = new GithubInfoEvent(deploymentEntity.getGithubInfo().getRepositoryUrl(), deploymentEntity.getGithubInfo().getRootDirectory(), deploymentEntity.getGithubInfo().getBranch());
         CreateInstanceEvent createInstanceEvent = null;
         if(deploymentEntity.getDockerfileScript().equals("Docker File Exist")){
-            createInstanceEvent = new CreateInstanceEvent(deploymentEvent, hostingEvent, githubInfoEvent, envEvents, null, versionEntity.getVersion(), null, true, deploymentEntity.getDockerfileScript());
+            createInstanceEvent = new CreateInstanceEvent(deploymentEvent, hostingEvent, githubInfoEvent, envEvents, databaseEvents, versionEntity.getVersion(), expirationDate, true, deploymentEntity.getDockerfileScript());
         }else{
-            createInstanceEvent = new CreateInstanceEvent(deploymentEvent, hostingEvent, githubInfoEvent, envEvents, null, versionEntity.getVersion(), null, false, deploymentEntity.getDockerfileScript());
+            createInstanceEvent = new CreateInstanceEvent(deploymentEvent, hostingEvent, githubInfoEvent, envEvents, databaseEvents, versionEntity.getVersion(), expirationDate, false, deploymentEntity.getDockerfileScript());
         }
-
 
         try {
             eventOutputPort.occurRebuildInstance(createInstanceEvent);

@@ -70,7 +70,7 @@ public class CreateDeploymentInputPort implements CreateDeploymentUsecase {
         DockerfileCreateRequest dockerfileCreateRequest = deploymentCreateRequest.getDockerfileCreateRequest();
 
         boolean dockerfileExist = dockerfileCreateRequest.isExist();
-        if(dockerfileExist){
+        if(!dockerfileExist){
             String dockerFileScript = createDockerfileUseCase.generateDockerfileScript(deployment.getServiceType(),
                     dockerfileCreateRequest.getBuildTool(),
                     dockerfileCreateRequest.getPackageManager(),
