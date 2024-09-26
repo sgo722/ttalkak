@@ -1,77 +1,78 @@
 package com.ttalkak.deployment.deployment.application.inputport;
 
-import com.ttalkak.deployment.common.global.error.ErrorCode;
-import com.ttalkak.deployment.common.global.exception.BusinessException;
-import com.ttalkak.deployment.deployment.application.outputport.GithubOutputPort;
-import com.ttalkak.deployment.deployment.application.outputport.UserOutputPort;
-import com.ttalkak.deployment.deployment.framework.useradapter.dto.UserInfoResponse;
-import com.ttalkak.deployment.deployment.framework.web.CreateDockerFileUsecase;
-import com.ttalkak.deployment.deployment.framework.web.request.DockerfileCreateRequest;
-import com.ttalkak.deployment.deployment.framework.web.response.DockerFileResponse;
-import io.github.flashvayne.chatgpt.service.ChatgptService;
+
+import com.ttalkak.deployment.deployment.application.usecase.CreateDockerfileUseCase;
+import com.ttalkak.deployment.deployment.domain.model.vo.ServiceType;
 import lombok.RequiredArgsConstructor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.nio.charset.StandardCharsets;
-import java.util.Base64;
-import java.util.HashMap;
-import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
 @Transactional
-public class CreateDockerFileInputPort implements CreateDockerFileUsecase {
-
-    private static final Logger log = LoggerFactory.getLogger(CreateDockerFileInputPort.class);
-
-    private final UserOutputPort userOutputPort;
-    private final ChatgptService chatgptService;
-    private final GithubOutputPort githubOutputPort;
+public class CreateDockerFileInputPort implements CreateDockerfileUseCase {
 
     @Override
-    public DockerFileResponse createDockerFile(Long userId, DockerfileCreateRequest dockerfileCreateRequest) {
+    public String generateDockerfileScript(ServiceType serviceType, String buildTool, String packageManager, String languageVersion) {
+        StringBuilder dockerfileBuilder = new StringBuilder();
 
-        String buildEnv = dockerfileCreateRequest.getBuildEnv();
-        String gitTree = dockerfileCreateRequest.getGitTree();
-        String prompt = buildEnv + "\n" + gitTree + "\n 패키지 구조와 프로젝트 설정 정보야. \n 도커파일 만들어줘. 딱 코드만 알려줘";
+        if(serviceType == ServiceType.BACKEND) {
+            if("gradle".equalsIgnoreCase(buildTool)) {
+                dockerfileBuilder.append("FROM gradle:8.8-jdk").append(languageVersion).append(" AS build\n");
+            } else if("maven".equalsIgnoreCase(buildTool)) {
+                dockerfileBuilder.append("FROM maven:3.9.4-eclipse-temurin-").append(languageVersion).append(" AS build\n");
+            }
 
-        DockerFileResponse dockerFileResponse;
-        try {
-            dockerFileResponse = DockerFileResponse.of(chatgptService.sendMessage(prompt));
-        } catch (Exception e) {
-            log.error("Failed to generate Dockerfile via ChatGPT", e);
-            throw new BusinessException(ErrorCode.GPT_NOT_CREATE_DOCKERFILE);
-        }
-        String dockerfileCode = dockerFileResponse.getDockerfileCode();
-        String encodedDockerfileCode = Base64.getEncoder().encodeToString(dockerfileCode.getBytes(StandardCharsets.UTF_8));
+            dockerfileBuilder.append("WORKDIR /app\n")
+                    .append("COPY . .\n");
 
-        UserInfoResponse userInfo = userOutputPort.getUserInfo(userId);
-        String accessToken = "token " + userInfo.getAccessToken();
+            if("gradle".equalsIgnoreCase(buildTool)) {
+                dockerfileBuilder.append("RUN gradle clean build -x test --no-daemon\n");
+            } else if("maven".equalsIgnoreCase(buildTool)) {
+                dockerfileBuilder.append("RUN mvn clean package -DskipTests\n");
+            }
 
-        Map<String, Object> requestBody = new HashMap<>();
-        requestBody.put("message", "Add Dockerfile by ttalkak");
-        requestBody.put("content", encodedDockerfileCode);
-        requestBody.put("branch", dockerfileCreateRequest.getBranch());
+            dockerfileBuilder.append("FROM eclipse-temurin:").append(languageVersion).append("-jdk\n")
+                    .append("WORKDIR /app\n");
 
-        try {
-            Map<String, Object> dockerFile = githubOutputPort.createDockerFile(
-                    accessToken,
-                    dockerfileCreateRequest.getOwner(),
-                    dockerfileCreateRequest.getRepo(),
-                    dockerfileCreateRequest.getRootDirectory(),
-                    requestBody
-            );
 
-            log.info("dockerFile :: " + dockerFile.toString());
-        } catch (Exception e) {
-            log.error("Failed to upload Dockerfile to GitHub", e);
-            throw new BusinessException(ErrorCode.GITHUB_FEIGN_ERROR);
+            if("gradle".equalsIgnoreCase(buildTool)) {
+                dockerfileBuilder.append("COPY --from=build /app/build/libs/*.jar /app/app.jar\n");
+            } else if("maven".equalsIgnoreCase(buildTool)) {
+                dockerfileBuilder.append("COPY --from=build /app/target/*.jar /app/app.jar\n");
+            }
+
+            dockerfileBuilder.append("ENTRYPOINT [\"java\", \"-jar\", \"/app/app.jar\"]\n");
         }
 
-        log.info("dockerFileResponse: {}", dockerFileResponse);
-        return dockerFileResponse;
+        if(serviceType == ServiceType.FRONTEND) {
+            dockerfileBuilder.append("FROM node:").append(languageVersion).append(" AS build\n")
+                    .append("WORKDIR /app\n");
+
+            if("npm".equalsIgnoreCase(packageManager)) {
+                dockerfileBuilder.append("COPY package*.json ./\n")
+                        .append("RUN npm ci\n")
+                        .append("COPY . .\n")
+                        .append("RUN ").append(packageManager).append("run build\n");
+            } else if("yarn".equalsIgnoreCase(packageManager)) {
+                dockerfileBuilder.append("COPY package.json yarn.lock ./\n")
+                        .append("RUN yarn install --frozen-lockfile\n")
+                        .append("COPY . .\n")
+                        .append("RUN ").append("yarn build\n");
+            }
+
+            dockerfileBuilder.append("FROM nginx:stable-alpine\n");
+
+            if("CRA".equalsIgnoreCase(buildTool)) {
+                dockerfileBuilder.append("COPY --from=build /app/build /usr/share/nginx/html\n");
+            } else if("Vite".equalsIgnoreCase(buildTool)) {
+                dockerfileBuilder.append("COPY --from=build /app/dist /usr/share/nginx/html\n");
+            }
+
+            dockerfileBuilder.append("CMD [\"nginx\", \"-g\", \"daemon off;\"]");
+        }
+
+        return dockerfileBuilder.toString();
     }
+
 }

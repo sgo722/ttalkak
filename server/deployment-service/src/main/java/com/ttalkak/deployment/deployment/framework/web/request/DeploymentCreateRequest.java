@@ -35,8 +35,10 @@ public class DeploymentCreateRequest {
 
     private String framework;
 
+    private DockerfileCreateRequest dockerfileCreateRequest;
+
     @Builder
-    private DeploymentCreateRequest(Long projectId, String serviceType, GithubRepositoryRequest githubRepositoryRequest, List<DatabaseCreateRequest> databaseCreateRequests,VersionRequest versionRequest, int hostingPort, List<EnvCreateRequest> envs, String framework) {
+    private DeploymentCreateRequest(Long projectId, String serviceType, GithubRepositoryRequest githubRepositoryRequest, List<DatabaseCreateRequest> databaseCreateRequests,VersionRequest versionRequest, int hostingPort, List<EnvCreateRequest> envs, String framework, DockerfileCreateRequest dockerfileCreateRequest) {
         this.projectId = projectId;
         this.serviceType = serviceType;
         this.githubRepositoryRequest = githubRepositoryRequest;
@@ -45,5 +47,6 @@ public class DeploymentCreateRequest {
         this.hostingPort = hostingPort;
         this.envs = envs;
         this.framework = framework;
+        this.dockerfileCreateRequest = dockerfileCreateRequest;
     }
 }

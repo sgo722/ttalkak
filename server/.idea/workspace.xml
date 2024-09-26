@@ -68,12 +68,12 @@
     &quot;assignee&quot;: &quot;sgo722&quot;
   }
 }</component>
-  <component name="GithubPullRequestsUISettings">{
-  &quot;selectedUrlAndAccountId&quot;: {
-    &quot;url&quot;: &quot;https://github.com/sunsuking/ddalkak.git&quot;,
-    &quot;accountId&quot;: &quot;cb748827-6561-41e7-9489-82ec21fc4f72&quot;
+  <component name="GithubPullRequestsUISettings"><![CDATA[{
+  "selectedUrlAndAccountId": {
+    "url": "https://github.com/sgo722/ddalkak.git",
+    "accountId": "cb748827-6561-41e7-9489-82ec21fc4f72"
   }
-}</component>
+}]]></component>
   <component name="KubernetesApiPersistence">{}</component>
   <component name="KubernetesApiProvider">{
   &quot;isMigrated&quot;: true
@@ -121,7 +121,7 @@
     "database.data.extractors.current.id": "SQL Updates",
     "git-widget-placeholder": "master",
     "kotlin-language-version-configured": "true",
-    "last_opened_file_path": "C:/Users/SSAFY/Desktop/Jun/ddalkak",
+    "last_opened_file_path": "C:/Users/SSAFY/Desktop/Jun/ddalkak/deployment-service/build.gradle",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
     "node.js.selected.package.eslint": "(autodetect)",
@@ -345,7 +345,8 @@
       <workItem from="1726587118289" duration="957000" />
       <workItem from="1727052158565" duration="2000000" />
       <workItem from="1727073035310" duration="5877000" />
-      <workItem from="1727163983634" duration="1060000" />
+      <workItem from="1727163983634" duration="2651000" />
+      <workItem from="1727225332255" duration="1979000" />
     </task>
     <task id="LOCAL-00001" summary="도커 컴포즈 수정">
       <option name="closed" value="true" />

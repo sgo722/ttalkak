@@ -51,8 +51,10 @@ public class DeploymentEntity extends BaseEntity {
 
     private String framework;
 
+    @Setter
+    private String dockerfileScript;
     @Builder
-    private DeploymentEntity(Long id, Long projectId, DeploymentStatus status, ServiceType serviceType, GithubInfo githubInfo, String framework, String payloadURL) {
+    private DeploymentEntity(Long id, Long projectId, DeploymentStatus status, ServiceType serviceType, GithubInfo githubInfo, String framework, String payloadURL, String dockerfileScript) {
         this.id = id;
         this.projectId = projectId;
         this.status = status;
@@ -60,6 +62,7 @@ public class DeploymentEntity extends BaseEntity {
         this.githubInfo = githubInfo;
         this.framework = framework;
         this.payloadURL = payloadURL;
+        this.dockerfileScript = dockerfileScript;
     }
 
     // 배포 생성
@@ -71,6 +74,7 @@ public class DeploymentEntity extends BaseEntity {
                 .githubInfo(githubInfo)
                 .framework(framework)
                 .payloadURL(payloadURL)
+                .dockerfileScript("Docker File Exist")
                 .build();
     }
 

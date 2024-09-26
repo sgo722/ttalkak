@@ -66,11 +66,12 @@ public class DeleteDeploymentInputPort implements DeleteDeploymentUsecase {
         for(DeploymentEntity deploymentEntity : deploymentEntities) {
             deploymentEntity.deleteDeployment();
             HostingEntity findHosting = hostingOutputPort.findByProjectIdAndServiceType(deploymentEntity.getProjectId(), deploymentEntity.getServiceType());
+            findHosting.delete();
             if(findHosting == null){
                 throw new BusinessException(ErrorCode.NOT_EXISTS_HOSTING);
             }
             domainOutputPort.deleteDomainKey(findHosting.getId().toString());
+            deploymentOutputPort.save(deploymentEntity);
         }
-        deploymentOutputPort.saveAll(deploymentEntities);
     }
 }

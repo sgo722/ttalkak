@@ -37,7 +37,19 @@ public class CreateInstanceEvent implements Serializable {
 
     private Long version;
 
-    public CreateInstanceEvent(DeploymentEvent deployment, HostingEvent hosting, GithubInfoEvent githubInfo, List<EnvEvent> envs, List<DatabaseEvent> database, Long version, String expirationDate) {
+    private boolean dockerfileExist;
+
+    private String dockerfileScript;
+
+    public CreateInstanceEvent(DeploymentEvent deployment,
+                               HostingEvent hosting,
+                               GithubInfoEvent githubInfo,
+                               List<EnvEvent> envs,
+                               List<DatabaseEvent> database,
+                               Long version,
+                               String expirationDate,
+                               boolean dockerfileExist,
+                               String dockerfileScript) {
         this.deploymentId = deployment.getDeploymentId().toString();
         this.port = String.valueOf(hosting.getHostingPort());
         this.subdomainName = hosting.getSubdomainName();
@@ -50,5 +62,7 @@ public class CreateInstanceEvent implements Serializable {
         this.databases = database;
         this.version = version;
         this.expirationDate = expirationDate;
+        this.dockerfileExist = dockerfileExist;
+        this.dockerfileScript = dockerfileScript;
     }
 }
