@@ -7,12 +7,15 @@ import com.ttalkak.project.config.OpenAIFeignClient;
 import com.ttalkak.project.project.application.outputport.LoadElasticSearchOutputPort;
 import com.ttalkak.project.project.application.outputport.LoadRedidMonitoringOutputPort;
 import com.ttalkak.project.project.application.usecase.GetLLMUseCase;
+import com.ttalkak.project.project.domain.model.redis.Monitoring;
 import com.ttalkak.project.project.framework.web.response.AIMonitoringResponse;
 import com.ttalkak.project.project.framework.web.response.MonitoringInfoResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.lang.reflect.Type;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -34,20 +37,38 @@ public class GetLLInputPort implements GetLLMUseCase {
     @SuppressWarnings("unchecked")
     public AIMonitoringResponse getMonitoringInfo(Long userId, String deploymentId) throws Exception {
 
-        String cacheData = loadRedidMonitoringOutputPort.getMonitoringData(userId);
-//        if(cacheData != null) {
-//            return AIMonitoringResponse.builder()
-//                    .monitoringInfoResponse(monitoring)
-//                    .answer(cacheData)
-//                    .build();
-//        }
+        Monitoring cacheData = loadRedidMonitoringOutputPort.getMonitoringData(userId);
 
+        // 조회데이터 5분 이내면 캐싱된 내용을 제공
+        if(cacheData != null) {
+            Duration timeDifference = Duration.between(cacheData.getTimestamp(), Instant.now());
+            if (timeDifference.compareTo(Duration.ofMinutes(5)) < 0) {
+                return AIMonitoringResponse.builder()
+                        .monitoringInfoResponse(null)
+                        .answer(cacheData.getAnswer())
+                        .build();
+            }
+        }
+
+        // 조회 데이터 5분 이후면 els를 조회
         MonitoringInfoResponse monitoring = loadElasticSearchOutputPort.getAIMonitoringInfo(deploymentId);
+
         if(monitoring == null || monitoring.getTotalDocCount() == 0) {
             return AIMonitoringResponse.builder()
                     .monitoringInfoResponse(monitoring)
                     .answer("집계된 데이터가 없습니다.")
                     .build();
+        }
+
+        // 캐시데이터가 비어있지 않고 캐시데이터와 모니터링 전체 조회수를 비교하여 동일한 경우 캐시데이터와 새로운 데이터가 일주일 사이라면 캐시 데이터를 반환
+        if(cacheData != null || cacheData.getDocCount() == monitoring.getTotalDocCount()) {
+            Duration timeDifference = Duration.between(cacheData.getTimestamp(), Instant.now());
+            if(timeDifference.compareTo(Duration.ofDays(7)) < 0) {
+                return AIMonitoringResponse.builder()
+                        .monitoringInfoResponse(monitoring)
+                        .answer(cacheData.getAnswer())
+                        .build();
+            }
         }
 
         String ipInfo = monitoring.getAccessIpInfos().stream()
@@ -74,8 +95,7 @@ public class GetLLInputPort implements GetLLMUseCase {
         double errorRate = (double) totalErrors / totalDocCount * 100;
 
         String input = """
-            
-            "We analyze the monitoring data. We provide an analysis summary of usage, errors, etc. in Korean. 
+            "We analyze the monitoring data. We provide an analysis summary of usage, errors, etc. in Korean.
              We give advice on potential risks and performance improvements. Full letters cannot exceed 600 characters."
             
             Full Overview:

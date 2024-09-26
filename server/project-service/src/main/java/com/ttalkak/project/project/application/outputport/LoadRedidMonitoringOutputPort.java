@@ -1,8 +1,10 @@
 package com.ttalkak.project.project.application.outputport;
 
+import com.ttalkak.project.project.domain.model.redis.Monitoring;
+
 public interface LoadRedidMonitoringOutputPort {
 
-    public void saveMonitoringData(Long userId, String monitoringInfo);
+    public void saveMonitoringData(Long userId, long docCount, String llmAnswer);
 
-    public String getMonitoringData(Long userId);
+    public Monitoring getMonitoringData(Long userId);
 }
