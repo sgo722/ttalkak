@@ -4,6 +4,7 @@ import com.ttalkak.project.common.UseCase;
 import com.ttalkak.project.project.application.outputport.LoadElasticSearchOutputPort;
 import com.ttalkak.project.project.application.usecase.GetElasticSearchUseCase;
 import com.ttalkak.project.project.framework.web.request.SearchLogRequest;
+import com.ttalkak.project.project.framework.web.response.DashBoardHistogramResponse;
 import com.ttalkak.project.project.framework.web.response.LogHistogramResponse;
 import com.ttalkak.project.project.framework.web.response.LogPageResponse;
 import com.ttalkak.project.project.framework.web.response.MonitoringInfoResponse;
@@ -42,7 +43,7 @@ public class GetElasticSearchInputPort implements GetElasticSearchUseCase {
      * @throws Exception
      */
     @Override
-    public List<LogHistogramResponse> getLogHistogram(Instant from, Instant to, Long deploymentId) throws Exception {
+    public DashBoardHistogramResponse getLogHistogram(Instant from, Instant to, Long deploymentId) throws Exception {
         Duration duration = Duration.between(from, to);
 
         DateHistogramInterval interval = switch ((int) duration.toDays()) {
@@ -58,8 +59,10 @@ public class GetElasticSearchInputPort implements GetElasticSearchUseCase {
             }
         };
 
-
-        return loadElasticSearchOutputPort.getLogHistogram(from, to, deploymentId, interval);
+        return DashBoardHistogramResponse.builder()
+                .histograms(loadElasticSearchOutputPort.getLogHistogram(from, to, deploymentId, interval))
+                .intervalMinute(duration.toMinutes())
+                .build();
     }
 
     /**

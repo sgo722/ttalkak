@@ -1,6 +1,9 @@
 package com.ttalkak.project.project.application.inputport;
 
 import com.ttalkak.project.common.UseCase;
+import com.ttalkak.project.common.error.ErrorCode;
+import com.ttalkak.project.common.exception.BusinessException;
+import com.ttalkak.project.common.exception.EntityNotFoundException;
 import com.ttalkak.project.project.application.outputport.DeploymentOutputPort;
 import com.ttalkak.project.project.application.outputport.LoadProjectOutputPort;
 import com.ttalkak.project.project.application.usecase.GetProjectUseCase;
@@ -36,8 +39,12 @@ public class GetProjectInputPort implements GetProjectUseCase {
      * @return
      */
     @Override
-    public ProjectDetailResponse getProject(Long projectId) {
+    public ProjectDetailResponse getProject(Long userId, Long projectId) {
         ProjectEntity result = loadProjectOutputPort.findById(projectId);
+
+        // 유저 프로젝트가 아닌 경우 예외 발생
+        if(result.getUserId() != projectId) throw new BusinessException(ErrorCode.ACCESS_PROJECT_DENIED);
+
         ProjectDetailResponse projectDetailResponse = ProjectDetailResponse.mapToResponse(result);
         List<DeploymentResponse> deployments = deploymentOutputPort.getDeployments(projectId);
         projectDetailResponse.setDeployments(deployments);
@@ -74,7 +81,14 @@ public class GetProjectInputPort implements GetProjectUseCase {
         } else {
             projects = loadProjectOutputPort.findMyProjectsContainsSearchKeyWord(pageable, userId, searchKeyword);
         }
+
+        // 유저 프로젝트가 아닌 경우 예외 발생
         Page<ProjectSearchResponse> page = projects.map(ProjectSearchResponse::mapToResponse);
+        if (page.getContent().size() > 0) {
+            if( userId != page.getContent().get(0).getUserId()) {
+                throw new BusinessException(ErrorCode.ACCESS_PROJECT_DENIED);
+            }
+        }
 
         ProjectPageResponse projectPageResponse = ProjectPageResponse.builder()
                 .content(page.getContent())

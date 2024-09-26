@@ -8,7 +8,7 @@ import org.springframework.data.domain.Pageable;
 
 public interface GetProjectUseCase {
 
-    ProjectDetailResponse getProject(Long projectId);
+    ProjectDetailResponse getProject(Long userId, Long projectId);
 
     ProjectDetailResponse getFeignProject(Long projectId);
 

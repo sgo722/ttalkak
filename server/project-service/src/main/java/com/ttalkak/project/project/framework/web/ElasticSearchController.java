@@ -70,9 +70,18 @@ public class ElasticSearchController {
         return ApiResponse.success(pages);
     }
 
+    /**
+     * 히스토그램 로그 조회
+     * @param userId
+     * @param from
+     * @param to
+     * @param deploymentId
+     * @return
+     * @throws Exception
+     */
     @GetMapping("/histogram")
     @ResponseStatus(HttpStatus.OK)
-    public ApiResponse<List<LogHistogramResponse>> getLogHistogram(
+    public ApiResponse<DashBoardHistogramResponse> getLogHistogram(
             @RequestHeader("X-USER-ID") Long userId,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Instant from,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Instant to,
@@ -82,17 +91,18 @@ public class ElasticSearchController {
         return ApiResponse.success(getElasticSearchUseCase.getLogHistogram(from, to, deploymentId));
     }
 
-//    @GetMapping("/test")
-//    @ResponseStatus(HttpStatus.OK)
-//    public ApiResponse<MonitoringInfoResponse> getMonitoringInfo() throws Exception {
-//
-//        MonitoringInfoResponse m = getElasticSearchUseCase.getAIMonitoringInfo("42");
-//        return ApiResponse.success(m);
-//    }
-    @GetMapping("/monitioring/{deploymentId}")
+    /**
+     * AI 모니터링 정보 조회
+     * @param deploymentId
+     * @return
+     * @throws Exception
+     */
+    @GetMapping("/monitoring/{deploymentId}")
     @ResponseStatus(HttpStatus.OK)
-    public ApiResponse<AIMonitoringResponse> getMonitoringInfo(@PathVariable String deploymentId) throws Exception {
-        return ApiResponse.success(getLLMUseCase.getMonitoringInfo(deploymentId));
+    public ApiResponse<AIMonitoringResponse> getMonitoringInfo(
+            @RequestHeader("X-USER-ID") Long userId,
+            @PathVariable String deploymentId) throws Exception {
+        return ApiResponse.success(getLLMUseCase.getMonitoringInfo(userId, deploymentId));
     }
 
 }

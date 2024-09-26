@@ -185,12 +185,14 @@ class ProjectControllerTest extends RestDocsSupport {
         projectDetailResponse.setDeployments(deploymentResponses);
 
         Long projectId = 1L;
-        when(getProjectUseCase.getProject(eq(projectId)))
+        Long userId = 1L;
+        when(getProjectUseCase.getProject(eq(userId), eq(projectId)))
                 .thenReturn(projectDetailResponse);
 
         // when
         ResultActions perform = mockMvc.perform(
                 get("/v1/project/{projectId}",1)
+                        .header("X-USER-ID", userId)
                 );
 
         perform.andExpect(status().isOk())
@@ -309,7 +311,7 @@ class ProjectControllerTest extends RestDocsSupport {
                 .updatedAt(fixedClock)
                 .build();
 
-        when(updateProjectUseCase.updateProject(eq(1L), any(ProjectUpdateRequest.class))).thenReturn(projectDetailResponse);
+        when(updateProjectUseCase.updateProject(eq(1L), eq(1L), any(ProjectUpdateRequest.class))).thenReturn(projectDetailResponse);
 
         // when
         ResultActions perform = mockMvc.perform(
@@ -347,12 +349,14 @@ class ProjectControllerTest extends RestDocsSupport {
 
         // given
         Long projectId = 1L;
+        Long userId = 1L;
 
-        doNothing().when(deleteProjectUseCase).deleteProject(eq(projectId));
+        doNothing().when(deleteProjectUseCase).deleteProject(eq(userId), eq(projectId));
 
         // when
         ResultActions perform = mockMvc.perform(
                 delete("/v1/project/{projectId}", projectId)
+                        .header("X-USER-ID", 1L)
                         .contentType(MediaType.APPLICATION_JSON));
 
         perform.andExpect(status().isOk())

@@ -57,8 +57,10 @@ public class ProjectController {
      */
     @GetMapping("/project/{projectId}")
     @ResponseStatus(HttpStatus.OK)
-    public ApiResponse<ProjectDetailResponse> getProject(@PathVariable Long projectId) {
-        ProjectDetailResponse projectDetailResponse = getProjectUseCase.getProject(projectId);
+    public ApiResponse<ProjectDetailResponse> getProject(
+            @RequestHeader("X-USER-ID") Long userId,
+            @PathVariable Long projectId) {
+        ProjectDetailResponse projectDetailResponse = getProjectUseCase.getProject(userId, projectId);
         return ApiResponse.success(projectDetailResponse);
     }
 
@@ -89,14 +91,16 @@ public class ProjectController {
 
     /**
      * 프로젝트 수정
-     * @param projectId
-     * @param projectUpdateRequest
+     * @param userId
      * @return
      */
     @PatchMapping("/project/{projectId}")
     @ResponseStatus(HttpStatus.OK)
-    public ApiResponse<ProjectDetailResponse> updateProject(@PathVariable Long projectId, @RequestBody ProjectUpdateRequest projectUpdateRequest) {
-        return ApiResponse.success(updateProjectUseCase.updateProject(projectId, projectUpdateRequest));
+    public ApiResponse<ProjectDetailResponse> updateProject(
+            @RequestHeader("X-USER-ID") Long userId,
+            @PathVariable Long projectId,
+            @RequestBody ProjectUpdateRequest projectUpdateRequest) {
+        return ApiResponse.success(updateProjectUseCase.updateProject(userId, projectId, projectUpdateRequest));
     }
 
     /**
@@ -105,8 +109,10 @@ public class ProjectController {
      * @return
      */
     @DeleteMapping("/project/{projectId}")
-    public ApiResponse<Void> deleteProject(@PathVariable Long projectId) throws JsonProcessingException {
-        deleteProjectUseCase.deleteProject(projectId);
+    public ApiResponse<Void> deleteProject(
+            @RequestHeader("X-USER-ID") Long userId,
+            @PathVariable Long projectId) throws JsonProcessingException {
+        deleteProjectUseCase.deleteProject(userId, projectId);
         return ApiResponse.success();
     }
     

@@ -5,6 +5,7 @@ import com.google.gson.reflect.TypeToken;
 import com.ttalkak.project.common.UseCase;
 import com.ttalkak.project.config.OpenAIFeignClient;
 import com.ttalkak.project.project.application.outputport.LoadElasticSearchOutputPort;
+import com.ttalkak.project.project.application.outputport.LoadRedidMonitoringOutputPort;
 import com.ttalkak.project.project.application.usecase.GetLLMUseCase;
 import com.ttalkak.project.project.framework.web.response.AIMonitoringResponse;
 import com.ttalkak.project.project.framework.web.response.MonitoringInfoResponse;
@@ -24,11 +25,22 @@ import java.util.stream.Collectors;
 public class GetLLInputPort implements GetLLMUseCase {
 
     private final LoadElasticSearchOutputPort loadElasticSearchOutputPort;
+
+    private final LoadRedidMonitoringOutputPort loadRedidMonitoringOutputPort;
+
     private final OpenAIFeignClient openAIFeignClient;
 
     @Override
     @SuppressWarnings("unchecked")
-    public AIMonitoringResponse getMonitoringInfo(String deploymentId) throws Exception {
+    public AIMonitoringResponse getMonitoringInfo(Long userId, String deploymentId) throws Exception {
+
+        String cacheData = loadRedidMonitoringOutputPort.getMonitoringData(userId);
+//        if(cacheData != null) {
+//            return AIMonitoringResponse.builder()
+//                    .monitoringInfoResponse(monitoring)
+//                    .answer(cacheData)
+//                    .build();
+//        }
 
         MonitoringInfoResponse monitoring = loadElasticSearchOutputPort.getAIMonitoringInfo(deploymentId);
         if(monitoring == null || monitoring.getTotalDocCount() == 0) {
@@ -53,7 +65,7 @@ public class GetLLInputPort implements GetLLMUseCase {
                             .collect(Collectors.joining(", "));
 
                     return String.format("%s %d times\n Key routes: %s",
-                            category.toString(), category.getCount(), topPaths);
+                            category.getCategory(), category.getCount(), topPaths);
                 })
                 .collect(Collectors.joining("\n"));
 

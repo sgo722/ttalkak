@@ -36,7 +36,6 @@ import static com.ttalkak.project.project.framework.elasticsearchadpter.adapter.
 
 @PersistenceAdapter
 @RequiredArgsConstructor
-@Transactional
 public class ProjectElasticAdapter implements LoadElasticSearchOutputPort {
 
     private final RestHighLevelClient client;

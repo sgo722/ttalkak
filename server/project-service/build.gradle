@@ -122,6 +122,9 @@ dependencies {
     implementation 'org.elasticsearch.client:elasticsearch-rest-high-level-client:7.9.3'
     implementation 'com.google.code.gson:gson:2.7'
 
+    // Redis
+    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+
 }
 
 dependencyManagement {
