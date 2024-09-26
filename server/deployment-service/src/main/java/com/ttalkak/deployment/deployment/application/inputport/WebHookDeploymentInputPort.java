@@ -14,11 +14,14 @@ import com.ttalkak.deployment.deployment.domain.model.VersionEntity;
 import com.ttalkak.deployment.deployment.domain.model.vo.DeploymentStatus;
 import com.ttalkak.deployment.deployment.domain.model.vo.GithubInfo;
 import com.ttalkak.deployment.deployment.domain.model.vo.ServiceType;
+import com.ttalkak.deployment.deployment.framework.projectadapter.dto.ProjectInfoResponse;
 import com.ttalkak.deployment.deployment.framework.projectadapter.dto.ProjectWebHookResponse;
 import lombok.RequiredArgsConstructor;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @UseCase
 @RequiredArgsConstructor
@@ -38,6 +41,8 @@ public class WebHookDeploymentInputPort implements WebHookDeploymentUsecase {
                 () -> new BusinessException(ErrorCode.NOT_EXISTS_DEPLOYMENT)
         );
 
+        ProjectInfoResponse projectInfo = projectOutputPort.getProjectInfo(deployment.getProjectId());
+        String expirationDate = projectInfo.getExpirationDate();
         // 배포 상태 변환
         deployment.setStatus(DeploymentStatus.PENDING);
 
@@ -61,13 +66,18 @@ public class WebHookDeploymentInputPort implements WebHookDeploymentUsecase {
                 hosting.getDetailSubDomainName(),
                 hosting.getDetailSubDomainKey()
         );
+
+        List<DatabaseEvent> databaseEvents = deployment.getDataBaseEntities().stream()
+                .map(databaseEntity -> new DatabaseEvent(databaseEntity.getId(), databaseEntity.getDatabaseType().toString(), databaseEntity.getUsername(), databaseEntity.getPassword(), databaseEntity.getPort()))
+                .collect(Collectors.toList());
+
         DeploymentEvent deploymentEvent = new DeploymentEvent(deployment.getId(), deployment.getProjectId(), envEvents, deployment.getServiceType().toString());
         GithubInfoEvent githubInfoEvent = new GithubInfoEvent(deployment.getGithubInfo().getRepositoryUrl(), deployment.getGithubInfo().getRootDirectory(), deployment.getGithubInfo().getBranch());
         CreateInstanceEvent createInstanceEvent = null;
         if(deployment.getDockerfileScript().equals("Docker File Exist")){
-            createInstanceEvent = new CreateInstanceEvent(deploymentEvent, hostingEvent, githubInfoEvent, envEvents, null, versionEntity.getVersion(), null, true, deployment.getDockerfileScript());
+            createInstanceEvent = new CreateInstanceEvent(deploymentEvent, hostingEvent, githubInfoEvent, envEvents, databaseEvents, versionEntity.getVersion(), expirationDate, true, deployment.getDockerfileScript());
         }else{
-            createInstanceEvent = new CreateInstanceEvent(deploymentEvent, hostingEvent, githubInfoEvent, envEvents, null, versionEntity.getVersion(), null, false, deployment.getDockerfileScript());
+            createInstanceEvent = new CreateInstanceEvent(deploymentEvent, hostingEvent, githubInfoEvent, envEvents, databaseEvents, versionEntity.getVersion(), expirationDate, false, deployment.getDockerfileScript());
         }
 
         try {
