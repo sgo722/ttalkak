@@ -25,19 +25,19 @@ public class RedisAdapter implements LoadRedisMonitoringOutputPort {
 
     /**
      * 모니터링 정보 저장
-     * @param userId
+     * @param deploymentId
      * @param docCount
      * @param llmAnswer
      */
-    public void saveMonitoringData(Long userId, long docCount, String llmAnswer) {
-        String key = generateMonitoringKey(userId);
+    public void saveMonitoringData(String deploymentId, long docCount, String llmAnswer) {
+        String key = generateMonitoringKey(deploymentId);
 
         Map<String, Object> monitoringInfo = new HashMap<>();
         monitoringInfo.put("docCount", docCount);
         monitoringInfo.put("answer", llmAnswer);
         monitoringInfo.put("timestamp", Instant.now().toString());
 
-        log.info("userId: {} save monitoring data cache", userId);
+        log.info("deploymentId: {} save monitoring data cache", deploymentId);
         // 모니터링 정보를 user id에 기반한 set에 저장 (monitoring:유저id, 모니터링정보)
         redisTemplate.opsForHash().putAll(key, monitoringInfo);
 
@@ -45,14 +45,14 @@ public class RedisAdapter implements LoadRedisMonitoringOutputPort {
 
     /**
      * 모니터링 정보 조회
-     * @param userId
+     * @param deploymentId
      * @return
      */
-    public Monitoring getMonitoringData(Long userId) {
-        String key = generateMonitoringKey(userId);
+    public Monitoring getMonitoringData(String deploymentId) {
+        String key = generateMonitoringKey(deploymentId);
         Map<Object, Object> monitoringInfo = redisTemplate.opsForHash().entries(key);
         if (monitoringInfo.isEmpty()) {
-            log.info("캐시된 모니터링 정보 없음 유저: {}", userId);
+            log.info("캐시된 모니터링 정보 없음 배포정보: {}", deploymentId);
             return null;
         }
         else {
@@ -64,8 +64,8 @@ public class RedisAdapter implements LoadRedisMonitoringOutputPort {
         }
     }
 
-    private String generateMonitoringKey(Long userId) {
-        return MONITORING_KEY + ":" + userId;
+    private String generateMonitoringKey(String deploymentId) {
+        return MONITORING_KEY + ":" + deploymentId;
     }
 
 }
