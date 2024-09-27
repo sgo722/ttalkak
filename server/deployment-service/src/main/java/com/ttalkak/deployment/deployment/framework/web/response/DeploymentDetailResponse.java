@@ -49,6 +49,8 @@ public class DeploymentDetailResponse {
 
     private List<DatabaseResponse> databaseResponses;
 
+    private String statusMessage;
+
     @Builder
     private DeploymentDetailResponse(Long deploymentId,
                                      Long projectId,
@@ -63,7 +65,8 @@ public class DeploymentDetailResponse {
                                      HostingResponse hostingResponse,
                                      List<VersionResponse> versions,
                                      List<EnvResponse> envs,
-                                     List<DatabaseResponse> databaseResponses) {
+                                     List<DatabaseResponse> databaseResponses,
+                                     String statusMessage) {
         this.deploymentId = deploymentId;
         this.projectId = projectId;
         this.status = status;
@@ -78,6 +81,7 @@ public class DeploymentDetailResponse {
         this.framework = framework;
         this.versions = versions;
         this.databaseResponses = databaseResponses;
+        this.statusMessage = statusMessage;
     }
 
     public static DeploymentDetailResponse mapToDTO(DeploymentEntity deploymentEntity,
@@ -104,6 +108,7 @@ public class DeploymentDetailResponse {
                 .databaseResponses(deploymentEntity.getDataBaseEntities().stream()
                         .map(DatabaseResponse::mapToDTO)
                         .toList())
+                .statusMessage(deploymentEntity.getStatusMessage())
                 .build();
     }
 }

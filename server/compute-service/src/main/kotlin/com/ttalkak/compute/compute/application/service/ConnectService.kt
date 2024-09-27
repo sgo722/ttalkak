@@ -14,6 +14,9 @@ class ConnectService (
     private val removeConnectPort: RemoveConnectPort,
     private val saveComputePort: SaveComputePort,
     private val checkConnectPort: CheckConnectPort,
+    private val removePortPort: RemovePortPort,
+    private val removeRunningPort: RemoveRunningPort,
+    private val removeDeploymentStatusPort: RemoveDeploymentStatusPort,
     private val loadComputePort: LoadComputePort
 ): ConnectUseCase, DisconnectScheduleUseCase {
     private val log = KotlinLogging.logger {}
@@ -31,7 +34,13 @@ class ConnectService (
         loadComputePort.loadAllCompute().filter {
             !checkConnectPort.isConnected(it.userId)
         }.forEach {
+            log.info {
+                "스케쥴러에 의해 연결이 끊어진 사용자: ${it.userId}"
+            }
             saveComputePort.deleteCompute(it.userId)
+            removePortPort.removePort(it.userId)
+            removeRunningPort.removeRunningByUserId(it.userId)
+            removeDeploymentStatusPort.removeDeploymentStatusByUserId(it.userId)
         }
     }
 }

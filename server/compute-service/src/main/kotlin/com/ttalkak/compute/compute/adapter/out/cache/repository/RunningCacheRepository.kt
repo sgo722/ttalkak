@@ -26,6 +26,17 @@ class RunningCacheRepository {
         hashOperations.delete(RUNNING_CACHE_KEY, deploymentId.toString())
     }
 
+    fun deleteByUserId(userId: Long) {
+        val keys = hashOperations.keys(RUNNING_CACHE_KEY)
+        keys.forEach {
+            val value = hashOperations.get(RUNNING_CACHE_KEY, it).toString()
+            val runningCache = Json.deserialize(value, RunningCache::class.java)
+            if (runningCache.userId == userId) {
+                hashOperations.delete(RUNNING_CACHE_KEY, it)
+            }
+        }
+    }
+
     fun findById(deploymentId: Long): Optional<RunningCache> {
         val value = hashOperations.get(RUNNING_CACHE_KEY, deploymentId.toString()).toString()
         return Optional.ofNullable(value).map {

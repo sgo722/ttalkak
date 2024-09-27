@@ -23,7 +23,7 @@ class ComputeCachePersistenceAdapter(
     private val runningCacheRepository: RunningCacheRepository,
     private val computePortCacheRepository: ComputePortCacheRepository,
     private val statusRepository: StatusRepository
-): SaveComputePort, LoadComputePort, SaveRunningPort, LoadRunningPort, LoadPortPort {
+): SaveComputePort, LoadComputePort, SaveRunningPort, LoadRunningPort, LoadPortPort, RemovePortPort, RemoveRunningPort {
     private val log = KotlinLogging.logger {  }
 
     override fun saveCompute(
@@ -117,5 +117,21 @@ class ComputeCachePersistenceAdapter(
 
     override fun loadPorts(userId: Long): List<Int> {
         return computePortCacheRepository.findAll(userId)
+    }
+
+    override fun removePort(userId: Long, port: Int) {
+        computePortCacheRepository.delete(userId, port)
+    }
+
+    override fun removePort(userId: Long) {
+        computePortCacheRepository.delete(userId)
+    }
+
+    override fun removeRunningByDeploymentId(deploymentId: Long) {
+        runningCacheRepository.delete(deploymentId)
+    }
+
+    override fun removeRunningByUserId(userId: Long) {
+        runningCacheRepository.deleteByUserId(userId)
     }
 }

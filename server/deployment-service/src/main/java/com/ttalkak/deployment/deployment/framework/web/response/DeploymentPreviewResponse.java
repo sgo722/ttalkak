@@ -32,6 +32,7 @@ public class DeploymentPreviewResponse {
 
     private String repositoryOwner;
 
+    private String statusMessage;
     @Builder
     private DeploymentPreviewResponse(Long deploymentId,
                                       Long projectId,
@@ -42,7 +43,8 @@ public class DeploymentPreviewResponse {
                                       String repositoryLastCommitMessage,
                                       String repositoryLastCommitUserProfile,
                                       String repositoryLastCommitUserName,
-                                      String repositoryOwner) {
+                                      String repositoryOwner,
+                                      String statusMessage) {
         this.deploymentId = deploymentId;
         this.projectId = projectId;
         this.status = status;
@@ -53,6 +55,7 @@ public class DeploymentPreviewResponse {
         this.repositoryLastCommitUserProfile = repositoryLastCommitUserProfile;
         this.repositoryLastCommitUserName = repositoryLastCommitUserName;
         this.repositoryOwner = repositoryOwner;
+        this.statusMessage = statusMessage;
     }
 
     public static DeploymentPreviewResponse mapToDTO(DeploymentEntity deploymentEntity){
@@ -68,6 +71,7 @@ public class DeploymentPreviewResponse {
                 .repositoryLastCommitUserProfile(deploymentEntity.getLastVersion().getRepositoryLastCommitUserProfile())
                 .repositoryOwner(deploymentEntity.getGithubInfo().getRepositoryOwner())
                 .serviceType(deploymentEntity.getServiceType().toString())
+                .statusMessage(deploymentEntity.getStatusMessage())
                 .build();
     }
 }

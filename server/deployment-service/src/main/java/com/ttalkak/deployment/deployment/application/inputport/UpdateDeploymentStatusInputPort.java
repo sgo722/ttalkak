@@ -43,19 +43,26 @@ public class UpdateDeploymentStatusInputPort implements UpdateDeploymentStatusUs
         DeploymentEntity deploymentEntity = deploymentOutputPort.findDeployment(Long.valueOf(deploymentUpdateStatusRequest.getDeploymentId()))
                 .orElseThrow(() -> new EntityNotFoundException(ErrorCode.NOT_EXISTS_DEPLOYMENT));
 
+        String message = deploymentUpdateStatusRequest.getMessage();
 
         DeploymentStatus status = deploymentUpdateStatusRequest.getStatus();
-        if(status == CLOUD_MANIPULATE){
-            deploymentEntity.setStatus(PENDING);
-            reAllocateInstance(deploymentEntity);
+        if(status == WAITING) {
+            if (message.equals("cloud manipulate")) {
+                deploymentEntity.setStatus(WAITING);
+                reAllocateInstance(deploymentEntity);
+            }
         }
 
-        if(status == ALLOCATE_ERROR){
-            deploymentEntity.setStatus(STOPPED);
-        }
+        if(status == ERROR){
+            if(message.equals("allocate")){
+                deploymentEntity.setStatus(ERROR);
+                deploymentEntity.setMessage(deploymentUpdateStatusRequest.getMessage());
+            }
 
-        if(status == DOCKER_FILE_ERROR){
-            deploymentEntity.setStatus(STOPPED);
+            if(message.equals("dockerfile")) {
+                deploymentEntity.setStatus(ERROR);
+                deploymentEntity.setMessage(deploymentUpdateStatusRequest.getMessage());
+            }
         }
 
         if(status == DELETED) {
@@ -73,6 +80,7 @@ public class UpdateDeploymentStatusInputPort implements UpdateDeploymentStatusUs
         if(status == RUNNING){
             deploymentEntity.setStatus(status);
         }
+
         deploymentOutputPort.save(deploymentEntity);
     }
 

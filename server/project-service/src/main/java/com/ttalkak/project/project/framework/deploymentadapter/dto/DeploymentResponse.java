@@ -30,8 +30,10 @@ public class DeploymentResponse {
 
     private String repositoryOwner;
 
+    private String statusMessage;
+
     @Builder
-    public DeploymentResponse(Long deploymentId, Long projectId, String status, String serviceType, String repositoryName, String repositoryUrl, String repositoryLastCommitMessage, String repositoryLastCommitUserProfile, String repositoryLastCommitUserName, String repositoryOwner) {
+    public DeploymentResponse(Long deploymentId, Long projectId, String status, String serviceType, String repositoryName, String repositoryUrl, String repositoryLastCommitMessage, String repositoryLastCommitUserProfile, String repositoryLastCommitUserName, String repositoryOwner, String StatusMessage) {
         this.deploymentId = deploymentId;
         this.projectId = projectId;
         this.status = status;
@@ -42,5 +44,6 @@ public class DeploymentResponse {
         this.repositoryLastCommitUserProfile = repositoryLastCommitUserProfile;
         this.repositoryLastCommitUserName = repositoryLastCommitUserName;
         this.repositoryOwner = repositoryOwner;
+        this.statusMessage = StatusMessage;
     }
 }
