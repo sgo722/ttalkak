@@ -20,152 +20,152 @@ pipeline {
             }
         }
 
-        stage('Test Services') {
-            parallel {
-                // stage('Test Eureka Server') {
-                //     when {
-                //         changeset "eureka-server/**"
-                //     }
-                //     steps {
-                //         script {
-                //             // Eureka Server 테스트 코드 실행
-                //             sh """
-                //             cd eureka-server
-                //             chmod +x gradlew
-                //             ./gradlew test
-                //             """
-                //         }
-                //     }
-                // }
-
-                // stage('Test Config Server') {
-                //     when {
-                //         changeset "config-server/**"
-                //     }
-                //     steps {
-                //         script {
-                //             // Config Server 테스트 코드 실행
-                //             sh """
-                //             cd config-server
-                //             chmod +x gradlew
-                //             ./gradlew test
-                //             """
-                //         }
-                //     }
-                // }
-
-                // stage('Test Gateway Service') {
-                //     when {
-                //         changeset "gateway-service/**"
-                //     }
-                //     steps {
-                //         script {
-                //             // Gateway Service 테스트 코드 실행
-                //             sh """
-                //             cd gateway-service
-                //             chmod +x gradlew
-                //             ./gradlew test
-                //             """
-                //         }
-                //     }
-                // }
-
-                stage('Test User Service') {
-                    when {
-                        changeset "user-service/**"
-                    }
-                    steps {
-                        script {
-                            // User Service 테스트 코드 실행
-                            sh """
-                            cd user-service
-                            chmod +x gradlew
-                            ./gradlew test
-                            ./gradlew openapi3-security-schemes
-                            """
-                        }
-                    }
-                }
-
-                // stage('Test Compute Service') {
-                //     when {
-                //         changeset "compute-service/**"
-                //     }
-                //     steps {
-                //         script {
-                //             // Compute Service 테스트 코드 실행
-                //             sh """
-                //             cd compute-service
-                //             chmod +x gradlew
-                //             ./gradlew test
-                //             """
-                //         }
-                //     }
-                // }
-
-                stage('Test Deployment Service') {
-                    when {
-                        changeset "deployment-service/**"
-                    }
-                    steps {
-                        script {
-                            // Deployment Service 테스트 코드 실행
-                            sh """
-                            cd deployment-service
-                            chmod +x gradlew
-                            ./gradlew test
-                            ./gradlew openapi3-security-schemes
-                            """
-                        }
-                    }
-                }
-
-                stage('Test Project Service') {
-                    when {
-                        changeset "project-service/**"
-                    }
-                    steps {
-                        script {
-                            // Project Service 테스트 코드 실행
-                            sh """
-                            cd project-service
-                            chmod +x gradlew
-                            ./gradlew test
-                            ./gradlew openapi3-security-schemes
-                            """
-                        }
-                    }
-                }
-            }
-        }
-
-        stage('documentation') {
-            when {
-                anyOf {
-                    changeset "deployment-service/**"
-                    changeset "project-service/**"
-                    changeset "user-service/**"
-                }
-            }
-            steps {
-                sh """
-                docker ps -q --filter "name=document-service" | xargs -r docker stop
-                docker ps -aq --filter "name=document-service" | xargs -r docker rm
-
-                sudo cp /var/lib/jenkins/workspace/ttalkak/deployment-service/build/resources/test/docs/ttalkak-deployment-api-docs.yaml /var/lib/jenkins/workspace/ttalkak/docs/deployment-api-docs.yaml
-                sudo cp /var/lib/jenkins/workspace/ttalkak/project-service/build/resources/test/docs/ttalkak-project-api-docs.yaml /var/lib/jenkins/workspace/ttalkak/docs/project-api-docs.yaml
-                sudo cp /var/lib/jenkins/workspace/ttalkak/user-service/build/resources/test/docs/ttalkak-user-api-docs.yaml /var/lib/jenkins/workspace/ttalkak/docs/user-api-docs.yaml
-
-                docker run -d \
-                  --name document-service \
-                  -p 10000:8080 \
-                  -e URLS_PRIMARY_NAME=User \
-                  -e URLS="[ { url: '/docs/user-api-docs.yaml', name: 'User' },{ url: '/docs/deployment-api-docs.yaml', name: 'Deployment' }, { url: '/docs/project-api-docs.yaml', name: 'Project' } ]" \
-                  -v /var/lib/jenkins/workspace/ttalkak/docs:/usr/share/nginx/html/docs/ \
-                  swaggerapi/swagger-ui
-                  """
-            }
-        }
+//         stage('Test Services') {
+//             parallel {
+//                 // stage('Test Eureka Server') {
+//                 //     when {
+//                 //         changeset "eureka-server/**"
+//                 //     }
+//                 //     steps {
+//                 //         script {
+//                 //             // Eureka Server 테스트 코드 실행
+//                 //             sh """
+//                 //             cd eureka-server
+//                 //             chmod +x gradlew
+//                 //             ./gradlew test
+//                 //             """
+//                 //         }
+//                 //     }
+//                 // }
+//
+//                 // stage('Test Config Server') {
+//                 //     when {
+//                 //         changeset "config-server/**"
+//                 //     }
+//                 //     steps {
+//                 //         script {
+//                 //             // Config Server 테스트 코드 실행
+//                 //             sh """
+//                 //             cd config-server
+//                 //             chmod +x gradlew
+//                 //             ./gradlew test
+//                 //             """
+//                 //         }
+//                 //     }
+//                 // }
+//
+//                 // stage('Test Gateway Service') {
+//                 //     when {
+//                 //         changeset "gateway-service/**"
+//                 //     }
+//                 //     steps {
+//                 //         script {
+//                 //             // Gateway Service 테스트 코드 실행
+//                 //             sh """
+//                 //             cd gateway-service
+//                 //             chmod +x gradlew
+//                 //             ./gradlew test
+//                 //             """
+//                 //         }
+//                 //     }
+//                 // }
+//
+//                 stage('Test User Service') {
+//                     when {
+//                         changeset "user-service/**"
+//                     }
+//                     steps {
+//                         script {
+//                             // User Service 테스트 코드 실행
+//                             sh """
+//                             cd user-service
+//                             chmod +x gradlew
+//                             ./gradlew test
+//                             ./gradlew openapi3-security-schemes
+//                             """
+//                         }
+//                     }
+//                 }
+//
+//                 // stage('Test Compute Service') {
+//                 //     when {
+//                 //         changeset "compute-service/**"
+//                 //     }
+//                 //     steps {
+//                 //         script {
+//                 //             // Compute Service 테스트 코드 실행
+//                 //             sh """
+//                 //             cd compute-service
+//                 //             chmod +x gradlew
+//                 //             ./gradlew test
+//                 //             """
+//                 //         }
+//                 //     }
+//                 // }
+//
+//                 stage('Test Deployment Service') {
+//                     when {
+//                         changeset "deployment-service/**"
+//                     }
+//                     steps {
+//                         script {
+//                             // Deployment Service 테스트 코드 실행
+//                             sh """
+//                             cd deployment-service
+//                             chmod +x gradlew
+//                             ./gradlew test
+//                             ./gradlew openapi3-security-schemes
+//                             """
+//                         }
+//                     }
+//                 }
+//
+//                 stage('Test Project Service') {
+//                     when {
+//                         changeset "project-service/**"
+//                     }
+//                     steps {
+//                         script {
+//                             // Project Service 테스트 코드 실행
+//                             sh """
+//                             cd project-service
+//                             chmod +x gradlew
+//                             ./gradlew test
+//                             ./gradlew openapi3-security-schemes
+//                             """
+//                         }
+//                     }
+//                 }
+//             }
+//         }
+//
+//         stage('documentation') {
+//             when {
+//                 anyOf {
+//                     changeset "deployment-service/**"
+//                     changeset "project-service/**"
+//                     changeset "user-service/**"
+//                 }
+//             }
+//             steps {
+//                 sh """
+//                 docker ps -q --filter "name=document-service" | xargs -r docker stop
+//                 docker ps -aq --filter "name=document-service" | xargs -r docker rm
+//
+//                 sudo cp /var/lib/jenkins/workspace/ttalkak/deployment-service/build/resources/test/docs/ttalkak-deployment-api-docs.yaml /var/lib/jenkins/workspace/ttalkak/docs/deployment-api-docs.yaml
+//                 sudo cp /var/lib/jenkins/workspace/ttalkak/project-service/build/resources/test/docs/ttalkak-project-api-docs.yaml /var/lib/jenkins/workspace/ttalkak/docs/project-api-docs.yaml
+//                 sudo cp /var/lib/jenkins/workspace/ttalkak/user-service/build/resources/test/docs/ttalkak-user-api-docs.yaml /var/lib/jenkins/workspace/ttalkak/docs/user-api-docs.yaml
+//
+//                 docker run -d \
+//                   --name document-service \
+//                   -p 10000:8080 \
+//                   -e URLS_PRIMARY_NAME=User \
+//                   -e URLS="[ { url: '/docs/user-api-docs.yaml', name: 'User' },{ url: '/docs/deployment-api-docs.yaml', name: 'Deployment' }, { url: '/docs/project-api-docs.yaml', name: 'Project' } ]" \
+//                   -v /var/lib/jenkins/workspace/ttalkak/docs:/usr/share/nginx/html/docs/ \
+//                   swaggerapi/swagger-ui
+//                   """
+//             }
+//         }
 
         stage('Build and Deploy Services') {
             parallel {
