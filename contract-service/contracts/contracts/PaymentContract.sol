@@ -37,18 +37,17 @@ contract PaymentContract {
         uint256 ownerFee = (_amount * ownerFeePercent) / 100;
         uint256 recipientAmount = _amount - ownerFee;
 
-        // Transfer ERC20 tokens
         tokenContract.transferFrom(msg.sender, _to, recipientAmount);
-        // tokenContract.transferFrom(msg.sender, owner, ownerFee);
+        tokenContract.transferFrom(msg.sender, owner, ownerFee);
 
-        // paymentHistory.push(Payment({
-        //     from: msg.sender,
-        //     to: _to,
-        //     amount: recipientAmount,
-        //     timestamp: block.timestamp
-        // }));
+        paymentHistory.push(Payment({
+            from: msg.sender,
+            to: _to,
+            amount: recipientAmount,
+            timestamp: block.timestamp
+        }));
 
-        // emit PaymentMade(msg.sender, _to, recipientAmount, ownerFee, block.timestamp);
+        emit PaymentMade(msg.sender, _to, recipientAmount, ownerFee, block.timestamp);
     }
 
     function balance(address _account) external view returns (uint256) {

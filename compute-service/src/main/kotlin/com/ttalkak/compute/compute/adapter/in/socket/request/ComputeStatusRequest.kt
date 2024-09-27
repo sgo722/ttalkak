@@ -6,7 +6,7 @@ data class ComputeStatusRequest (
     val userId: Long,
     val computerType: ComputerType,
     val usedCompute: Int,
-    val usedMemory: Int,
+    val usedMemory: Long,
     val usedCPU: Double,
     val deployments: List<DeploymentStatusRequest>
 )
