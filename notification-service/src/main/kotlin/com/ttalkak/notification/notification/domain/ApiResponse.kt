@@ -15,7 +15,7 @@ data class ApiResponse<T> (
             return ApiResponse(true, "OK", 200, null)
         }
 
-        fun <T> fail(message: String, status: Int): ApiResponse<Nothing?> {
+        fun fail(message: String, status: Int): ApiResponse<Void> {
             return ApiResponse(false, message, status, null)
         }
     }
