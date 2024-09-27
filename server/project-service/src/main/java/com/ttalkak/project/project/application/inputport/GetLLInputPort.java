@@ -111,7 +111,6 @@ public class GetLLInputPort implements GetLLMUseCase {
             %s
          """.formatted(monitoring.getTotalDocCount(), monitoring.getAvgResponseTime(), ipInfo, methodInfo, errorRate, errorsInfo);
 
-
         // 입력 메시지
         Map<String, String> message = new HashMap<>();
         message.put("role", "user");
@@ -138,7 +137,7 @@ public class GetLLInputPort implements GetLLMUseCase {
             e.printStackTrace();
         }
 
-        // gpt 답변 캐싱
+        // gpt 답변 레디스로 캐싱
         loadRedisMonitoringOutputPort.saveMonitoringData(userId, totalDocCount, content);
 
         return AIMonitoringResponse.builder()
