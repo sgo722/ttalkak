@@ -39,18 +39,8 @@ class ComputeService (
     }
 
     override fun allocate(command: AllocateCommand): AllocateCompute {
-        log.info {
-            "AllocateCommand: $command"
-        }
-        log.info {
-            "loadComputePort: ${loadComputePort.loadAllCompute()}"
-        }
         loadComputePort.loadAllCompute().forEach {
-            log.info {
-                "it: $it"
-            }
-//            if (command.computeCount <= it.remainCompute && command.useMemory <= it.remainMemory) {
-            if (command.computeCount <= it.remainCompute) {
+            if (command.computeCount <= it.remainCompute && command.useMemory <= it.remainMemory) {
                 val availablePorts = loadStatusPort.loadStatus(it.userId).orElseThrow {
                     IllegalArgumentException("유저에 알맞는 상태가 존재하지 않습니다.")
                 }.let { status ->

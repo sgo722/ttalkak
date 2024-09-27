@@ -30,7 +30,7 @@ class ComputeCachePersistenceAdapter(
         userId: Long,
         computeType: ComputerType,
         usedCompute: Int,
-        usedMemory: Int,
+        usedMemory: Double,
         usedCPU: Double
     ) {
         val compute = ComputeUserCache(

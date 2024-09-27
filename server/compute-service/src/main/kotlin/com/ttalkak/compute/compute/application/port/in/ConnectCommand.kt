@@ -6,6 +6,6 @@ data class ConnectCommand(
     val userId: Long,
     val computeType: ComputerType,
     val usedCompute: Int,
-    val usedMemory: Int,
+    val usedMemory: Double,
     val usedCPU: Double,
 )

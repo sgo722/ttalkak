@@ -4,6 +4,6 @@ data class ComputeUser(
     val userId: Long,
     val computeType: ComputerType,
     val remainCompute: Int,
-    val remainMemory: Int,
+    val remainMemory: Double,
     val remainCPU: Double
 )

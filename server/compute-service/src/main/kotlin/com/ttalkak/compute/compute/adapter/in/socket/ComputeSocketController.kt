@@ -30,7 +30,7 @@ class ComputeSocketController(
             userId = request.userId,
             computeType = request.computerType,
             usedCompute = request.usedCompute,
-            usedMemory = request.usedMemory,
+            usedMemory = (request.usedMemory / 1_000_000_000.0),
             usedCPU = request.usedCPU,
         )
 
@@ -52,7 +52,7 @@ class ComputeSocketController(
             userId = request.userId,
             computeType = request.computerType,
             usedCompute = request.usedCompute,
-            usedMemory = request.usedMemory,
+            usedMemory = (request.usedMemory / 1_000_000_000.0),
             usedCPU = request.usedCPU,
         )
 

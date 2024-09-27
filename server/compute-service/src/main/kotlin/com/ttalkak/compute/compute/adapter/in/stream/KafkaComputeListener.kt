@@ -55,8 +55,8 @@ class KafkaComputeListener(
             maxCompute = 5,
             availablePortStart = 10000,
             availablePortEnd = 15000,
-            maxMemory = 0,
-            maxCPU = 0.0
+            maxMemory = 16.0,
+            maxCPU = 8.0
         )
 
         updateStatusUseCase.upsertStatus(response.userId, command)
