@@ -1,6 +1,7 @@
 package com.ttalkak.compute.compute.adapter.`in`.socket
 
 import com.ttalkak.compute.common.SocketAdapter
+import com.ttalkak.compute.compute.application.port.`in`.ComputeUseCase
 import com.ttalkak.compute.compute.application.port.`in`.ConnectUseCase
 import com.ttalkak.compute.compute.application.service.ConnectService
 import io.github.oshai.kotlinlogging.KotlinLogging
@@ -13,7 +14,8 @@ import org.springframework.web.socket.messaging.SessionUnsubscribeEvent
 
 @SocketAdapter
 class SocketSubscribeEventListener(
-    private val connectUseCase: ConnectUseCase
+    private val connectUseCase: ConnectUseCase,
+    private val computeUseCase: ComputeUseCase
 ) {
     private val log = KotlinLogging.logger {}
 
@@ -37,7 +39,8 @@ class SocketSubscribeEventListener(
         val sessionId = headerAccessor.sessionId
 
         if (sessionId != null) {
-            connectUseCase.disconnect(sessionId)
+            val userId = connectUseCase.disconnect(sessionId)
+            computeUseCase.disconnect(userId)
         }
     }
 }
