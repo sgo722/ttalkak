@@ -53,9 +53,7 @@ class ComputeCreateSocketListener(
             dockerImageTag = null,
             hasDockerFile = response.dockerfileExist,
             dockerFileScript = response.dockerfileScript,
-            envs = response.envs.map {
-                it.key to it.value
-            }
+            envs = response.envs
         )
 
         val databases = response.databases.map {
@@ -88,44 +86,43 @@ class ComputeCreateSocketListener(
                 name = "mysql",
                 tag = "5.7",
                 envs = listOf(
-                    "MYSQL_ROOT_PASSWORD" to password,
-                    "MYSQL_DATABASE" to name,
-                    "MYSQL_USER" to username,
-                    "MYSQL_PASSWORD" to password
+                    Environment("MYSQL_ROOT_PASSWORD", password),
+                    Environment("MYSQL_DATABASE", name),
+                    Environment("MYSQL_USER", username),
+                    Environment("MYSQL_PASSWORD", password)
                 )
             )
             DatabaseType.POSTGRESQL -> DatabaseContainer(
                 name = "postgres",
                 tag = "13",
                 envs = listOf(
-                    "POSTGRES_DB" to name,
-                    "POSTGRES_USER" to username,
-                    "POSTGRES_PASSWORD" to password
+                    Environment("POSTGRES_DB", name),
+                    Environment("POSTGRES_USER", username),
+                    Environment("POSTGRES_PASSWORD", password)
                 )
             )
             DatabaseType.REDIS -> DatabaseContainer(
                 name = "redis",
                 tag = "6.2",
-                envs = listOf(
-                    "REDIS_PASSWORD" to password
-                )
+                envs = listOf()
             )
             DatabaseType.MONGODB -> DatabaseContainer(
                 name = "mongo",
                 tag = "4.4",
                 envs = listOf(
-                    "MONGO_INITDB_ROOT_USERNAME" to username,
-                    "MONGO_INITDB_ROOT_PASSWORD" to password
+                    Environment("MONGO_INITDB_DATABASE", name),
+                    Environment("MONGO_INITDB_ROOT_USERNAME", username),
+                    Environment("MONGO_INITDB_ROOT_PASSWORD", password)
                 )
             )
             DatabaseType.MARIADB -> DatabaseContainer(
                 name = "mariadb",
                 tag = "10.5",
                 envs = listOf(
-                    "MYSQL_ROOT_PASSWORD" to password,
-                    "MYSQL_DATABASE" to name,
-                    "MYSQL_USER" to username,
-                    "MYSQL_PASSWORD" to password
+                    Environment("MYSQL_ROOT_PASSWORD", password),
+                    Environment("MYSQL_DATABASE", name),
+                    Environment("MYSQL_USER", username),
+                    Environment("MYSQL_PASSWORD", password)
                 )
             )
         }
