@@ -5,14 +5,16 @@ import com.google.gson.reflect.TypeToken;
 import com.ttalkak.project.common.UseCase;
 import com.ttalkak.project.config.OpenAIFeignClient;
 import com.ttalkak.project.project.application.outputport.LoadElasticSearchOutputPort;
-import com.ttalkak.project.project.application.outputport.LoadRedidMonitoringOutputPort;
+import com.ttalkak.project.project.application.outputport.LoadRedisMonitoringOutputPort;
 import com.ttalkak.project.project.application.usecase.GetLLMUseCase;
 import com.ttalkak.project.project.domain.model.redis.Monitoring;
 import com.ttalkak.project.project.framework.web.response.AIMonitoringResponse;
 import com.ttalkak.project.project.framework.web.response.MonitoringInfoResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.lang.reflect.Executable;
 import java.lang.reflect.Type;
 import java.time.Duration;
 import java.time.Instant;
@@ -22,6 +24,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Transactional
 @RequiredArgsConstructor
 @UseCase
@@ -29,15 +32,15 @@ public class GetLLInputPort implements GetLLMUseCase {
 
     private final LoadElasticSearchOutputPort loadElasticSearchOutputPort;
 
-    private final LoadRedidMonitoringOutputPort loadRedidMonitoringOutputPort;
+    private final LoadRedisMonitoringOutputPort loadRedisMonitoringOutputPort;
 
     private final OpenAIFeignClient openAIFeignClient;
-
+    
     @Override
     @SuppressWarnings("unchecked")
     public AIMonitoringResponse getMonitoringInfo(Long userId, String deploymentId) throws Exception {
 
-        Monitoring cacheData = loadRedidMonitoringOutputPort.getMonitoringData(userId);
+        Monitoring cacheData = loadRedisMonitoringOutputPort.getMonitoringData(userId);
 
         // 조회데이터 5분 이내면 캐싱된 내용을 제공
         if(cacheData != null) {
@@ -118,14 +121,25 @@ public class GetLLInputPort implements GetLLMUseCase {
         request.put("model", "gpt-4o-mini");
         request.put("messages", Collections.singletonList(message));
 
-        String response = openAIFeignClient.getChatCompletion(request);
+        // gpt 답변 생성
+        String content = "";
+        try {
+            String response = openAIFeignClient.getChatCompletion(request);
+            Gson gson = new Gson();
+            Type type = new TypeToken<Map<String, Object>>() {
+            }.getType();
+            Map<String, Object> answerMap = gson.fromJson(response, type);
+            Map<String, Object> choices = (Map<String, Object>) ((List<Object>) answerMap.get("choices")).get(0);
+            Map<String, Object> messages = (Map<String, Object>) choices.get("message");
+            content = (String) messages.get("content");
+        
+        } catch(Exception e) {
+            log.info("========= LLM 모니터링 답변 생성 오류 ======== ");
+            e.printStackTrace();
+        }
 
-        Gson gson = new Gson();
-        Type type = new TypeToken<Map<String, Object>>(){}.getType();
-        Map<String, Object> answerMap = gson.fromJson(response, type);
-        Map<String, Object> choices = (Map<String, Object>) ((List<Object>) answerMap.get("choices")).get(0);
-        Map<String, Object> messages = (Map<String, Object>) choices.get("message");
-        String content = (String) messages.get("content");
+        // gpt 답변 캐싱
+        loadRedisMonitoringOutputPort.saveMonitoringData(userId, totalDocCount, content);
 
         return AIMonitoringResponse.builder()
                 .monitoringInfoResponse(monitoring)

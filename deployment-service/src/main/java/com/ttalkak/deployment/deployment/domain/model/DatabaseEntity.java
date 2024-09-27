@@ -21,6 +21,8 @@ public class DatabaseEntity {
     @JoinColumn(name = "deploymentEntity", nullable = false)
     private DeploymentEntity deploymentEntity;
 
+    private String name;
+
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private DatabaseType databaseType;
@@ -32,8 +34,9 @@ public class DatabaseEntity {
     private int port;
 
     @Builder
-    private DatabaseEntity(DeploymentEntity deploymentEntity, DatabaseType databaseType, String username, String password, int port) {
+    private DatabaseEntity(DeploymentEntity deploymentEntity, String name, DatabaseType databaseType, String username, String password, int port) {
         this.deploymentEntity = deploymentEntity;
+        this.name = name;
         this.databaseType = databaseType;
         this.username = username;
         this.password = password;
@@ -42,12 +45,14 @@ public class DatabaseEntity {
 
     public static DatabaseEntity createDatabase(DeploymentEntity deploymentEntity,
                                                 int port,
+                                                String name,
                                                 DatabaseType databaseType,
                                                 String username,
                                                 String password) {
         return DatabaseEntity.builder()
                 .deploymentEntity(deploymentEntity)
                 .port(port)
+                .name(name)
                 .databaseType(databaseType)
                 .username(username)
                 .password(password)

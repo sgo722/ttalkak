@@ -13,6 +13,8 @@ public class DatabaseEvent implements Serializable {
 
     private Long databaseId;
 
+    private String name;
+
     private String databaseType;
 
     private String username;

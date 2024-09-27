@@ -15,6 +15,8 @@ public class DatabaseCreateRequest {
     @Enumerated(EnumType.STRING)
     private DatabaseType databaseName;
 
+    private String name;
+
     @NotNull(message = "데이터베이스 포트는 필수입니다.")
     private int databasePort;
 
@@ -24,8 +26,9 @@ public class DatabaseCreateRequest {
     private String password;
 
     @Builder
-    private DatabaseCreateRequest(DatabaseType databaseName, int databasePort, String username, String password) {
+    private DatabaseCreateRequest(DatabaseType databaseName,String name, int databasePort, String username, String password) {
         this.databaseName = databaseName;
+        this.name = name;
         this.databasePort = databasePort;
         this.username = username;
         this.password = password;
