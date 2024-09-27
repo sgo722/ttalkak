@@ -1,0 +1,31 @@
+name: sonar-push
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  sonar-push:
+    runs-on: default
+    steps:
+      - uses: actions/checkout@v3.0.2
+      - name: Set up JDK
+        uses: actions/setup-java@v3
+        with:
+          distribution: zulu
+          java-version: 17
+          cache: 'gradle'
+      - name: generate application test report
+        run: |
+          ./gradlew test --parallel
+      - name: Build and analyze
+        env:
+          # PR 추적도 한다면(Developer Edition) 추가할 수 있습니다...
+          # GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+        run: |
+          ./gradlew sonar -Dorg.gradle.jvmargs=-Xmx4g -Pversion=${GITHUB_SHA} --parallel
