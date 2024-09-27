@@ -59,11 +59,15 @@ public class UpdateDeploymentStatusInputPort implements UpdateDeploymentStatusUs
         }
 
         if(status == DeploymentStatus.DELETED) {
-            deploymentEntity.setStatus(DELETED);
+            deploymentEntity.setStatus(status);
             HostingEntity findHosting = hostingOutputPort.findByProjectIdAndServiceType(deploymentEntity.getProjectId(), deploymentEntity.getServiceType());
             findHosting.delete();
             domainOutputPort.deleteDomainKey(findHosting.getId().toString());
             deploymentEntity.deleteDeployment();
+        }
+
+        if(status == DeploymentStatus.RUNNING){
+            deploymentEntity.setStatus(status);
         }
         deploymentOutputPort.save(deploymentEntity);
     }
