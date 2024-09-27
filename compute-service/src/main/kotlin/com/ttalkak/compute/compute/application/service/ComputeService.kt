@@ -12,13 +12,15 @@ import io.github.oshai.kotlinlogging.KotlinLogging
 @UseCase
 class ComputeService (
     private val saveComputePort: SaveComputePort,
-    private val removeConnectPort: RemoveConnectPort,
     private val loadComputePort: LoadComputePort,
     private val loadStatusPort: LoadStatusPort,
     private val saveDeploymentStatusPort: SaveDeploymentStatusPort,
     private val saveRunningPort: SaveRunningPort,
     private val loadRunningPort: LoadRunningPort,
     private val loadPortPort: LoadPortPort,
+    private val removePortPort: RemovePortPort,
+    private val removeDeploymentStatusPort: RemoveDeploymentStatusPort,
+    private val removeRunningPort: RemoveRunningPort,
     private val deploymentFeignClient: DeploymentFeignClient
 ): ComputeUseCase, AllocateUseCase, ComputeStatusUseCase, UpsertRunningUseCase, LoadRunningUseCase {
     val log = KotlinLogging.logger {  }
@@ -34,8 +36,10 @@ class ComputeService (
     }
 
     override fun disconnect(userId: Long) {
-        removeConnectPort.disconnect(userId)
         saveComputePort.deleteCompute(userId)
+        removePortPort.removePort(userId)
+        removeRunningPort.removeRunningByUserId(userId)
+        removeDeploymentStatusPort.removeDeploymentStatusByUserId(userId)
     }
 
     override fun allocate(command: AllocateCommand): AllocateCompute {

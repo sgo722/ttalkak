@@ -4,7 +4,9 @@ import lombok.Getter;
 
 @Getter
 public enum DeploymentStatus {
-    RUNNING, STOPPED, DELETED, PENDING, CLOUD_MANIPULATE, DOCKER_FILE_ERROR, ALLOCATE_ERROR;
+    RUNNING, STOPPED, DELETED, PENDING, WAITING, ERROR;
+
+//    CLOUD_MANIPULATE, DOCKER_FILE_ERROR, ALLOCATE_ERROR;
 
 
     public static boolean isAlive(DeploymentStatus deploymentStatus) {

@@ -12,4 +12,6 @@ public class DeploymentUpdateStatusRequest {
 
     @Enumerated(EnumType.STRING)
     private DeploymentStatus status;
+
+    private String message;
 }

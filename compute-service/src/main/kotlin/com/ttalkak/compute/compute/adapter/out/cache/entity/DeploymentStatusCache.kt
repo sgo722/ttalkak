@@ -4,6 +4,7 @@ import com.ttalkak.compute.compute.domain.RunningStatus
 
 data class DeploymentStatusCache (
     val status: RunningStatus,
+    val userId: Long,
     val useMemory: Int,
     val useCPU: Double,
     val runningTime: Int,
