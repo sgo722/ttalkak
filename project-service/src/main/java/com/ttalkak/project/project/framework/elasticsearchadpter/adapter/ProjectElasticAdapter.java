@@ -216,7 +216,6 @@ public class ProjectElasticAdapter implements LoadElasticSearchOutputPort {
         List<LogResponse> logs = new ArrayList<>();
         for (SearchHit hit : searchResponse.getHits()) {
             Map<String, Object> sourceAsMap = hit.getSourceAsMap();
-
             String durationObj = (String) sourceAsMap.get("duration");
             LogResponse logResponse = LogResponse.builder()
                     .timestamp((String) sourceAsMap.get("@timestamp"))
@@ -226,7 +225,7 @@ public class ProjectElasticAdapter implements LoadElasticSearchOutputPort {
                     .path((String) sourceAsMap.get("path"))
                     .method((String) sourceAsMap.get("method"))
                     .status((String) sourceAsMap.get("status"))
-                    .duration(Double.valueOf((String) sourceAsMap.get("duration")))
+                    .duration(Double.valueOf(String.valueOf(sourceAsMap.get("duration"))))
                     .build();
 
             logs.add(logResponse);
