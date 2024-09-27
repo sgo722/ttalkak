@@ -67,11 +67,13 @@ public class GetElasticSearchInputPort implements GetElasticSearchUseCase {
                 if(duration.toHours() >= 15) {
                     between = Duration.ofMinutes(30);
                     yield DateHistogramInterval.minutes(30);
-                } else {
-                    
+                } else if(duration.toMinutes() > 10) {
                     // 10분
                     between = Duration.ofMinutes(10);
                     yield DateHistogramInterval.minutes(10);
+                } else {
+                    between = Duration.ofSeconds(10);
+                    yield DateHistogramInterval.seconds(10);
                 }
             }
         };
