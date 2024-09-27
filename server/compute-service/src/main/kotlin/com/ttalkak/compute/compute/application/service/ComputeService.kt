@@ -89,6 +89,10 @@ class ComputeService (
                 status = runningCommand.status
             )
 
+            log.info {
+                "배포 상태 업데이트 요청: $request"
+            }
+
             deploymentFeignClient.updateStatus(request)
         } catch (e: Exception) {
             log.error(e) { "Deployment 상태 업데이트 실패" }
