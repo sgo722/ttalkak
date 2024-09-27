@@ -10,6 +10,7 @@ import useCreateWebhook from "@/apis/webhook/useCreateWebhook";
 
 interface DatabaseForm {
   databaseType: DatabaseType;
+  databaseName?: string;
   databasePort: string;
   databaseUsername?: string;
   databasePassword?: string;
@@ -52,6 +53,8 @@ export default function BackendForm() {
     },
   });
 
+  const useDatabase = watch("useDatabase");
+
   const { fields, append, remove } = useFieldArray({
     control,
     name: "databases",
@@ -63,11 +66,6 @@ export default function BackendForm() {
     defaultValue: [],
   });
 
-  const useDatabase = watch("useDatabase");
-
-  const { mutate: createDeploy } = useCreateDeploy();
-  const { mutate: createWebhook } = useCreateWebhook();
-
   useEffect(() => {
     if (!useDatabase) {
       setValue("databases", []);
@@ -76,10 +74,67 @@ export default function BackendForm() {
     }
   }, [useDatabase, setValue, fields.length, append]);
 
+  const { mutate: createDeploy } = useCreateDeploy();
+  const { mutate: createWebhook } = useCreateWebhook();
+
+  const isValidDatabaseName = (
+    name: string,
+    type: DatabaseType
+  ): true | string => {
+    //postgresql은 최대 63바이트, 다른 db는 64바이트
+    const maxLength = type === DatabaseType.POSTGRESQL ? 63 : 64;
+
+    // 빈 문자열이거나 최대 길이를 초과하면 유효하지 않음
+    if (name.length === 0 || name.length > maxLength) {
+      return "데이터베이스 이름을 입력해주세요.";
+    }
+
+    switch (type) {
+      case DatabaseType.MYSQL:
+      case DatabaseType.MARIADB:
+        // MySQL과 MariaDB: 영문자, 숫자, 언더스코어, 달러 기호 허용, 숫자로 시작 불가
+        if (!/^[a-zA-Z_$]/.test(name)) {
+          return "데이터베이스 이름은 영문자, 언더스코어(_), 달러 기호($)로 시작해야 합니다.";
+        }
+        if (/[^a-zA-Z0-9_$]/.test(name)) {
+          return "데이터베이스 이름은 영문자, 숫자, _, $ 기호만 사용 가능합니다.";
+        }
+        break;
+      case DatabaseType.POSTGRESQL:
+        // PostgreSQL: 소문자, 숫자, 언더스코어 허용, 숫자로 시작 불가, 'pg_' 시작 불가
+        if (!/^[a-z_]/.test(name)) {
+          return "데이터베이스 이름은 소문자나 언더스코어(_)로 시작해야 합니다.";
+        }
+        if (/[^a-z0-9_]/.test(name)) {
+          return "데이터베이스 이름은 소문자, 숫자, 언더스코어(_)만 사용 가능합니다.";
+        }
+        if (/^pg_/.test(name)) {
+          return "데이터베이스 이름은 'pg_'로 시작할 수 없습니다.";
+        }
+        break;
+      case DatabaseType.MONGODB:
+        // MongoDB: 영문자, 숫자, 언더스코어, 하이픈 허용, 특정 예약어 사용 불가,
+        // system.으로 시작하는 이름 사용 불가
+        if (name.startsWith("system.")) {
+          return "데이터베이스 이름은 'system.'으로 시작할 수 없습니다.";
+        }
+        if (!/^[a-zA-Z0-9_-]+$/.test(name)) {
+          return "데이터베이스 이름은 영문자, 숫자, 언더스코어(_), 하이픈(-)만 사용 가능합니다.";
+        }
+        if (["admin", "local", "config"].includes(name)) {
+          return "데이터베이스 이름으로 'admin', 'local', 'config'는 사용할 수 없습니다.";
+        }
+        break;
+    }
+
+    return true;
+  };
+
   const onSubmit = (data: FormData) => {
     const databaseCreateRequests = data.useDatabase
       ? data.databases.map((db) => ({
           databaseName: db.databaseType,
+          name: db.databaseType === "REDIS" ? "" : db.databaseName || "",
           databasePort: Number(db.databasePort),
           username:
             db.databaseType === "REDIS" ? "" : db.databaseUsername || "",
@@ -293,22 +348,70 @@ export default function BackendForm() {
                             htmlFor={`databases.${index}.databaseType`}
                             className="block text-md font-semibold text-gray-700 mb-1"
                           >
-                            데이터베이스
+                            데이터베이스 종류
                           </label>
                           <select
                             {...field}
                             id={`databases.${index}.databaseType`}
                             className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                           >
-                            <option value="MYSQL">MySQL</option>
-                            <option value="MARIADB">MariaDB</option>
-                            <option value="MONGODB">MongoDB</option>
-                            <option value="POSTGRESQL">PostgreSQL</option>
-                            <option value="REDIS">Redis</option>
+                            <option value={DatabaseType.MYSQL}>MySQL</option>
+                            <option value={DatabaseType.MARIADB}>
+                              MariaDB
+                            </option>
+                            <option value={DatabaseType.MONGODB}>
+                              MongoDB
+                            </option>
+                            <option value={DatabaseType.POSTGRESQL}>
+                              PostgreSQL
+                            </option>
+                            <option value={DatabaseType.REDIS}>Redis</option>
                           </select>
                         </div>
                       )}
                     />
+
+                    {databaseTypes[index]?.databaseType !== "REDIS" && (
+                      <Controller
+                        name={`databases.${index}.databaseName`}
+                        control={control}
+                        rules={{
+                          required: "데이터베이스 이름 입력해주세요.",
+                          validate: (value) => {
+                            const dbType = databaseTypes[index]?.databaseType;
+                            if (!dbType) {
+                              return "데이터베이스 타입이 유효하지 않습니다.";
+                            }
+                            if (typeof value !== "string") {
+                              return "데이터베이스 이름은 문자열이어야 합니다.";
+                            }
+                            const result = isValidDatabaseName(value, dbType);
+                            return result === true ? true : result;
+                          },
+                        }}
+                        render={({ field }) => (
+                          <div>
+                            <label
+                              htmlFor={`databases.${index}.databaseName`}
+                              className="block text-md font-semibold text-gray-700 mb-1"
+                            >
+                              데이터베이스 이름
+                            </label>
+                            <input
+                              {...field}
+                              id={`databases.${index}.databaseUsername`}
+                              type="text"
+                              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            />
+                            {errors.databases?.[index]?.databaseName && (
+                              <p className="text-red-500 text-sm mt-2">
+                                {errors.databases[index].databaseName?.message}
+                              </p>
+                            )}
+                          </div>
+                        )}
+                      />
+                    )}
 
                     {databaseTypes[index]?.databaseType !== "REDIS" && (
                       <Controller

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
 import useAuthStore from "@/store/useAuthStore";
@@ -10,7 +10,7 @@ export default function CallbackPage() {
   const router = useRouter();
   const { setAccessToken, setUserInfo } = useAuthStore();
 
-  const fetchUserInfoAndSetState = async () => {
+  const fetchUserInfoAndSetState = useCallback(async () => {
     const urlParams = new URLSearchParams(window.location.search);
     const accessToken = urlParams.get("accessToken");
 
@@ -34,10 +34,10 @@ export default function CallbackPage() {
       console.error("url에서 accessToken 찾을 수 없음");
       router.push("/login");
     }
-  };
+  }, [router, setAccessToken, setUserInfo]);
 
   useEffect(() => {
     fetchUserInfoAndSetState();
-  }, [router, setAccessToken, setUserInfo]);
+  }, [fetchUserInfoAndSetState]);
   return <div>로그인중</div>;
 }
