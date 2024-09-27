@@ -7,4 +7,10 @@ interface LoadConnectPort {
      * @return 연결된 사용자 ID 목록
      */
     fun loadConnectUser(): List<Long>
+
+    /**
+     * 연결된 사용자 조회
+     *
+     * @return 연결된 사용자 ID 목록
+     */
 }
