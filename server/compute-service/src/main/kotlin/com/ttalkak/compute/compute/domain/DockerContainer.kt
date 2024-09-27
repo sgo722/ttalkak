@@ -13,7 +13,7 @@ data class DockerContainer(
     private val dockerRootDirectory: String? = "",
     private val hasDockerFile: Boolean,
     private val dockerFileScript: String? = "",
-    private val envs: List<Pair<String, String>> = emptyList(),
+    private val envs: List<Environment> = emptyList(),
 
     private val dockerImageName: String? = "",
     private val dockerImageTag: String? = "",
