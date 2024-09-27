@@ -19,7 +19,9 @@ class StatusMapper {
                 userId = statusEntity.userId,
                 maxCompute = statusEntity.maxCompute,
                 availablePortStart = statusEntity.availablePortStart,
-                availablePortEnd = statusEntity.availablePortEnd
+                availablePortEnd = statusEntity.availablePortEnd,
+                maxMemory = statusEntity.maxMemory,
+                maxCPU = statusEntity.maxCPU
             )
         }
     }
