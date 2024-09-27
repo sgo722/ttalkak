@@ -44,6 +44,7 @@ public class GetLLInputPort implements GetLLMUseCase {
 
         // 조회데이터 5분 이내면 캐싱된 내용을 제공
         if(cacheData != null) {
+            log.info("return cache data");
             Duration timeDifference = Duration.between(cacheData.getTimestamp(), Instant.now());
             if (timeDifference.compareTo(Duration.ofMinutes(5)) < 0) {
                 return AIMonitoringResponse.builder()

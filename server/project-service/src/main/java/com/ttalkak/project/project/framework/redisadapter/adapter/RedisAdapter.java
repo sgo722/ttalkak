@@ -37,6 +37,7 @@ public class RedisAdapter implements LoadRedisMonitoringOutputPort {
         monitoringInfo.put("answer", llmAnswer);
         monitoringInfo.put("timestamp", Instant.now().toString());
 
+        log.info("userId: {} save monitoring data cache", userId);
         // 모니터링 정보를 user id에 기반한 set에 저장 (monitoring:유저id, 모니터링정보)
         redisTemplate.opsForHash().putAll(key, monitoringInfo);
 
