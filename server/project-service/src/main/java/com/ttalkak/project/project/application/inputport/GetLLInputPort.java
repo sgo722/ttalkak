@@ -38,9 +38,9 @@ public class GetLLInputPort implements GetLLMUseCase {
     
     @Override
     @SuppressWarnings("unchecked")
-    public AIMonitoringResponse getMonitoringInfo(Long userId, String deploymentId) throws Exception {
+    public AIMonitoringResponse getMonitoringInfo(String deploymentId) throws Exception {
 
-        Monitoring cacheData = loadRedisMonitoringOutputPort.getMonitoringData(userId);
+        Monitoring cacheData = loadRedisMonitoringOutputPort.getMonitoringData(deploymentId);
 
         // 조회데이터 5분 이내면 캐싱된 내용을 제공
         if(cacheData != null) {
@@ -139,7 +139,7 @@ public class GetLLInputPort implements GetLLMUseCase {
         }
 
         // gpt 답변 레디스로 캐싱
-        loadRedisMonitoringOutputPort.saveMonitoringData(userId, totalDocCount, content);
+        loadRedisMonitoringOutputPort.saveMonitoringData(deploymentId, totalDocCount, content);
 
         return AIMonitoringResponse.builder()
                 .monitoringInfoResponse(monitoring)

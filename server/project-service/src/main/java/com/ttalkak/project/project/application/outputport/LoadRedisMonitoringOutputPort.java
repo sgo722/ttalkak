@@ -4,7 +4,7 @@ import com.ttalkak.project.project.domain.model.redis.Monitoring;
 
 public interface LoadRedisMonitoringOutputPort {
 
-    public void saveMonitoringData(Long userId, long docCount, String llmAnswer);
+    public void saveMonitoringData(String deploymentId, long docCount, String llmAnswer);
 
-    public Monitoring getMonitoringData(Long userId);
+    public Monitoring getMonitoringData(String deploymentId);
 }

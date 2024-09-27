@@ -102,7 +102,7 @@ public class ElasticSearchController {
     public ApiResponse<AIMonitoringResponse> getMonitoringInfo(
             @RequestHeader("X-USER-ID") Long userId,
             @PathVariable String deploymentId) throws Exception {
-        return ApiResponse.success(getLLMUseCase.getMonitoringInfo(userId, deploymentId));
+        return ApiResponse.success(getLLMUseCase.getMonitoringInfo(deploymentId));
     }
 
 }
