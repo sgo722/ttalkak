@@ -132,9 +132,19 @@ export default function FrontendForm() {
             rules={{
               required: "Node.js 버전을 입력해주세요.",
               pattern: {
-                value: /^\d+(\.\d+)?(\.\d+)?$/,
+                value: /^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)$/,
                 message:
-                  "유효한 Node.js 버전을 입력해주세요 (예: 16.x, 18.12.1)",
+                  "유효한 Node.js 버전을 입력해주세요 (예: 22.9.0, 21.7.3)",
+              },
+              validate: (value) => {
+                const parts = value.split(".");
+                if (
+                  parts.length !== 3 ||
+                  parts.some((part) => isNaN(parseInt(part)))
+                ) {
+                  return "유효한 Node.js 버전은 3자리 숫자로 구성되어야 합니다 (메이저.마이너.패치).";
+                }
+                return true;
               },
             }}
             render={({ field }) => (

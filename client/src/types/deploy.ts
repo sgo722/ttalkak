@@ -70,6 +70,7 @@ export interface VersionRequest {
 export interface DatabaseResponse {
   databaseId: number;
   databaseType: string;
+  name?: string;
   username: string;
   password: string;
   port: number;
@@ -78,6 +79,7 @@ export interface DatabaseResponse {
 export interface DatabaseCreateRequest {
   databaseName: DatabaseType;
   databasePort: number;
+  name?: string;
   username: string;
   password: string;
 }

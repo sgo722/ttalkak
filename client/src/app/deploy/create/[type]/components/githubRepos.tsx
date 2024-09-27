@@ -54,13 +54,48 @@ export default function GitHubRepos() {
     }
   }, [searchTerm, repos]);
 
-  useEffect(() => {
-    if (repos && repos.length > 0 && !selectedRepo) {
-      const initialRepo = repos[0];
-      setSelectedRepo(initialRepo);
-      fetchBranches(initialRepo);
-    }
-  }, [repos]);
+  // 파일 내용 가져오기 함수
+  const fetchFileContent = useCallback(
+    async (file: FileContent) => {
+      setIsLoading(true);
+      setIsFileSelected(true);
+
+      try {
+        const response = await fetch(
+          `https://api.github.com/repos/${selectedRepo!.full_name}/contents/${file.path}?ref=${selectedBranch}`,
+          {
+            headers: {
+              Authorization: `Bearer ${githubApiKey}`,
+              Accept: "application/vnd.github.v3.raw",
+            },
+          }
+        );
+
+        if (!response.ok) {
+          throw new Error("파일 내용 가져오기 실패");
+        }
+
+        const content = await response.text();
+        setFileContent(content);
+        setCurrentPath(file.path);
+      } catch (error) {
+        setError("파일 내용 가져오기 실패");
+        console.error("파일 내용 가져오기 실패:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    },
+    [
+      selectedRepo,
+      selectedBranch,
+      githubApiKey,
+      setIsLoading,
+      setIsFileSelected,
+      setFileContent,
+      setCurrentPath,
+      setError,
+    ]
+  );
 
   // 커밋 정보
   const fetchCommits = useCallback(
@@ -95,73 +130,6 @@ export default function GitHubRepos() {
     },
     [githubApiKey]
   );
-
-  // 브랜치 목록 가져오기
-  const fetchBranches = async (repo: Repository) => {
-    try {
-      const response = await fetch(
-        `https://api.github.com/repos/${repo.full_name}/branches`,
-        {
-          headers: {
-            Authorization: `Bearer ${githubApiKey}`,
-          },
-        }
-      );
-
-      if (!response.ok) {
-        throw new Error("Failed to fetch branches");
-      }
-
-      const branchesData = await response.json();
-      const branchNames = branchesData.map(
-        (branch: { name: string }) => branch.name
-      );
-      setBranches(branchNames);
-
-      // 기본 브랜치 설정
-      const defaultBranch = repo.default_branch || branchNames[0];
-      setSelectedBranch(defaultBranch);
-
-      // 기본 브랜치의 콘텐츠 가져오기
-      await fetchRepoContents(repo, "", defaultBranch);
-      // 루트 경로의 커밋 정보 가져오기
-      await fetchCommits(repo, "");
-    } catch (error) {
-      console.error("Error fetching branches:", error);
-      setError("브랜치 목록 가져오기 실패");
-    }
-  };
-
-  // 파일 내용 가져오기 함수
-  const fetchFileContent = async (file: FileContent) => {
-    setIsLoading(true);
-    setIsFileSelected(true);
-
-    try {
-      const response = await fetch(
-        `https://api.github.com/repos/${selectedRepo!.full_name}/contents/${file.path}?ref=${selectedBranch}`,
-        {
-          headers: {
-            Authorization: `Bearer ${githubApiKey}`,
-            Accept: "application/vnd.github.v3.raw",
-          },
-        }
-      );
-
-      if (!response.ok) {
-        throw new Error("파일 내용 가져오기 실패");
-      }
-
-      const content = await response.text();
-      setFileContent(content);
-      setCurrentPath(file.path);
-    } catch (error) {
-      setError("파일 내용 가져오기 실패");
-      console.error("파일 내용 가져오기 실패:", error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
 
   // 레포지토리 내용 조회 함수
   const fetchRepoContents = useCallback(
@@ -217,6 +185,60 @@ export default function GitHubRepos() {
     },
     [githubApiKey, fetchCommits, fetchFileContent]
   );
+
+  // 브랜치 목록 가져오기
+  const fetchBranches = useCallback(
+    async (repo: Repository) => {
+      try {
+        const response = await fetch(
+          `https://api.github.com/repos/${repo.full_name}/branches`,
+          {
+            headers: {
+              Authorization: `Bearer ${githubApiKey}`,
+            },
+          }
+        );
+
+        if (!response.ok) {
+          throw new Error("Failed to fetch branches");
+        }
+
+        const branchesData = await response.json();
+        const branchNames = branchesData.map(
+          (branch: { name: string }) => branch.name
+        );
+        setBranches(branchNames);
+
+        // 기본 브랜치 설정
+        const defaultBranch = repo.default_branch || branchNames[0];
+        setSelectedBranch(defaultBranch);
+
+        // 기본 브랜치의 콘텐츠 가져오기
+        await fetchRepoContents(repo, "", defaultBranch);
+        // 루트 경로의 커밋 정보 가져오기
+        await fetchCommits(repo, "");
+      } catch (error) {
+        console.error("Error fetching branches:", error);
+        setError("브랜치 목록 가져오기 실패");
+      }
+    },
+    [
+      githubApiKey,
+      setBranches,
+      setSelectedBranch,
+      fetchRepoContents,
+      fetchCommits,
+      setError,
+    ]
+  );
+
+  useEffect(() => {
+    if (repos && repos.length > 0 && !selectedRepo) {
+      const initialRepo = repos[0];
+      setSelectedRepo(initialRepo);
+      fetchBranches(initialRepo);
+    }
+  }, [repos, fetchBranches, selectedRepo]);
 
   // 브랜치 변경
   const handleBranchChange = (branch: string) => {
