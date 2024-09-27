@@ -6,7 +6,6 @@
   <component name="ChangeListManager">
     <list default="true" id="a1774c54-c6a5-4af4-9971-881967232b08" name="Changes" comment="프로젝트 기능 구현">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/deployment-service/build.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/deployment-service/build.gradle" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/deployment-service/src/main/java/com/ttalkak/deployment/deployment/application/inputport/CreateDeploymentInputPort.java" beforeDir="false" afterPath="$PROJECT_DIR$/deployment-service/src/main/java/com/ttalkak/deployment/deployment/application/inputport/CreateDeploymentInputPort.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -335,7 +334,7 @@
       <workItem from="1727073035310" duration="5877000" />
       <workItem from="1727163983634" duration="2651000" />
       <workItem from="1727225332255" duration="1979000" />
-      <workItem from="1727334627348" duration="1702000" />
+      <workItem from="1727334627348" duration="5552000" />
     </task>
     <task id="LOCAL-00001" summary="도커 컴포즈 수정">
       <option name="closed" value="true" />

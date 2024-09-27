@@ -1,7 +1,7 @@
 package com.ttalkak.project.project.framework.redisadapter.adapter;
 
 import com.ttalkak.project.common.PersistenceAdapter;
-import com.ttalkak.project.project.application.outputport.LoadRedidMonitoringOutputPort;
+import com.ttalkak.project.project.application.outputport.LoadRedisMonitoringOutputPort;
 import com.ttalkak.project.project.domain.model.redis.Monitoring;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -15,7 +15,7 @@ import java.util.concurrent.TimeUnit;
 @Slf4j
 @PersistenceAdapter
 @RequiredArgsConstructor
-public class RedisAdapter implements LoadRedidMonitoringOutputPort {
+public class RedisAdapter implements LoadRedisMonitoringOutputPort {
 
     private final RedisTemplate<String, Object> redisTemplate;
 

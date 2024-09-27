@@ -148,6 +148,8 @@ public class CreateDeploymentInputPort implements CreateDeploymentUsecase {
                     DatabaseEntity database = DatabaseEntity.createDatabase(
                             savedDeployment,
                             databaseCreateRequest.getDatabasePort(),
+                            // 이후에 고쳐야할 내용(프론트에서 데이터베이스 이름 넘겨주는 작업 완료 시 수정해야함)
+                            databaseCreateRequest.getDatabaseName().toString().toLowerCase(),
                             databaseCreateRequest.getDatabaseName(),
                             databaseCreateRequest.getUsername(),
                             databaseCreateRequest.getPassword()
@@ -155,6 +157,7 @@ public class CreateDeploymentInputPort implements CreateDeploymentUsecase {
                     DatabaseEntity savedDatabaseEntity = databaseOutputPort.save(database);
                     savedDeployment.addDatabaseEntity(savedDatabaseEntity);
                     databaseEvents.add(new DatabaseEvent(savedDatabaseEntity.getId(),
+                            savedDatabaseEntity.getName(),
                             savedDatabaseEntity.getDatabaseType().toString(),
                             savedDatabaseEntity.getUsername(),
                             savedDatabaseEntity.getPassword(),
