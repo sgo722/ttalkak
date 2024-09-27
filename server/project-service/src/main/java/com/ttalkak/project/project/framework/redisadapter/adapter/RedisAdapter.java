@@ -35,7 +35,7 @@ public class RedisAdapter implements LoadRedisMonitoringOutputPort {
         Map<String, Object> monitoringInfo = new HashMap<>();
         monitoringInfo.put("docCount", docCount);
         monitoringInfo.put("answer", llmAnswer);
-        monitoringInfo.put("timestamp", Instant.now());
+        monitoringInfo.put("timestamp", Instant.now().toString());
 
         // 모니터링 정보를 user id에 기반한 set에 저장 (monitoring:유저id, 모니터링정보)
         redisTemplate.opsForHash().putAll(key, monitoringInfo);
@@ -58,7 +58,7 @@ public class RedisAdapter implements LoadRedisMonitoringOutputPort {
             return Monitoring.builder()
                     .answer(String.valueOf(monitoringInfo.get("answer")))
                     .docCount(Integer.parseInt(String.valueOf(monitoringInfo.get("docCount"))))
-                    .timestamp(Instant.parse((CharSequence) monitoringInfo.get("timestamp")))
+                    .timestamp(Instant.parse((String) monitoringInfo.get("timestamp")))
                     .build();
         }
     }
