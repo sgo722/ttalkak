@@ -45,20 +45,20 @@ public class UpdateDeploymentStatusInputPort implements UpdateDeploymentStatusUs
 
 
         DeploymentStatus status = deploymentUpdateStatusRequest.getStatus();
-        if(status == DeploymentStatus.CLOUD_MANIPULATE){
+        if(status == CLOUD_MANIPULATE){
             deploymentEntity.setStatus(PENDING);
             reAllocateInstance(deploymentEntity);
         }
 
-        if(status == DeploymentStatus.ALLOCATE_ERROR){
+        if(status == ALLOCATE_ERROR){
             deploymentEntity.setStatus(STOPPED);
         }
 
-        if(status == DeploymentStatus.DOCKER_FILE_ERROR){
+        if(status == DOCKER_FILE_ERROR){
             deploymentEntity.setStatus(STOPPED);
         }
 
-        if(status == DeploymentStatus.DELETED) {
+        if(status == DELETED) {
             deploymentEntity.setStatus(status);
             HostingEntity findHosting = hostingOutputPort.findByProjectIdAndServiceType(deploymentEntity.getProjectId(), deploymentEntity.getServiceType());
             findHosting.delete();
@@ -66,7 +66,11 @@ public class UpdateDeploymentStatusInputPort implements UpdateDeploymentStatusUs
             deploymentEntity.deleteDeployment();
         }
 
-        if(status == DeploymentStatus.RUNNING){
+        if(status == STOPPED){
+            deploymentEntity.setStatus(status);
+        }
+
+        if(status == RUNNING){
             deploymentEntity.setStatus(status);
         }
         deploymentOutputPort.save(deploymentEntity);
