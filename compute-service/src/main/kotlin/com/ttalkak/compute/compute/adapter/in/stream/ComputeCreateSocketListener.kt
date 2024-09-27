@@ -6,6 +6,7 @@ import com.ttalkak.compute.common.util.Json
 import com.ttalkak.compute.compute.application.port.`in`.AllocateCommand
 import com.ttalkak.compute.compute.application.port.`in`.AllocateUseCase
 import com.ttalkak.compute.compute.domain.*
+import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.data.redis.connection.Message
 import org.springframework.data.redis.connection.MessageListener
 import org.springframework.data.redis.core.RedisTemplate
@@ -17,6 +18,7 @@ class ComputeCreateSocketListener(
     private val simpleMessagingTemplate: SimpMessagingTemplate,
     private val allocateUseCase: AllocateUseCase
 ): MessageListener {
+    private val log = KotlinLogging.logger {}
 
     override fun onMessage(message: Message, pattern: ByteArray?) {
         val response = redisTemplate.stringSerializer.deserialize(message.body)?.let {
@@ -31,6 +33,9 @@ class ComputeCreateSocketListener(
         )
 
         val allocate = allocateUseCase.allocate(command)
+        log.info {
+            "배포 요청: $response, 할당 결과: $allocate"
+        }
 
         val deployerId = allocate.userId
 

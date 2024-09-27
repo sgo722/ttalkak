@@ -7,7 +7,7 @@ interface RemoveConnectPort {
      * @param sessionId 세션 ID
      * @return Unit
      */
-    fun disconnect(sessionId: String)
+    fun disconnect(sessionId: String): Long
 
     /**
      * 컴퓨터 연결 해제

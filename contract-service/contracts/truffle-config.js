@@ -3,8 +3,6 @@ const { MNEMONIC } = process.env;
 
 const HDWalletProvider = require('@truffle/hdwallet-provider');
 
-console.log(MNEMONIC)
-
 module.exports = {
   /**
    * Networks define how you connect to your ethereum client and let you set the

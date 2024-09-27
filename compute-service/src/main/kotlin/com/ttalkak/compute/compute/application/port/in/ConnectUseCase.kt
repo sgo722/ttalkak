@@ -16,5 +16,5 @@ interface ConnectUseCase {
      * @param sessionId 세션 ID
      * @return Unit
      */
-    fun disconnect(sessionId: String)
+    fun disconnect(sessionId: String): Long
 }
