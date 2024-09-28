@@ -237,6 +237,7 @@ class DeploymentControllerTest extends RestDocsSupport {
                                 .repositoryLastCommitUserName("userName")
                                 .build()
                 ))
+                .statusMessage("RUNNING")
                 .build();
 
         when(inquiryUsecase.getDeployment(anyLong())).thenReturn(response);
@@ -290,7 +291,8 @@ class DeploymentControllerTest extends RestDocsSupport {
                                 fieldWithPath("data.versions[].logUrl").type(JsonFieldType.STRING).description("로그 URL"),
                                 fieldWithPath("data.versions[].repositoryLastCommitMessage").type(JsonFieldType.STRING).description("최근 커밋 메시지"),
                                 fieldWithPath("data.versions[].repositoryLastCommitUserProfile").type(JsonFieldType.STRING).description("최근 커밋 유저 프로필 URL"),
-                                fieldWithPath("data.versions[].repositoryLastCommitUserName").type(JsonFieldType.STRING).description("최근 커밋 유저 이름")
+                                fieldWithPath("data.versions[].repositoryLastCommitUserName").type(JsonFieldType.STRING).description("최근 커밋 유저 이름"),
+                                fieldWithPath("data.statusMessage").type(JsonFieldType.STRING).description("배포 상태")
                         ).build()
                 )));
     }
@@ -504,6 +506,7 @@ class DeploymentControllerTest extends RestDocsSupport {
                                 .hostingPort(8080)
                                 .build()
                 )
+                .statusMessage("RUNNING")
                 .build();
 
 
@@ -567,8 +570,10 @@ class DeploymentControllerTest extends RestDocsSupport {
                                 fieldWithPath("data.hostingResponse.hostingId").type(JsonFieldType.NUMBER).description("호스팅 ID"),
                                 fieldWithPath("data.hostingResponse.serviceType").type(JsonFieldType.STRING).description("호스팅 서비스 타입"),
                                 fieldWithPath("data.hostingResponse.detailDomainName").type(JsonFieldType.STRING).description("호스팅 서브 도메인 이름"),
-                                fieldWithPath("data.hostingResponse.hostingPort").type(JsonFieldType.NUMBER).description("호스팅 포트")
-                        ).build()
+                                fieldWithPath("data.hostingResponse.hostingPort").type(JsonFieldType.NUMBER).description("호스팅 포트"),
+                                fieldWithPath("data.statusMessage").type(JsonFieldType.STRING).description("배포 상태")
+
+                                        ).build()
                 )));
     }
 }

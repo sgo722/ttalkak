@@ -56,12 +56,12 @@ public class UpdateDeploymentStatusInputPort implements UpdateDeploymentStatusUs
         if(status == ERROR){
             if(message.equals("allocate")){
                 deploymentEntity.setStatus(ERROR);
-                deploymentEntity.setMessage(deploymentUpdateStatusRequest.getMessage());
+                deploymentEntity.setStatusMessage(deploymentUpdateStatusRequest.getMessage());
             }
 
             if(message.equals("dockerfile")) {
                 deploymentEntity.setStatus(ERROR);
-                deploymentEntity.setMessage(deploymentUpdateStatusRequest.getMessage());
+                deploymentEntity.setStatusMessage(deploymentUpdateStatusRequest.getMessage());
             }
         }
 
