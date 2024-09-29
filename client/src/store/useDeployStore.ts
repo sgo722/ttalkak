@@ -17,7 +17,7 @@ interface DeployStoreState extends DeployData {
   removeDatabaseCreateRequest: (index: number) => void;
   setVersionRequest: (data: Partial<VersionRequest>) => void;
   setHostingPort: (hostingPort: number | null) => void;
-  setEnvironment: (env: string | null) => void;
+  setEnvironment: (env: { key: string; value: string }[] | null) => void;
   setDockerfileCreateRequest: (
     data: Partial<DockerfileCreateRequest> | undefined
   ) => void;
@@ -40,7 +40,7 @@ const initialState: DeployData = {
   },
   databaseCreateRequests: null,
   hostingPort: null,
-  env: null,
+  envs: null,
 };
 
 const useDeployStore = create(
@@ -88,7 +88,7 @@ const useDeployStore = create(
             : undefined,
         })),
       setHostingPort: (hostingPort) => set({ hostingPort }),
-      setEnvironment: (env) => set({ env }),
+      setEnvironment: (envs) => set({ envs }),
       reset: () => set(initialState),
     }),
     {

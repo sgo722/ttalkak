@@ -156,7 +156,6 @@ export default function BackendForm() {
         versionRequest,
         databaseCreateRequests,
         dockerfileCreateRequest,
-        env: null,
         framework: Framework.SPRINGBOOT,
       },
       {

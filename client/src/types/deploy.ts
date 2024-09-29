@@ -99,13 +99,18 @@ export interface DockerfileCreateRequest {
   languageVersion: string;
 }
 
+export interface EnvVar {
+  key: string;
+  value: string;
+}
+
 export interface DeployData {
   hostingPort: number | null;
   githubRepositoryRequest: GithubRepositoryRequest;
   versionRequest: VersionRequest | null;
   databaseCreateRequests?: DatabaseCreateRequest[] | null;
   dockerfileCreateRequest?: DockerfileCreateRequest;
-  env: string | null;
+  envs?: EnvVar[] | null;
   framework: Framework;
 }
 
