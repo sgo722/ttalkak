@@ -48,21 +48,20 @@ public class UpdateDeploymentStatusInputPort implements UpdateDeploymentStatusUs
         DeploymentStatus status = deploymentUpdateStatusRequest.getStatus();
         if(status == WAITING) {
             if (message.equals("cloud manipulate")) {
-                deploymentEntity.setStatus(WAITING);
                 reAllocateInstance(deploymentEntity);
             }
+            deploymentEntity.setStatus(WAITING);
         }
 
         if(status == ERROR){
             if(message.equals("allocate")){
-                deploymentEntity.setStatus(ERROR);
                 deploymentEntity.setStatusMessage(deploymentUpdateStatusRequest.getMessage());
             }
 
             if(message.equals("dockerfile")) {
-                deploymentEntity.setStatus(ERROR);
                 deploymentEntity.setStatusMessage(deploymentUpdateStatusRequest.getMessage());
             }
+            deploymentEntity.setStatus(ERROR);
         }
 
         if(status == DELETED) {
