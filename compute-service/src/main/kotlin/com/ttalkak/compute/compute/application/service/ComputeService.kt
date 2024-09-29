@@ -91,7 +91,7 @@ class ComputeService (
             val request = DeploymentUpdateStatusRequest(
                 deploymentId = runningCommand.deploymentId,
                 status = runningCommand.status,
-                message = runningCommand.message
+                message = runningCommand.message ?: ""
             )
 
             log.info {

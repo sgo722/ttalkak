@@ -37,6 +37,7 @@ class ConnectService (
             log.info {
                 "스케쥴러에 의해 연결이 끊어진 사용자: ${it.userId}"
             }
+
             saveComputePort.deleteCompute(it.userId)
             removePortPort.removePort(it.userId)
             removeRunningPort.removeRunningByUserId(it.userId)
