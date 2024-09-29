@@ -5,7 +5,6 @@ enum class RunningStatus {
     STOPPED,
     DELETED,
     PENDING,
-    CLOUD_MANIPULATE,
-    DOCKER_FILE_ERROR,
-    ALLOCATE_ERROR;
+    WAITING,
+    ERROR
 }
