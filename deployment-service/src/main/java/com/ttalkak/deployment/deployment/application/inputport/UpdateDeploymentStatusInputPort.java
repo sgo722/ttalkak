@@ -44,7 +44,6 @@ public class UpdateDeploymentStatusInputPort implements UpdateDeploymentStatusUs
                 .orElseThrow(() -> new EntityNotFoundException(ErrorCode.NOT_EXISTS_DEPLOYMENT));
 
         String message = deploymentUpdateStatusRequest.getMessage();
-
         DeploymentStatus status = deploymentUpdateStatusRequest.getStatus();
         if(status == WAITING) {
             if (message.equals("cloud manipulate")) {
@@ -54,13 +53,6 @@ public class UpdateDeploymentStatusInputPort implements UpdateDeploymentStatusUs
         }
 
         if(status == ERROR){
-            if(message.equals("allocate")){
-                deploymentEntity.setStatusMessage(deploymentUpdateStatusRequest.getMessage());
-            }
-
-            if(message.equals("dockerfile")) {
-                deploymentEntity.setStatusMessage(deploymentUpdateStatusRequest.getMessage());
-            }
             deploymentEntity.setStatus(ERROR);
         }
 
@@ -79,7 +71,7 @@ public class UpdateDeploymentStatusInputPort implements UpdateDeploymentStatusUs
         if(status == RUNNING){
             deploymentEntity.setStatus(status);
         }
-
+        deploymentEntity.setStatusMessage(message);
         deploymentOutputPort.save(deploymentEntity);
     }
 
