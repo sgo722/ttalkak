@@ -52,10 +52,6 @@ export default function FrontendForm() {
   } = useDeployStore();
 
   const onSubmit = (data: FormData) => {
-    const envString = data.envVars
-      .map(({ key, value }) => `${key}=${value}`)
-      .join("\n");
-
     setDockerfileCreateRequest({
       ...dockerfileCreateRequest,
       languageVersion: data.nodeVersion,
@@ -70,7 +66,7 @@ export default function FrontendForm() {
         versionRequest,
         databaseCreateRequests: null,
         dockerfileCreateRequest,
-        env: envString,
+        envs: data.envVars,
         framework: data.framework,
       },
       {
