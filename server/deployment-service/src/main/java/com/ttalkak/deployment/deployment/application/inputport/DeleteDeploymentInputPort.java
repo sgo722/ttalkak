@@ -64,13 +64,16 @@ public class DeleteDeploymentInputPort implements DeleteDeploymentUsecase {
     @Override
     public void deleteDeploymentByProject(Long projectId) throws Exception {
         List<DeploymentEntity> deploymentEntities = deploymentOutputPort.findAllByProjectId(projectId);
-        List<DeploymentEntity> deployments = deploymentEntities.stream()
-                .filter(deploymentEntity -> DeploymentStatus.isAlive(deploymentEntity.getStatus()))
-                .toList();
+//        List<DeploymentEntity> deployments = deploymentEntities.stream()
+//                .filter(deploymentEntity -> DeploymentStatus.isAlive(deploymentEntity.getStatus()))
+//                .toList();
 
-        for(DeploymentEntity deployment : deployments) {
+        for(DeploymentEntity deployment : deploymentEntities) {
             deployment.deleteDeployment();
             HostingEntity findHosting = hostingOutputPort.findByProjectIdAndServiceType(deployment.getProjectId(), deployment.getServiceType());
+            if(findHosting == null){
+                throw new BusinessException(ErrorCode.NOT_EXISTS_HOSTING);
+            }
             findHosting.delete();
             domainOutputPort.deleteDomainKey(findHosting.getId().toString());
             deploymentOutputPort.save(deployment);

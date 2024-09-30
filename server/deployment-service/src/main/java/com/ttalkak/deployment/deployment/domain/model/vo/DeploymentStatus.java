@@ -10,9 +10,6 @@ public enum DeploymentStatus {
 
 
     public static boolean isAlive(DeploymentStatus deploymentStatus) {
-        if(deploymentStatus == DELETED){
-            return false;
-        }
-        return true;
+        return deploymentStatus != DELETED;
     }
 }
