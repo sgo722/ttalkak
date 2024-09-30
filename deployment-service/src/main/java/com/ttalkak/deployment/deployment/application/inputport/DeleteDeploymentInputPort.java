@@ -11,6 +11,7 @@ import com.ttalkak.deployment.deployment.domain.event.CommandEvent;
 import com.ttalkak.deployment.deployment.domain.event.UpdateDeploymentStatusEvent;
 import com.ttalkak.deployment.deployment.domain.model.DeploymentEntity;
 import com.ttalkak.deployment.deployment.domain.model.HostingEntity;
+import com.ttalkak.deployment.deployment.domain.model.vo.DeploymentStatus;
 import com.ttalkak.deployment.deployment.framework.kafka.ChangeStatusProducer;
 import com.ttalkak.deployment.deployment.framework.projectadapter.dto.ProjectInfoResponse;
 import com.ttalkak.deployment.common.global.error.ErrorCode;
@@ -63,15 +64,16 @@ public class DeleteDeploymentInputPort implements DeleteDeploymentUsecase {
     @Override
     public void deleteDeploymentByProject(Long projectId) throws Exception {
         List<DeploymentEntity> deploymentEntities = deploymentOutputPort.findAllByProjectId(projectId);
-        for(DeploymentEntity deploymentEntity : deploymentEntities) {
-            deploymentEntity.deleteDeployment();
-            HostingEntity findHosting = hostingOutputPort.findByProjectIdAndServiceType(deploymentEntity.getProjectId(), deploymentEntity.getServiceType());
+        List<DeploymentEntity> deployments = deploymentEntities.stream()
+                .filter(deploymentEntity -> DeploymentStatus.isAlive(deploymentEntity.getStatus()))
+                .toList();
+
+        for(DeploymentEntity deployment : deployments) {
+            deployment.deleteDeployment();
+            HostingEntity findHosting = hostingOutputPort.findByProjectIdAndServiceType(deployment.getProjectId(), deployment.getServiceType());
             findHosting.delete();
-            if(findHosting == null){
-                throw new BusinessException(ErrorCode.NOT_EXISTS_HOSTING);
-            }
             domainOutputPort.deleteDomainKey(findHosting.getId().toString());
-            deploymentOutputPort.save(deploymentEntity);
+            deploymentOutputPort.save(deployment);
         }
     }
 }
