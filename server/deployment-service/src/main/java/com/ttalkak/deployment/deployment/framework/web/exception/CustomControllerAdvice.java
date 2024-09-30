@@ -18,7 +18,7 @@ public class CustomControllerAdvice {
         log.error("error", e);
         return ResponseEntity
                 .status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(ApiResponse.fail(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR.value()));
+                .body(ApiResponse.fail("배포 서버가 불안정합니다.", HttpStatus.INTERNAL_SERVER_ERROR.value()));
     }
 
     @ExceptionHandler(CustomValidationException.class)
