@@ -7,6 +7,8 @@ import { DatabaseType, ServiceType, Framework } from "@/types/deploy";
 import useDeployStore from "@/store/useDeployStore";
 import useCreateDeploy from "@/apis/deploy/useCreateDeploy";
 import useCreateWebhook from "@/apis/webhook/useCreateWebhook";
+import { LuMinusCircle } from "react-icons/lu";
+import { MdAdd } from "react-icons/md";
 
 interface DatabaseForm {
   databaseType: DatabaseType;
@@ -22,6 +24,7 @@ interface FormData {
   rootDir: string;
   useDatabase: boolean;
   databases: DatabaseForm[];
+  envVars: { key: string; value: string }[];
 }
 
 export default function BackendForm() {
@@ -50,12 +53,26 @@ export default function BackendForm() {
       port: "8080",
       useDatabase: false,
       databases: [{ databaseType: DatabaseType.MYSQL, databasePort: "" }],
+      envVars: [],
     },
   });
 
   const useDatabase = watch("useDatabase");
 
-  const { fields, append, remove } = useFieldArray({
+  const {
+    fields: envFields,
+    append: appendEnv,
+    remove: removeEnv,
+  } = useFieldArray({
+    control,
+    name: "envVars",
+  });
+
+  const {
+    fields: dbFields,
+    append: appendDb,
+    remove: removeDb,
+  } = useFieldArray({
     control,
     name: "databases",
   });
@@ -69,10 +86,10 @@ export default function BackendForm() {
   useEffect(() => {
     if (!useDatabase) {
       setValue("databases", []);
-    } else if (fields.length === 0) {
-      append({ databaseType: DatabaseType.MYSQL, databasePort: "" });
+    } else if (dbFields.length === 0) {
+      appendDb({ databaseType: DatabaseType.MYSQL, databasePort: "" });
     }
-  }, [useDatabase, setValue, fields.length, append]);
+  }, [useDatabase, setValue, dbFields.length, appendDb]);
 
   const { mutate: createDeploy } = useCreateDeploy();
   const { mutate: createWebhook } = useCreateWebhook();
@@ -156,6 +173,7 @@ export default function BackendForm() {
         versionRequest,
         databaseCreateRequests,
         dockerfileCreateRequest,
+        envs: data.envVars,
         framework: Framework.SPRINGBOOT,
       },
       {
@@ -208,6 +226,7 @@ export default function BackendForm() {
                   {...field}
                   id="javaVersion"
                   type="text"
+                  placeholder="예 : 17"
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
                 {errors.javaVersion && (
@@ -294,6 +313,54 @@ export default function BackendForm() {
             />
           </div>
 
+          <div className="mt-8">
+            <h3 className="block text-md font-semibold text-gray-700 mb-1">
+              환경변수
+            </h3>
+            <div className="space-y-3">
+              {envFields.map((field, index) => (
+                <div key={field.id} className="flex items-center space-x-2">
+                  <Controller
+                    name={`envVars.${index}.key`}
+                    control={control}
+                    render={({ field }) => (
+                      <input
+                        {...field}
+                        placeholder="Key"
+                        className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      />
+                    )}
+                  />
+                  <Controller
+                    name={`envVars.${index}.value`}
+                    control={control}
+                    render={({ field }) => (
+                      <input
+                        {...field}
+                        placeholder="Value"
+                        className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      />
+                    )}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => removeEnv(index)}
+                    className="p-2.5 rounded-md text-gray-400 border border-gray-300 hover:text-gray-600"
+                  >
+                    <LuMinusCircle className="w-5 h-5" />
+                  </button>
+                </div>
+              ))}
+            </div>
+            <button
+              type="button"
+              onClick={() => appendEnv({ key: "", value: "" })}
+              className="mt-3 flex items-center px-4 py-2 text-sm bg-gray-200 rounded-md hover:bg-blue-200"
+            >
+              <MdAdd className="mr-2" /> 추가
+            </button>
+          </div>
+
           <Controller
             name="useDatabase"
             control={control}
@@ -318,7 +385,7 @@ export default function BackendForm() {
 
           {useDatabase && (
             <div className="space-y-4">
-              {fields.map((field, index) => (
+              {dbFields.map((field, index) => (
                 <div
                   key={field.id}
                   className="p-4 border border-gray-300 rounded-md"
@@ -330,7 +397,7 @@ export default function BackendForm() {
                     {index > 0 && (
                       <button
                         type="button"
-                        onClick={() => remove(index)}
+                        onClick={() => removeDb(index)}
                         className="py-2 px-4 border border-red-500 text-red-500 rounded-md focus:outline-none"
                       >
                         삭제
@@ -522,7 +589,10 @@ export default function BackendForm() {
               <button
                 type="button"
                 onClick={() =>
-                  append({ databaseType: DatabaseType.MYSQL, databasePort: "" })
+                  appendDb({
+                    databaseType: DatabaseType.MYSQL,
+                    databasePort: "",
+                  })
                 }
                 className="mt-4 py-2 px-4 border text-black rounded-md focus:outline-none"
               >
