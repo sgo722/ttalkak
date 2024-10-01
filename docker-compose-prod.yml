@@ -128,6 +128,22 @@ services:
       resources:
         limits:
           cpus: "0.5"
+          memory: 512M  
+
+  contract-service:
+    container_name: contract-service
+    build:
+      context: contract-service
+      dockerfile: Dockerfile.prod
+    depends_on:
+      - eureka-server
+      - gateway-service
+    networks:
+      - spring-network
+    deploy:
+      resources:
+        limits:
+          cpus: "0.5"
           memory: 512M         
 
 networks:
