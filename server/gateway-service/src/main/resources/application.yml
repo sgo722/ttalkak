@@ -71,6 +71,11 @@ spring:
           predicates:
             - Path=/v1/notification/**
 
+        - id: contract-service-api
+          uri: http://localhost:5555
+          predicates:
+            - Path=/v1/payment/**
+
         - id: deployment-service-webhook
           uri: lb://DEPLOYMENT-SERVICE
           predicates:

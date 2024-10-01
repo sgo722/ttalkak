@@ -16,7 +16,7 @@ import { Receipt } from './payment.type';
 import { CustomException } from '@src/common/exception/exception';
 import { INVALID_INPUT } from '@src/common/exception/error.code';
 
-@Controller('payment')
+@Controller('v1/payment')
 export class PaymentController {
   constructor(private readonly paymentService: PaymentService) {}
 
