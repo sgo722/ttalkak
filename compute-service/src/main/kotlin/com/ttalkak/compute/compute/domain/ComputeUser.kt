@@ -1,5 +1,7 @@
 package com.ttalkak.compute.compute.domain
 
+import io.github.oshai.kotlinlogging.KotlinLogging
+
 data class ComputeUser(
     val userId: Long,
     val computeType: ComputerType,
@@ -16,6 +18,8 @@ data class ComputeUser(
         const val CPU_WEIGHT = 0.2
     }
 
+    private val log = KotlinLogging.logger {  }
+
     val weight = COMPUTE_WEIGHT * (remainCompute / maxCompute) +
             MEMORY_WEIGHT * (remainMemory / maxMemory) +
             CPU_WEIGHT * (remainCPU / maxCPU)
@@ -25,6 +29,7 @@ data class ComputeUser(
         memory: Double,
         cpu: Double
     ): Boolean {
+        log.info { "userId: $userId, remainCompute: $remainCompute, maxCompute: $maxCompute, remainMemory: $remainMemory, maxMemory: $maxMemory, remainCPU: $remainCPU, maxCPU: $maxCPU, memory: $memory, cpu: $cpu, compute: $compute" }
         return remainCompute >= compute &&
                 remainMemory >= memory &&
                 remainCPU >= cpu
