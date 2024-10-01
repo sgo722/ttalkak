@@ -257,6 +257,28 @@ pipeline {
                     }
                 }
 
+                stage('Build and Deploy Contract Service') {
+                    when {
+                        changeset "contract-service/**"
+                    }
+                    steps {
+                        script {
+
+                            // 기존 user-service 컨테이너 중지 및 삭제
+                            sh """
+                            docker-compose -f docker-compose-prod.yml stop contract-service || true
+                            docker-compose -f docker-compose-prod.yml rm -f contract-service || true
+                            """
+
+                            // 해당 컨테이너만 재시작
+                            sh """
+                            docker-compose -f docker-compose-prod.yml build --no-cache contract-service
+                            docker-compose -f docker-compose-prod.yml up -d --no-deps --build contract-service
+                            """
+                        }
+                    }
+                }
+
                 stage('Build and Deploy User Service') {
                     when {
                         changeset "user-service/**"
