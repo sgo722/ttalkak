@@ -1,5 +1,6 @@
 package com.ttalkak.compute.compute.adapter.out.cache.repository
 
+import com.ttalkak.compute.common.util.Json
 import com.ttalkak.compute.compute.adapter.out.cache.entity.ComputeAllocateCache
 import jakarta.annotation.Resource
 import org.springframework.data.redis.core.ValueOperations
@@ -11,14 +12,14 @@ import java.util.concurrent.TimeUnit
 @Repository
 class ComputeAllocateCacheRepository {
     @Resource(name = "redisTemplate")
-    private lateinit var zSetOperations: ZSetOperations<String, ComputeAllocateCache>
+    private lateinit var zSetOperations: ZSetOperations<String, String>
 
     companion object {
         const val COMPUTE_ALLOCATE_CACHE_KEY = "computeAllocateCache"
     }
 
     fun add(cache: ComputeAllocateCache, priority: Double) {
-        zSetOperations.add(COMPUTE_ALLOCATE_CACHE_KEY, cache, priority)
+        zSetOperations.add(COMPUTE_ALLOCATE_CACHE_KEY, Json.serialize(cache), priority)
     }
 
     fun poll(): Optional<ComputeAllocateCache> {
@@ -26,14 +27,14 @@ class ComputeAllocateCacheRepository {
         return cache?.let {
             zSetOperations.remove(COMPUTE_ALLOCATE_CACHE_KEY, it)
 
-            return Optional.of(it)
+            return Optional.of(Json.deserialize(it, ComputeAllocateCache::class.java))
         } ?: Optional.empty()
     }
 
     fun peek(): Optional<ComputeAllocateCache> {
         val cache = zSetOperations.range(COMPUTE_ALLOCATE_CACHE_KEY, 0, 0)?.firstOrNull()
         return cache?.let {
-            return Optional.of(it)
+            return Optional.of(Json.deserialize(it, ComputeAllocateCache::class.java))
         } ?: Optional.empty()
     }
 
@@ -42,6 +43,8 @@ class ComputeAllocateCacheRepository {
     }
 
     fun findDeploymentIds(): List<Long> {
-        return zSetOperations.range(COMPUTE_ALLOCATE_CACHE_KEY, 0, -1)?.map { it.deploymentId } ?: emptyList()
+        return zSetOperations.range(COMPUTE_ALLOCATE_CACHE_KEY, 0, -1)?.map {
+            Json.deserialize(it, ComputeAllocateCache::class.java)
+        }?.map { it.deploymentId } ?: emptyList()
     }
 }
