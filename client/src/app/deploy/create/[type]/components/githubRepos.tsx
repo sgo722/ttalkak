@@ -313,10 +313,12 @@ export default function GitHubRepos() {
   // 루트 디렉토리인지 검증하는 함수
   const checkIfRootDirectory = () => {
     const hasFrontendMarker = repoContents.some(
-      (item) => item.name === "package.json"
+      (item) =>
+        /^package\.json$/i.test(item.name) || /^dockerfile$/i.test(item.name)
     );
     const hasBackendMarker = repoContents.some(
-      (item) => item.name === "build.gradle" || item.name === "pom.xml"
+      (item) =>
+        /^build\.gradle$/i.test(item.name) || /^pom\.xml$/i.test(item.name)
     );
 
     if (deployType === ServiceType.FRONTEND) {
@@ -341,9 +343,7 @@ export default function GitHubRepos() {
 
   // 도커파일 존재 여부 확인 함수
   const checkDockerfileExists = () => {
-    return repoContents.some(
-      (item) => item.name.toLowerCase() === "dockerfile"
-    );
+    return repoContents.some((item) => /^dockerfile$/i.test(item.name));
   };
 
   // 프론트엔드 패키지매니저, 빌드 도구 확인 함수
