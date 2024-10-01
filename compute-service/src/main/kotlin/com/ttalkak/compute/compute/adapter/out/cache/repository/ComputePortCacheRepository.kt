@@ -17,6 +17,10 @@ class ComputePortCacheRepository {
         listOperations.leftPush(key(userId), port.toString())
     }
 
+    fun save(userId: Long, ports: List<Int>) {
+        listOperations.leftPushAll(key(userId), ports.map { it.toString() })
+    }
+
     fun delete(userId: Long, port: Int) {
         listOperations.remove(key(userId), 1, port.toString())
     }
