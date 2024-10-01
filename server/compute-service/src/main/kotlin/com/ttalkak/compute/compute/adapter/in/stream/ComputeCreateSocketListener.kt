@@ -68,8 +68,6 @@ class ComputeCreateSocketListener(
         )
 
         allocateUseCase.addQueue(command)
-
-//
     }
 
     private fun parseGithubLink(baseURL: String, branch: String): String = "$baseURL/archive/refs/heads/$branch.zip"
