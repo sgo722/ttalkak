@@ -48,7 +48,7 @@ class AllocateService (
 
         log.debug { "컴퓨터 할당 프로세스 시작" }
 
-        val tries = loadAllocatePort.findDeploymentIds().associateWith { false }
+        val tries = loadAllocatePort.findDeploymentIds().associateWith { false }.toMutableMap()
 
         while (loadAllocatePort.size() > 0) {
             // * 할당할 컴퓨터 선정
@@ -74,6 +74,7 @@ class AllocateService (
                             instances = it.instances
                         )
                     }
+                    tries[compute.deploymentId] = true
                     continue
                 } else {
                     log.error { "할당 가능한 컴퓨터가 없습니다. 재시도를 중단합니다." }
