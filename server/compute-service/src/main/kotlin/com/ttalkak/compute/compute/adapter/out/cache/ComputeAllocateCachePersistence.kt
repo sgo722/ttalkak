@@ -4,12 +4,14 @@ import com.ttalkak.compute.common.PersistenceAdapter
 import com.ttalkak.compute.compute.adapter.out.cache.entity.ComputeAllocateCache
 import com.ttalkak.compute.compute.adapter.out.cache.repository.ComputeAllocateCacheRepository
 import com.ttalkak.compute.compute.application.port.out.CreateAllocatePort
+import com.ttalkak.compute.compute.application.port.out.LoadAllocatePort
 import com.ttalkak.compute.compute.domain.DockerContainer
+import java.util.*
 
 @PersistenceAdapter
 class ComputeAllocateCachePersistence (
     private val computeAllocateCacheRepository: ComputeAllocateCacheRepository
-): CreateAllocatePort {
+): CreateAllocatePort, LoadAllocatePort {
     companion object {
         const val PRIORITY_WEIGHT = 1_000_000_000 // 11.57 days
     }
@@ -48,5 +50,23 @@ class ComputeAllocateCachePersistence (
             instances = instances
         )
         computeAllocateCacheRepository.add(compute, priority)
+    }
+
+    override fun findFirst(): ComputeAllocateCache {
+        return computeAllocateCacheRepository.peek().orElseThrow {
+            NoSuchElementException("할당 대기중인 컴퓨터가 없습니다.")
+        }
+    }
+
+    override fun pop(): Optional<ComputeAllocateCache> {
+        return computeAllocateCacheRepository.poll()
+    }
+
+    override fun size(): Long {
+        return computeAllocateCacheRepository.size()
+    }
+
+    override fun findDeploymentIds(): List<Long> {
+        return computeAllocateCacheRepository.findDeploymentIds()
     }
 }

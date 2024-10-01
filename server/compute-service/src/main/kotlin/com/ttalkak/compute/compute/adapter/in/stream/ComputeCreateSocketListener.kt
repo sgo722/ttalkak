@@ -1,9 +1,8 @@
 package com.ttalkak.compute.compute.adapter.`in`.stream
 
 import com.ttalkak.compute.common.SocketAdapter
-import com.ttalkak.compute.common.StreamAdapter
 import com.ttalkak.compute.common.util.Json
-import com.ttalkak.compute.compute.application.port.`in`.AllocateCommand
+import com.ttalkak.compute.compute.application.port.`in`.AddComputeCommand
 import com.ttalkak.compute.compute.application.port.`in`.AllocateUseCase
 import com.ttalkak.compute.compute.domain.*
 import io.github.oshai.kotlinlogging.KotlinLogging
@@ -25,27 +24,16 @@ class ComputeCreateSocketListener(
             Json.deserialize(it, ComputeCreateEvent::class.java)
         }
 
-        require(response != null) { "이벤트 수신에 문제가 발생하였습니다." }
-
-        val command = AllocateCommand(
-            computeCount = response.databases.size + 1,
-            useMemory = 0.512 * (response.databases.size + 1)
-        )
-
-        val allocate = allocateUseCase.allocate(command)
-        log.info {
-            "배포 요청: $response, 할당 결과: $allocate"
+        require(response != null) {
+            "이벤트 수신에 문제가 발생하였습니다."
         }
 
-        val deployerId = allocate.userId
-
-        val mainContainer = DockerContainer(
+        val containers = mutableListOf(DockerContainer(
             deploymentId = response.deploymentId,
             serviceType = "${response.serviceType}",
             hasDockerImage = false,
             containerName = "${response.serviceType}-${response.deploymentId}",
             inboundPort = response.port,
-            outboundPort = allocate.ports.first(),
             subdomainName = response.subdomainName,
             subdomainKey = response.subdomainKey,
             sourceCodeLink = parseGithubLink(response.repositoryUrl, response.branch),
@@ -55,25 +43,33 @@ class ComputeCreateSocketListener(
             hasDockerFile = response.dockerfileExist,
             dockerFileScript = response.dockerfileScript,
             envs = response.envs
-        )
-
-        val databases = response.databases.map {
+        )) +  response.databases.map {
             val database = it.databaseType.parse(it.name, it.username, it.password)
             DockerContainer(
                 deploymentId = response.deploymentId,
                 serviceType = "${response.serviceType}",
                 hasDockerImage = true,
                 containerName = "${response.serviceType}-${response.deploymentId}-db-${it.databaseId}",
-                inboundPort = it.port,
-                outboundPort = allocate.ports[response.databases.indexOf(it) + 1],
                 hasDockerFile = false,
+                inboundPort = it.port,
                 dockerImageName = database.name,
                 dockerImageTag = database.tag,
                 envs = database.envs
             )
         }
 
-        simpleMessagingTemplate.convertAndSend("/sub/compute-create/${deployerId}", Json.serialize(listOf(mainContainer) + databases))
+        val size = response.databases.size + 1
+
+        val command = AddComputeCommand(
+            computeCount = size,
+            useMemory = 0.512 * size,
+            useCPU = (5.0 * size),
+            containers = containers
+        )
+
+        allocateUseCase.addQueue(command)
+
+//
     }
 
     private fun parseGithubLink(baseURL: String, branch: String): String = "$baseURL/archive/refs/heads/$branch.zip"

@@ -12,17 +12,14 @@ import io.github.oshai.kotlinlogging.KotlinLogging
 @UseCase
 class ComputeService (
     private val saveComputePort: SaveComputePort,
-    private val loadComputePort: LoadComputePort,
-    private val loadStatusPort: LoadStatusPort,
     private val saveDeploymentStatusPort: SaveDeploymentStatusPort,
     private val saveRunningPort: SaveRunningPort,
     private val loadRunningPort: LoadRunningPort,
-    private val loadPortPort: LoadPortPort,
     private val removePortPort: RemovePortPort,
     private val removeDeploymentStatusPort: RemoveDeploymentStatusPort,
     private val removeRunningPort: RemoveRunningPort,
     private val deploymentFeignClient: DeploymentFeignClient
-): ComputeUseCase, AllocateUseCase, ComputeStatusUseCase, UpsertRunningUseCase, LoadRunningUseCase {
+): ComputeUseCase, ComputeStatusUseCase, UpsertRunningUseCase, LoadRunningUseCase {
     val log = KotlinLogging.logger {  }
 
     override fun connect(command: ConnectCommand) {
@@ -40,25 +37,6 @@ class ComputeService (
         removePortPort.removePort(userId)
         removeRunningPort.removeRunningByUserId(userId)
         removeDeploymentStatusPort.removeDeploymentStatusByUserId(userId)
-    }
-
-    override fun allocate(command: AllocateCommand): AllocateCompute {
-        loadComputePort.loadAllCompute().forEach {
-            if (command.computeCount <= it.remainCompute && command.useMemory <= it.remainMemory) {
-                val availablePorts = loadStatusPort.loadStatus(it.userId).orElseThrow {
-                    IllegalArgumentException("유저에 알맞는 상태가 존재하지 않습니다.")
-                }.let { status ->
-                    status.availablePortStart..status.availablePortEnd
-                }.subtract(loadPortPort.loadPorts(it.userId).toSet())
-
-                return AllocateCompute(
-                    userId = it.userId,
-                    ports = availablePorts.shuffled().take(command.computeCount),
-                )
-            }
-        }
-
-        throw IllegalArgumentException("할당 가능한 컴퓨터가 없습니다.")
     }
 
     override fun update(connectCommand: ConnectCommand, deploymentCommands: List<DeploymentCommand>) {
