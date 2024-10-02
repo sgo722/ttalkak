@@ -17,13 +17,14 @@ import com.ttalkak.deployment.deployment.framework.projectadapter.dto.ProjectInf
 import com.ttalkak.deployment.common.global.error.ErrorCode;
 import com.ttalkak.deployment.common.global.exception.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Objects;
 
-
+@Slf4j
 @Service
 @Transactional
 @RequiredArgsConstructor
@@ -56,7 +57,11 @@ public class DeleteDeploymentInputPort implements DeleteDeploymentUsecase {
         }
         HostingEntity findHosting = hostingOutputPort.findByProjectIdAndServiceType(deploymentEntity.getProjectId(), deploymentEntity.getServiceType());
         findHosting.delete();
-        domainOutputPort.deleteDomainKey(findHosting.getId().toString());
+
+        if(findHosting != null) {
+            domainOutputPort.deleteDomainKey(findHosting.getId().toString());
+        }
+
         deploymentEntity.deleteDeployment();
         deploymentOutputPort.save(deploymentEntity);
     }
