@@ -55,9 +55,6 @@ public class DeleteDeploymentInputPort implements DeleteDeploymentUsecase {
             throw new BusinessException(ErrorCode.KAFKA_PRODUCER_ERROR);
         }
         HostingEntity findHosting = hostingOutputPort.findByProjectIdAndServiceType(deploymentEntity.getProjectId(), deploymentEntity.getServiceType());
-        if(findHosting == null){
-            throw new BusinessException(ErrorCode.NOT_EXISTS_HOSTING);
-        }
         findHosting.delete();
         domainOutputPort.deleteDomainKey(findHosting.getId().toString());
         deploymentEntity.deleteDeployment();
