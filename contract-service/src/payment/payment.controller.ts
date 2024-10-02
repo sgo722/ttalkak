@@ -35,9 +35,9 @@ export class PaymentController {
     return this.paymentService.getPayments(+request.user.userId, query.range);
   }
 
-  @Get('summary/:address')
+  @Get('summary')
   async getSummary(
-    @Param('address') address: string,
+    @Request() request,
     @Query()
     query: {
       year: number;
@@ -48,7 +48,7 @@ export class PaymentController {
       throw new CustomException(INVALID_INPUT, '연도 및 월을 입력해주세요');
     }
     return this.paymentService.getPaymentSummary(
-      address,
+      +request.user.userId,
       query.year,
       query.month,
     );

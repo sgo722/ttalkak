@@ -60,7 +60,7 @@ export class PaymentService {
   }
 
   async getPaymentSummary(
-    address: string,
+    userId: number,
     year: number,
     month: number,
   ): Promise<any> {
@@ -75,14 +75,19 @@ export class PaymentService {
         amount: true,
       },
       where: {
-        fromAddress: address,
+        receipientId: userId,
         createdAt: {
           gte: startDate,
           lt: endDate,
         },
       },
     });
-    console.log(histories);
+
+    if (!histories) {
+      return [];
+    }
+
+    return histories;
   }
 
   async processPayment(
@@ -125,6 +130,8 @@ export class PaymentService {
         data: {
           fromAddress: response.from,
           toAddress: response.to,
+          senderId: senderId,
+          receipientId: receipientId,
           blockHash: response.blockHash.toString(),
           amount: transaction.amount,
           deploymentId: transaction.deploymentId,

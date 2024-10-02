@@ -27,6 +27,8 @@ model TransactionHistory {
   id            Int         @id @default(autoincrement())
   fromAddress   String
   toAddress     String
+  senderId      Int
+  receipientId  Int
   blockHash     String
   amount        Decimal     @db.Decimal(10, 8)
   deploymentId  Int
