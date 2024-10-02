@@ -40,11 +40,6 @@ spring:
           filters:
             - AuthenticationHeaderFilter
 
-        - id: compute-service-ws
-          uri: lb:ws://COMPUTE-SERVICE
-          predicates:
-            - Path=/ws/**
-
         - id: compute-service-api
           uri: lb://COMPUTE-SERVICE
           predicates:
