@@ -45,7 +45,7 @@ public class InquiryInputPort implements InquiryUsecase {
             deploymentEntity.setStatus(DeploymentStatus.DELETED);
             deploymentOutputPort.save(deploymentEntity);
 
-            throw new BusinessException(ErrorCode.NOT_EXISTS_DEPLOYMENT);
+            throw new BusinessException(ErrorCode.NOT_EXISTS_HOSTING);
         }
         List<VersionEntity> versionEntities = versionOutputPort.findAllByDeploymentId(deploymentEntity);
         log.info("version entities: {}", versionEntities);
