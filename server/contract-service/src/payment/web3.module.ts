@@ -6,7 +6,9 @@ import Web3 from 'web3';
     {
       provide: 'WEB3',
       useFactory: () => {
-        return new Web3(new Web3.providers.HttpProvider(process.env.BLOCKCHAIN_PROVIDER));
+        return new Web3(
+          new Web3.providers.HttpProvider(process.env.BLOCKCHAIN_PROVIDER),
+        );
       },
     },
   ],
