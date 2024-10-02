@@ -89,7 +89,11 @@ class AllocateService (
                 IllegalArgumentException("유저에 알맞는 상태가 존재하지 않습니다.")
             }.let { status ->
                 status.availablePortStart..status.availablePortEnd
-            }.subtract(loadPortPort.loadPorts(availableCompute.userId).toSet())
+            }.subtract(loadPortPort.loadPorts(availableCompute.userId).toSet()).toList()
+
+            log.debug {
+                "할당 가능한 포트: $availablePorts"
+            }
 
             // * 포트 할당
             compute.instances.forEachIndexed { index, instance ->
@@ -101,5 +105,7 @@ class AllocateService (
 
             simpleMessagingTemplate.convertAndSend("/sub/compute-create/${availableCompute.userId}", Json.serialize(compute.instances))
         }
+
+        redisLockPort.unlock(ALLOCATE_LOCK_KEY)
     }
 }
