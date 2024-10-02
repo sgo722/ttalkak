@@ -29,7 +29,7 @@ class ComputeCreateSocketListener(
 
         val containers = mutableListOf(DockerContainer(
             deploymentId = response.deploymentId,
-            serviceType = "${response.serviceType}",
+            serviceType = response.serviceType,
             hasDockerImage = false,
             containerName = "${response.serviceType}-${response.deploymentId}",
             inboundPort = response.port,
@@ -46,11 +46,11 @@ class ComputeCreateSocketListener(
             val database = it.databaseType.parse(it.name, it.username, it.password)
             DockerContainer(
                 deploymentId = response.deploymentId,
-                serviceType = "${response.serviceType}",
+                serviceType = response.serviceType,
                 hasDockerImage = true,
                 containerName = "${response.serviceType}-${response.deploymentId}-db-${it.databaseId}",
                 hasDockerFile = false,
-                inboundPort = it.port,
+                inboundPort = it.databaseType.port(),
                 dockerImageName = database.name,
                 dockerImageTag = database.tag,
                 envs = database.envs
@@ -71,6 +71,14 @@ class ComputeCreateSocketListener(
     }
 
     private fun parseGithubLink(baseURL: String, branch: String): String = "$baseURL/archive/refs/heads/$branch.zip"
+
+    private fun DatabaseType.port() = when(this) {
+        DatabaseType.MYSQL -> 3306
+        DatabaseType.POSTGRESQL -> 5432
+        DatabaseType.REDIS -> 6379
+        DatabaseType.MONGODB -> 27017
+        DatabaseType.MARIADB -> 3306
+    }
 
     private fun DatabaseType.parse(
         name: String,
