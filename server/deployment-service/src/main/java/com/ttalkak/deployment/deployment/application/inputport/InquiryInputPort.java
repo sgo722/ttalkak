@@ -43,6 +43,7 @@ public class InquiryInputPort implements InquiryUsecase {
         if(hosting == null && deploymentEntity.getStatus() == DeploymentStatus.ERROR ){
             deploymentEntity.setStatus(DeploymentStatus.DELETED);
             deploymentOutputPort.save(deploymentEntity);
+            return null;
         }
         List<VersionEntity> versionEntities = versionOutputPort.findAllByDeploymentId(deploymentEntity);
         log.info("version entities: {}", versionEntities);
