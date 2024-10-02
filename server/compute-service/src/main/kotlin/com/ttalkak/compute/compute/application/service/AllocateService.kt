@@ -89,16 +89,17 @@ class AllocateService (
                 IllegalArgumentException("유저에 알맞는 상태가 존재하지 않습니다.")
             }.let { status ->
                 status.availablePortStart..status.availablePortEnd
-            }.subtract(loadPortPort.loadPorts(availableCompute.userId).toSet()).toList()
+            }.subtract(loadPortPort.loadPorts(availableCompute.userId).toSet())
 
             log.debug {
                 "할당 가능한 포트: $availablePorts"
             }
 
             // * 포트 할당
-            compute.instances.forEachIndexed { index, instance ->
-                instance.outboundPort = availablePorts.elementAt(index)
+            compute.instances.forEach {
+                it.outboundPort = availablePorts.random()
             }
+
             savePortPort.savePort(availableCompute.userId, availablePorts.toList())
 
 

@@ -18,6 +18,9 @@ class ComputePortCacheRepository {
     }
 
     fun save(userId: Long, ports: List<Int>) {
+        if (ports.isEmpty()) {
+            return
+        }
         listOperations.leftPushAll(key(userId), ports.map { it.toString() })
     }
 
