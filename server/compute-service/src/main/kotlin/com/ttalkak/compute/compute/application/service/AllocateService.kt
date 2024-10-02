@@ -80,6 +80,8 @@ class AllocateService (
                     log.error { "할당 가능한 컴퓨터가 없습니다. 재시도를 중단합니다." }
                     break
                 }
+            } else {
+                loadAllocatePort.pop()
             }
 
             // * 컴퓨터에 할당 가능한 포트 저장
@@ -94,6 +96,8 @@ class AllocateService (
                 instance.outboundPort = availablePorts.elementAt(index)
             }
             savePortPort.savePort(availableCompute.userId, availablePorts.toList())
+
+
 
             simpleMessagingTemplate.convertAndSend("/sub/compute-create/${availableCompute.userId}", Json.serialize(compute.instances))
         }

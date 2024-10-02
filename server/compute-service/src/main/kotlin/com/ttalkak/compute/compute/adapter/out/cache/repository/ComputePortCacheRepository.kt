@@ -33,5 +33,5 @@ class ComputePortCacheRepository {
         return listOperations.range(key(userId), 0, -1)?.map { it.toInt() } ?: emptyList()
     }
 
-    private fun key(userId: Long) = "$COMPUTE_PORT_CACHE_KEY:$userId"
+    private fun key(userId: Long): String = "$COMPUTE_PORT_CACHE_KEY:$userId"
 }
