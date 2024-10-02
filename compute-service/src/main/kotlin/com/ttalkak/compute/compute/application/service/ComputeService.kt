@@ -45,12 +45,18 @@ class ComputeService (
         removeDeploymentStatusPort.removeDeploymentStatusByUserId(userId)
     }
 
-    override fun update(connectCommand: ConnectCommand, deploymentCommands: List<DeploymentCommand>) {
-        connect(connectCommand)
+    override fun update(command: StatusUpdateCommand, deploymentCommands: List<DeploymentCommand>) {
+        saveComputePort.saveCompute(
+            userId = command.userId,
+            computeType = command.computeType,
+            usedCompute = command.usedCompute,
+            usedMemory = command.usedMemory,
+            usedCPU = command.usedCPU
+        )
 
         deploymentCommands.forEach {
             saveDeploymentStatusPort.saveDeploymentStatus(
-                userId = connectCommand.userId,
+                userId = command.userId,
                 deploymentId = it.deploymentId,
                 status = it.status,
                 useMemory = it.useMemory,
