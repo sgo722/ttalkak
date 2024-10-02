@@ -98,7 +98,7 @@ public class UpdateDeploymentStatusInputPort implements UpdateDeploymentStatusUs
         );
 
         List<DatabaseEvent> databaseEvents = deploymentEntity.getDataBaseEntities().stream()
-                .map(databaseEntity -> new DatabaseEvent(databaseEntity.getId(), databaseEntity.getName(), databaseEntity.getDatabaseType().toString(), databaseEntity.getUsername(), databaseEntity.getPassword(), databaseEntity.getPort()))
+                .map(databaseEntity -> new DatabaseEvent(databaseEntity.getId(), databaseEntity.getName(), databaseEntity.getDatabaseType().toString(), databaseEntity.getUsername(), databaseEntity.getPassword()))
                 .collect(Collectors.toList());
 
         DeploymentEvent deploymentEvent = new DeploymentEvent(deploymentEntity.getId(), deploymentEntity.getProjectId(), envEvents, deploymentEntity.getServiceType().toString());
