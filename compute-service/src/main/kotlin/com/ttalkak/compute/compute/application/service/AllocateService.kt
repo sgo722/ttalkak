@@ -2,9 +2,12 @@ package com.ttalkak.compute.compute.application.service
 
 import com.ttalkak.compute.common.UseCase
 import com.ttalkak.compute.common.util.Json
+import com.ttalkak.compute.compute.adapter.out.feign.DeploymentFeignClient
+import com.ttalkak.compute.compute.adapter.out.feign.request.DeploymentUpdateStatusRequest
 import com.ttalkak.compute.compute.application.port.`in`.AddComputeCommand
 import com.ttalkak.compute.compute.application.port.`in`.AllocateUseCase
 import com.ttalkak.compute.compute.application.port.out.*
+import com.ttalkak.compute.compute.domain.RunningStatus
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.messaging.simp.SimpMessagingTemplate
 import org.springframework.scheduling.annotation.Scheduled
@@ -16,6 +19,7 @@ class AllocateService (
     private val loadStatusPort: LoadStatusPort,
     private val loadPortPort: LoadPortPort,
     private val savePortPort: SavePortPort,
+    private val deploymentFeignClient: DeploymentFeignClient,
     private val simpleMessagingTemplate: SimpMessagingTemplate,
     private val loadComputePort: LoadComputePort,
     private val redisLockPort: RedisLockPort
@@ -30,13 +34,20 @@ class AllocateService (
         log.info {
             "신규 컴퓨터 할당 요청: $command"
         }
+
         createAllocatePort.append(
-            deploymentId = 1,
+            deploymentId = command.deploymentId,
             count = command.computeCount,
             useMemory = command.useMemory,
             useCPU = command.useCPU,
             instances = command.containers
         )
+
+        deploymentFeignClient.updateStatus(DeploymentUpdateStatusRequest(
+            deploymentId = command.deploymentId,
+            status = RunningStatus.WAITING,
+            message = "컴퓨터 할당 대기중"
+        ))
     }
 
     @Scheduled(fixedDelay = 1000 * 60)
@@ -101,8 +112,6 @@ class AllocateService (
             }
 
             savePortPort.savePort(availableCompute.userId, availablePorts.toList())
-
-
 
             simpleMessagingTemplate.convertAndSend("/sub/compute-create/${availableCompute.userId}", Json.serialize(compute.instances))
         }
