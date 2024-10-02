@@ -9,6 +9,9 @@ import com.ttalkak.deployment.deployment.framework.web.request.WebHookCommit;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Collections;
+import java.util.Optional;
+
 @WebAdapter
 @RequiredArgsConstructor
 @RestController
@@ -26,7 +29,12 @@ public class DeploymentWebHookController {
                 deploymentWebHookRequest.getRepository().getUrl(),
                 deploymentWebHookRequest.getSender().getLogin(),
                 deploymentWebHookRequest.getSender().getAvatarUrl(),
-                deploymentWebHookRequest.getCommits().stream().findFirst().orElse(new WebHookCommit("")).getMessage()
+                Optional.ofNullable(deploymentWebHookRequest.getCommits())
+                        .orElse(Collections.emptyList())
+                        .stream()
+                        .findFirst()
+                        .orElse(new WebHookCommit(""))
+                        .getMessage()
         );
         webHookDeploymentUsecase.createDeploymentWebHook(ServiceType.BACKEND, webhookToken, command);
     }
@@ -41,7 +49,12 @@ public class DeploymentWebHookController {
                 deploymentWebHookRequest.getRepository().getUrl(),
                 deploymentWebHookRequest.getSender().getLogin(),
                 deploymentWebHookRequest.getSender().getAvatarUrl(),
-                deploymentWebHookRequest.getCommits().stream().findFirst().orElse(new WebHookCommit("")).getMessage()
+                Optional.ofNullable(deploymentWebHookRequest.getCommits())
+                        .orElse(Collections.emptyList())
+                        .stream()
+                        .findFirst()
+                        .orElse(new WebHookCommit(""))
+                        .getMessage()
         );
 
         webHookDeploymentUsecase.createDeploymentWebHook(ServiceType.FRONTEND, webhookToken, command);

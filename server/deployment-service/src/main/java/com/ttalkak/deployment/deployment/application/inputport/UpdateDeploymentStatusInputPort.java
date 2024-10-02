@@ -2,6 +2,7 @@ package com.ttalkak.deployment.deployment.application.inputport;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.ttalkak.deployment.common.global.error.ErrorCode;
+import com.ttalkak.deployment.common.global.exception.BusinessException;
 import com.ttalkak.deployment.common.global.exception.EntityNotFoundException;
 import com.ttalkak.deployment.deployment.application.outputport.*;
 import com.ttalkak.deployment.deployment.application.usecase.UpdateDeploymentStatusUsecase;
@@ -83,7 +84,9 @@ public class UpdateDeploymentStatusInputPort implements UpdateDeploymentStatusUs
         String expirationDate = projectInfo.getExpirationDate();
 
         HostingEntity hosting = hostingOutputPort.findByProjectIdAndServiceType(deploymentEntity.getProjectId(), deploymentEntity.getServiceType());
-
+        if(hosting == null){
+            throw new BusinessException(ErrorCode.NOT_EXISTS_HOSTING);
+        }
         List<EnvEvent> envEvents = deploymentEntity.getEnvs().stream().map(env -> new EnvEvent(env.getKey(), env.getValue())).toList();
         HostingEvent hostingEvent = new HostingEvent(
                 deploymentEntity.getId(),
