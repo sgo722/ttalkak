@@ -7,7 +7,9 @@ import com.ttalkak.compute.compute.adapter.out.feign.request.DeploymentUpdateSta
 import com.ttalkak.compute.compute.application.port.`in`.AddComputeCommand
 import com.ttalkak.compute.compute.application.port.`in`.AllocateUseCase
 import com.ttalkak.compute.compute.application.port.out.*
+import com.ttalkak.compute.compute.domain.Environment
 import com.ttalkak.compute.compute.domain.RunningStatus
+import com.ttalkak.compute.compute.domain.ServiceType
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.messaging.simp.SimpMessagingTemplate
 import org.springframework.scheduling.annotation.Scheduled
@@ -106,6 +108,10 @@ class AllocateService (
             // * 포트 할당
             compute.instances.forEach {
                 it.outboundPort = availablePorts.random()
+
+                if (it.serviceType == ServiceType.BACKEND) {
+                    it.envs += Environment("PORT", it.outboundPort.toString())
+                }
             }
 
             savePortPort.savePort(availableCompute.userId, compute.instances.map { it.outboundPort })

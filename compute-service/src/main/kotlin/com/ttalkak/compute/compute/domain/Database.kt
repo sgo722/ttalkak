@@ -6,5 +6,4 @@ data class Database(
     val name: String,
     val username: String,
     val password: String,
-    val port: Int,
 )
