@@ -8,5 +8,6 @@ data class ComputeStatusRequest (
     val usedCompute: Int,
     val usedMemory: Long,
     val usedCPU: Double,
+    val ports: List<Int>,
     val deployments: List<DeploymentStatusRequest>
 )

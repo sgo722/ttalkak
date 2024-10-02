@@ -14,6 +14,7 @@ class ComputeService (
     private val saveComputePort: SaveComputePort,
     private val saveDeploymentStatusPort: SaveDeploymentStatusPort,
     private val saveRunningPort: SaveRunningPort,
+    private val savePortPort: SavePortPort,
     private val loadRunningPort: LoadRunningPort,
     private val removePortPort: RemovePortPort,
     private val removeDeploymentStatusPort: RemoveDeploymentStatusPort,
@@ -29,6 +30,11 @@ class ComputeService (
             usedCompute = command.usedCompute,
             usedMemory = command.usedMemory,
             usedCPU = command.usedCPU
+        )
+
+        savePortPort.savePort(
+            userId = command.userId,
+            ports = command.ports
         )
     }
 

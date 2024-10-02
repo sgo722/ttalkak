@@ -26,7 +26,7 @@ class ComputePortCacheRepository {
     }
 
     fun delete(userId: Long) {
-        listOperations.remove(key(userId), 0, -1)
+        listOperations.operations.delete(key(userId))
     }
 
     fun findAll(userId: Long): List<Int> {
