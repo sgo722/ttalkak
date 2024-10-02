@@ -14,7 +14,6 @@ import org.springframework.messaging.simp.SimpMessagingTemplate
 @SocketAdapter
 class ComputeCreateSocketListener(
     private val redisTemplate: RedisTemplate<String, String>,
-    private val simpleMessagingTemplate: SimpMessagingTemplate,
     private val allocateUseCase: AllocateUseCase
 ): MessageListener {
     private val log = KotlinLogging.logger {}
@@ -61,6 +60,7 @@ class ComputeCreateSocketListener(
         val size = response.databases.size + 1
 
         val command = AddComputeCommand(
+            deploymentId = response.deploymentId,
             computeCount = size,
             useMemory = 0.512 * size,
             useCPU = (5.0 * size),
