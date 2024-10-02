@@ -131,7 +131,8 @@ class AllocateService (
                 it.outboundPort = availablePorts.random()
 
                 if (it.serviceType == ServiceType.BACKEND) {
-                    it.envs += Environment("PORT", it.outboundPort.toString())
+                    val databasePort = compute.instances.find { it.serviceType == ServiceType.DATABASE }?.outboundPort
+                    it.envs += Environment("PORT", databasePort.toString())
                 }
             }
 
