@@ -38,8 +38,14 @@ public class InquiryInputPort implements InquiryUsecase {
                 // 배포 이력이 존재하지 않은 경우
                 .orElseThrow(() -> new EntityNotFoundException(ErrorCode.NOT_EXISTS_DEPLOYMENT));
         HostingEntity hosting = hostingOutputPort.findByProjectIdAndServiceType(deploymentEntity.getProjectId(), deploymentEntity.getServiceType());
-        if(hosting == null){
-            throw new BusinessException(ErrorCode.NOT_EXISTS_HOSTING);
+
+        // 호스팅 내역이 없고 배포 상태가 에러인 경우에는 삭제인 상태로 수정해줘야 한다.
+        if(hosting == null && deploymentEntity.getStatus() == DeploymentStatus.ERROR ){
+
+            deploymentEntity.setStatus(DeploymentStatus.DELETED);
+            deploymentOutputPort.save(deploymentEntity);
+
+            throw new BusinessException(ErrorCode.NOT_EXISTS_DEPLOYMENT);
         }
         List<VersionEntity> versionEntities = versionOutputPort.findAllByDeploymentId(deploymentEntity);
         log.info("version entities: {}", versionEntities);
