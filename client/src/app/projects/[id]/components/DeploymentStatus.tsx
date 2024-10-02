@@ -41,11 +41,13 @@ export default function DeploymentStatus({
         <div className="flex items-center gap-2 mb-3">
           <div
             className={`inline-block w-3 h-3 rounded-full ${
-              deploy.status === DeployStatus.STOPPED
+              deploy.status === DeployStatus.STOPPED ||
+              deploy.status === DeployStatus.ERROR
                 ? "bg-red-500"
                 : deploy.status === DeployStatus.RUNNING
                   ? "bg-green-500"
-                  : deploy.status === DeployStatus.PENDING
+                  : deploy.status === DeployStatus.PENDING ||
+                      deploy.status === DeployStatus.WAITTING
                     ? "bg-yellow-400 animate-pulse-slow"
                     : "bg-gray-500"
             }`}
