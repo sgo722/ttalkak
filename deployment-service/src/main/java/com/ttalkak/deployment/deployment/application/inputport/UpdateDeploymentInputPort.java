@@ -1,5 +1,6 @@
 package com.ttalkak.deployment.deployment.application.inputport;
 
+import com.ttalkak.deployment.common.global.exception.BusinessException;
 import com.ttalkak.deployment.deployment.application.outputport.DeploymentOutputPort;
 import com.ttalkak.deployment.deployment.application.outputport.DomainOutputPort;
 import com.ttalkak.deployment.deployment.application.outputport.HostingOutputPort;
@@ -70,6 +71,9 @@ public class UpdateDeploymentInputPort implements UpdateDeploymentUsecase {
 
         // 호스팅 정보 수정
         HostingEntity hosting = hostingOutputPort.findByProjectIdAndServiceType(deploymentEntity.getProjectId(), deploymentEntity.getServiceType());
+        if(hosting == null){
+            throw new BusinessException(ErrorCode.NOT_EXISTS_HOSTING);
+        }
         hosting.setHostingPort(deploymentUpdateRequest.getHostingPort());
         hosting.updateDomainName(domainName, String.valueOf(deploymentEntity.getServiceType()));
 

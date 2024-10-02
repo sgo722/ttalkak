@@ -62,6 +62,10 @@ public class WebHookDeploymentInputPort implements WebHookDeploymentUsecase {
 
         HostingEntity hosting = hostingOutputPort.findByProjectIdAndServiceType(response.getProjectId(), serviceType);
 
+        if(hosting == null){
+            throw new BusinessException(ErrorCode.NOT_EXISTS_HOSTING);
+        }
+
         List<EnvEvent> envEvents = deployment.getEnvs().stream().map(env -> new EnvEvent(env.getKey(), env.getValue())).toList();
         HostingEvent hostingEvent = new HostingEvent(
                 deployment.getId(),

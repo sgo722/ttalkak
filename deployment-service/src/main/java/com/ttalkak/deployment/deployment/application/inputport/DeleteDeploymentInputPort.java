@@ -71,6 +71,7 @@ public class DeleteDeploymentInputPort implements DeleteDeploymentUsecase {
         for(DeploymentEntity deployment : deployments) {
             deployment.deleteDeployment();
             HostingEntity findHosting = hostingOutputPort.findByProjectIdAndServiceType(deployment.getProjectId(), deployment.getServiceType());
+            if(findHosting == null) continue;
             findHosting.delete();
             domainOutputPort.deleteDomainKey(findHosting.getId().toString());
             deploymentOutputPort.save(deployment);
