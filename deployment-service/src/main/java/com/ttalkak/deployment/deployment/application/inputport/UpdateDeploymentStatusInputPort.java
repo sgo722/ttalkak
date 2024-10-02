@@ -46,6 +46,10 @@ public class UpdateDeploymentStatusInputPort implements UpdateDeploymentStatusUs
 
         String message = deploymentUpdateStatusRequest.getMessage();
         DeploymentStatus status = deploymentUpdateStatusRequest.getStatus();
+
+        // 삭제된 상태인 경우에는 아무것도 하지 않는다.
+        if(deploymentEntity.getStatus() == DELETED) return;
+
         if(status == WAITING) {
             if (message.equals("cloud manipulate")) {
                 reAllocateInstance(deploymentEntity);
