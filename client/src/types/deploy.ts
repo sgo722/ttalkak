@@ -94,7 +94,7 @@ export interface GithubRepositoryRequest {
 
 export interface DockerfileCreateRequest {
   exist: boolean;
-  buildTool: BuildTool;
+  buildTool?: BuildTool;
   packageManager?: PackageManager;
   languageVersion: string;
 }

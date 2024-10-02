@@ -41,6 +41,10 @@ const initialState: DeployData = {
   databaseCreateRequests: null,
   hostingPort: null,
   envs: null,
+  dockerfileCreateRequest: {
+    exist: true,
+    languageVersion: "",
+  },
 };
 
 const useDeployStore = create(
