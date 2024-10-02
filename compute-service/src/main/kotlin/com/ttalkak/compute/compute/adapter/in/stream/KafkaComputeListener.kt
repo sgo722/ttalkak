@@ -80,11 +80,6 @@ class KafkaComputeListener(
             "컴퓨터 재배포 이벤트 발생: ${response.deploymentId}"
         }
 
-        val event = UpdateComputeStatusEvent(
-            deploymentId = response.deploymentId,
-            command = RunningCommand.REBUILD
-        )
-
-        redisTemplate.convertAndSend(computeUpdateChannel.topic, Json.serialize(event))
+        redisTemplate.convertAndSend(computeUpdateChannel.topic, Json.serialize(response))
     }
 }

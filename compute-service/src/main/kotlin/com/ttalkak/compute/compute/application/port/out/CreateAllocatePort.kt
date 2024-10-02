@@ -13,6 +13,7 @@ interface CreateAllocatePort {
 
     fun appendPriority(
         deploymentId: Long,
+        rebuild: Boolean,
         count: Int,
         useMemory: Double,
         useCPU: Double,

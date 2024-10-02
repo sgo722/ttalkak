@@ -26,6 +26,7 @@ class ComputeAllocateCachePersistence (
         val priority = System.currentTimeMillis().toDouble()
         val compute = ComputeAllocateCache(
             deploymentId = deploymentId,
+            rebuild = false,
             count = count,
             useMemory = useMemory,
             useCPU = useCPU,
@@ -36,6 +37,7 @@ class ComputeAllocateCachePersistence (
 
     override fun appendPriority(
         deploymentId: Long,
+        rebuild: Boolean,
         count: Int,
         useMemory: Double,
         useCPU: Double,
@@ -44,6 +46,7 @@ class ComputeAllocateCachePersistence (
         val priority = System.currentTimeMillis().toDouble() - PRIORITY_WEIGHT
         val compute = ComputeAllocateCache(
             deploymentId = deploymentId,
+            rebuild = rebuild,
             count = count,
             useMemory = useMemory,
             useCPU = useCPU,
