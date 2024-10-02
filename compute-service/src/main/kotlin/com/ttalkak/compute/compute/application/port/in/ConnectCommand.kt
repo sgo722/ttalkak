@@ -8,4 +8,5 @@ data class ConnectCommand(
     val usedCompute: Int,
     val usedMemory: Double,
     val usedCPU: Double,
+    val ports: List<Int>
 )

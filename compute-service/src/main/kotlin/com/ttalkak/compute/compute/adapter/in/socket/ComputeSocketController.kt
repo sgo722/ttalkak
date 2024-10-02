@@ -32,6 +32,7 @@ class ComputeSocketController(
             usedCompute = request.usedCompute,
             usedMemory = (request.usedMemory / 1_000_000_000.0),
             usedCPU = request.usedCPU,
+            ports = request.ports
         )
 
         computeUseCase.connect(command)
@@ -54,6 +55,7 @@ class ComputeSocketController(
             usedCompute = request.usedCompute,
             usedMemory = (request.usedMemory / 1_000_000_000.0),
             usedCPU = request.usedCPU,
+            ports = mutableListOf()
         )
 
         val deploymentCommands = request.deployments.map {
