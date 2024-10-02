@@ -20,6 +20,4 @@ public class DatabaseEvent implements Serializable {
     private String username;
 
     private String password;
-
-    private int port;
 }

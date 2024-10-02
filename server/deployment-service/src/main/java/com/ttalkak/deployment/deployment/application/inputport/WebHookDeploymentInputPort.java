@@ -77,7 +77,7 @@ public class WebHookDeploymentInputPort implements WebHookDeploymentUsecase {
         );
 
         List<DatabaseEvent> databaseEvents = deployment.getDataBaseEntities().stream()
-                .map(databaseEntity -> new DatabaseEvent(databaseEntity.getId(), databaseEntity.getName(), databaseEntity.getDatabaseType().toString(), databaseEntity.getUsername(), databaseEntity.getPassword(), databaseEntity.getPort()))
+                .map(databaseEntity -> new DatabaseEvent(databaseEntity.getId(), databaseEntity.getName(), databaseEntity.getDatabaseType().toString(), databaseEntity.getUsername(), databaseEntity.getPassword()))
                 .collect(Collectors.toList());
 
         DeploymentEvent deploymentEvent = new DeploymentEvent(deployment.getId(), deployment.getProjectId(), envEvents, deployment.getServiceType().toString());

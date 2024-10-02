@@ -159,8 +159,7 @@ public class CreateDeploymentInputPort implements CreateDeploymentUsecase {
                             savedDatabaseEntity.getName(),
                             savedDatabaseEntity.getDatabaseType().toString(),
                             savedDatabaseEntity.getUsername(),
-                            savedDatabaseEntity.getPassword(),
-                            savedDatabaseEntity.getPort()
+                            savedDatabaseEntity.getPassword()
                     ));
                 }
             }
