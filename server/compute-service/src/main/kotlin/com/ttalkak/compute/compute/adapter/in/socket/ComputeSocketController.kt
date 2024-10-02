@@ -1,6 +1,7 @@
 package com.ttalkak.compute.compute.adapter.`in`.socket
 
 import com.ttalkak.compute.common.SocketAdapter
+import com.ttalkak.compute.compute.adapter.`in`.socket.request.ComputeConnectRequest
 import com.ttalkak.compute.compute.adapter.`in`.socket.request.ComputeRunningRequest
 import com.ttalkak.compute.compute.adapter.`in`.socket.request.ComputeStatusRequest
 import com.ttalkak.compute.compute.application.port.`in`.*
@@ -21,7 +22,7 @@ class ComputeSocketController(
     private val log = KotlinLogging.logger {  }
     
     @MessageMapping("/compute/connect")
-    fun compute(@Payload request: ComputeStatusRequest) {
+    fun compute(@Payload request: ComputeConnectRequest) {
         log.info { 
             "컴퓨터 연결 요청 (/compute/connect): $request"
         }
@@ -49,13 +50,12 @@ class ComputeSocketController(
             "컴퓨터 실시간 데이터 요청 (/compute/ping): $request"
         }
         
-        val command = ConnectCommand(
+        val command = StatusUpdateCommand(
             userId = request.userId,
             computeType = request.computerType,
             usedCompute = request.usedCompute,
             usedMemory = (request.usedMemory / 1_000_000_000.0),
-            usedCPU = request.usedCPU,
-            ports = mutableListOf()
+            usedCPU = request.usedCPU
         )
 
         val deploymentCommands = request.deployments.map {
