@@ -52,6 +52,27 @@ class AllocateService (
         ))
     }
 
+    override fun addRebuildQueue(command: AddComputeCommand) {
+        log.info {
+            "재할당 요청: $command"
+        }
+
+        createAllocatePort.appendPriority(
+            deploymentId = command.deploymentId,
+            rebuild = true,
+            count = command.computeCount,
+            useMemory = command.useMemory,
+            useCPU = command.useCPU,
+            instances = command.containers
+        )
+
+        deploymentFeignClient.updateStatus(DeploymentUpdateStatusRequest(
+            deploymentId = command.deploymentId,
+            status = RunningStatus.WAITING,
+            message = "컴퓨터 재할당 대기중"
+        ))
+    }
+
     @Scheduled(fixedDelay = 1000 * 60)
     fun process() {
         if (!redisLockPort.lock(ALLOCATE_LOCK_KEY, 1000 * 60)) {

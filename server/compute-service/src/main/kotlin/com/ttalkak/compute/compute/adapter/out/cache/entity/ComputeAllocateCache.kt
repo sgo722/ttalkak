@@ -5,6 +5,7 @@ import com.ttalkak.compute.compute.domain.DockerContainer
 data class ComputeAllocateCache (
     val deploymentId: Long,
     val count: Int,
+    val rebuild: Boolean,
     val useMemory: Double,
     val useCPU: Double,
     val instances: List<DockerContainer>
