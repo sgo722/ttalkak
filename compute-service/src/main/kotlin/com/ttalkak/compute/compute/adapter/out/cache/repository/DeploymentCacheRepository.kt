@@ -28,11 +28,13 @@ class DeploymentCacheRepository {
     }
 
     fun deleteByUserId(userId: Long) {
+        if (userId == 0L) return
+
         hashOperations.keys(DEPLOYMENT_CACHE_KEY).forEach {
             val value = hashOperations.get(DEPLOYMENT_CACHE_KEY, it).toString()
             val deploymentStatus = Json.deserialize(value, DeploymentStatusCache::class.java)
             log.info {
-                "RunningCache 삭제: $it, $deploymentStatus"
+                "DeploymentStatus 삭제(userId: $userId): $it, $deploymentStatus"
             }
             if (deploymentStatus.userId == userId) {
                 hashOperations.delete(DEPLOYMENT_CACHE_KEY, it)

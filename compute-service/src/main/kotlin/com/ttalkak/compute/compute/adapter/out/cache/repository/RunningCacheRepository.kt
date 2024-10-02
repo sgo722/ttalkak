@@ -30,11 +30,13 @@ class RunningCacheRepository {
     }
 
     fun deleteByUserId(userId: Long) {
+        if (userId == 0L) return
+
         hashOperations.keys(RUNNING_CACHE_KEY).forEach {
             val value = hashOperations.get(RUNNING_CACHE_KEY, it).toString()
             val runningCache = Json.deserialize(value, RunningCache::class.java)
             log.info {
-                "RunningCache 삭제: $it, $runningCache"
+                "RunningCache 삭제(userId: $userId): $it, $runningCache"
             }
             if (runningCache.userId == userId) {
                 hashOperations.delete(RUNNING_CACHE_KEY, it)
