@@ -13,5 +13,7 @@ WORKDIR /app
 # 4. 빌드된 JAR 파일 복사
 COPY --from=build /app/build/libs/*.jar /app/app.jar
 
+EXPOSE 15000
+
 # 5. 스프링 부트 앱 실행
 ENTRYPOINT ["java", "-jar", "-Dspring.profiles.active=prod", "/app/app.jar"]
