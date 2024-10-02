@@ -111,7 +111,7 @@ class AllocateService (
                 it.outboundPort = availablePorts.random()
             }
 
-            savePortPort.savePort(availableCompute.userId, availablePorts.toList())
+            savePortPort.savePort(availableCompute.userId, compute.instances.map { it.outboundPort })
 
             simpleMessagingTemplate.convertAndSend("/sub/compute-create/${availableCompute.userId}", Json.serialize(compute.instances))
         }
