@@ -29,20 +29,40 @@ public class DeploymentController {
 
     private final InquiryUsecase inquiryUsecase;
 
+    // 배포 등록
+    @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
+    public ApiResponse<DeploymentCreateResponse> createDeployment(@RequestBody DeploymentCreateRequest deploymentCreateRequest){
+        DeploymentCreateResponse deployment = createDeploymentUsecase.createDeployment(deploymentCreateRequest);
+        return ApiResponse.created(deployment);
+    }
+
+    // 배포 검색조회
+    @GetMapping
+    @ResponseStatus(HttpStatus.OK)
+    public ApiResponse<List<DeploymentPreviewResponse>> searchDeploymentByGithubRepositoryName(
+            @RequestParam(value = "githubRepoName") String githubRepoName,
+            @RequestParam(value = "page", defaultValue = "0") int page,
+            @RequestParam(value = "size", defaultValue = "10") int size
+    ){
+        List<DeploymentPreviewResponse> deployments = inquiryUsecase.searchDeploymentByGithubRepositoryName(githubRepoName, page, size);
+        return ApiResponse.success(deployments);
+    }
+
+    // 배포 수정
+    @PatchMapping
+    @ResponseStatus(HttpStatus.OK)
+    public ApiResponse<DeploymentDetailResponse> updateDeployment(@RequestHeader("X-USER-ID") Long userId, @RequestBody DeploymentUpdateRequest deploymentUpdateRequest){
+        DeploymentDetailResponse deployment = updateDeploymentUsecase.updateDeployment(userId, deploymentUpdateRequest);
+        return ApiResponse.success(deployment);
+    }
+
     // 도커 파일 생성
     @PostMapping("/dockerfile")
     @ResponseStatus(HttpStatus.CREATED)
     public ApiResponse<Void> createDockerFile(@RequestHeader("X-USER-ID") Long userId, @RequestBody DockerfileCreateRequestRegacy dockerfileCreateRequestRegacy){
         createDockerFileUsecaseRegacy.createDockerFile(userId, dockerfileCreateRequestRegacy);
         return ApiResponse.success();
-    }
-
-    // 배포 등록
-    @PostMapping("")
-    @ResponseStatus(HttpStatus.CREATED)
-    public ApiResponse<DeploymentCreateResponse> createDeployment(@RequestBody DeploymentCreateRequest deploymentCreateRequest){
-        DeploymentCreateResponse deployment = createDeploymentUsecase.createDeployment(deploymentCreateRequest);
-        return ApiResponse.created(deployment);
     }
 
     // 배포 상태 변경
@@ -58,26 +78,6 @@ public class DeploymentController {
     @ResponseStatus(HttpStatus.OK)
     public ApiResponse<DeploymentDetailResponse> getDeployment(@PathVariable("deploymentId") Long deploymentId){
         DeploymentDetailResponse deployment = inquiryUsecase.getDeployment(deploymentId);
-        return ApiResponse.success(deployment);
-    }
-
-    // 배포 검색조회
-    @GetMapping("")
-    @ResponseStatus(HttpStatus.OK)
-    public ApiResponse<List<DeploymentPreviewResponse>> searchDeploymentByGithubRepositoryName(
-            @RequestParam(value = "githubRepoName") String githubRepoName,
-            @RequestParam(value = "page", defaultValue = "0") int page,
-            @RequestParam(value = "size", defaultValue = "10") int size
-    ){
-        List<DeploymentPreviewResponse> deployments = inquiryUsecase.searchDeploymentByGithubRepositoryName(githubRepoName, page, size);
-        return ApiResponse.success(deployments);
-    }
-
-    // 배포 수정
-    @PatchMapping("")
-    @ResponseStatus(HttpStatus.OK)
-    public ApiResponse<DeploymentDetailResponse> updateDeployment(@RequestHeader("X-USER-ID") Long userId, @RequestBody DeploymentUpdateRequest deploymentUpdateRequest){
-        DeploymentDetailResponse deployment = updateDeploymentUsecase.updateDeployment(userId, deploymentUpdateRequest);
         return ApiResponse.success(deployment);
     }
 
