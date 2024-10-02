@@ -3,6 +3,7 @@ package com.ttalkak.compute.compute.adapter.out.cache.repository
 import com.ttalkak.compute.common.util.Json
 import com.ttalkak.compute.compute.adapter.out.cache.entity.DeploymentStatusCache
 import com.ttalkak.compute.compute.adapter.out.cache.entity.RunningCache
+import io.github.oshai.kotlinlogging.KotlinLogging
 import jakarta.annotation.Resource
 import org.springframework.data.redis.core.HashOperations
 import org.springframework.stereotype.Repository
@@ -13,6 +14,8 @@ class RunningCacheRepository {
     companion object {
         const val RUNNING_CACHE_KEY = "runningCache"
     }
+
+    private val log = KotlinLogging.logger { }
 
     @Resource(name = "redisTemplate")
     private lateinit var hashOperations: HashOperations<String, String, String>
@@ -27,10 +30,12 @@ class RunningCacheRepository {
     }
 
     fun deleteByUserId(userId: Long) {
-        val keys = hashOperations.keys(RUNNING_CACHE_KEY)
-        keys.forEach {
+        hashOperations.keys(RUNNING_CACHE_KEY).forEach {
             val value = hashOperations.get(RUNNING_CACHE_KEY, it).toString()
             val runningCache = Json.deserialize(value, RunningCache::class.java)
+            log.info {
+                "RunningCache 삭제: $it, $runningCache"
+            }
             if (runningCache.userId == userId) {
                 hashOperations.delete(RUNNING_CACHE_KEY, it)
             }
