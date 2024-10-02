@@ -18,7 +18,6 @@ import { MdAdd } from "react-icons/md";
 interface DatabaseForm {
   databaseType: DatabaseType;
   databaseName?: string;
-  databasePort: string;
   databaseUsername?: string;
   databasePassword?: string;
 }
@@ -56,7 +55,7 @@ export default function BackendForm() {
       javaVersion: "",
       port: "8080",
       useDatabase: false,
-      databases: [{ databaseType: DatabaseType.MYSQL, databasePort: "" }],
+      databases: [{ databaseType: DatabaseType.MYSQL }],
       envVars: [],
     },
   });
@@ -91,7 +90,7 @@ export default function BackendForm() {
     if (!useDatabase) {
       setValue("databases", []);
     } else if (dbFields.length === 0) {
-      appendDb({ databaseType: DatabaseType.MYSQL, databasePort: "" });
+      appendDb({ databaseType: DatabaseType.MYSQL });
     }
   }, [useDatabase, setValue, dbFields.length, appendDb]);
 
@@ -156,7 +155,6 @@ export default function BackendForm() {
       ? data.databases.map((db) => ({
           databaseName: db.databaseType,
           name: db.databaseType === "REDIS" ? "" : db.databaseName || "",
-          databasePort: Number(db.databasePort),
           username:
             db.databaseType === "REDIS" ? "" : db.databaseUsername || "",
           password: db.databasePassword || "",
@@ -553,41 +551,6 @@ export default function BackendForm() {
                         </div>
                       )}
                     />
-
-                    <Controller
-                      name={`databases.${index}.databasePort`}
-                      control={control}
-                      rules={{
-                        required: "포트번호를 입력해주세요.",
-                        pattern: {
-                          value: /^\d+$/,
-                          message: "숫자만 입력가능합니다.",
-                        },
-                      }}
-                      render={({ field, fieldState: { error } }) => (
-                        <div>
-                          <label
-                            htmlFor={`databases.${index}.databasePort`}
-                            className="block text-md font-semibold text-gray-700 mb-1"
-                          >
-                            데이터베이스 포트번호
-                          </label>
-                          <input
-                            {...field}
-                            id={`databases.${index}.databasePort`}
-                            type="number"
-                            min="0"
-                            max="65535"
-                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                          />
-                          {error && (
-                            <p className="text-red-500 text-sm mt-2">
-                              {error.message}
-                            </p>
-                          )}
-                        </div>
-                      )}
-                    />
                   </div>
                 </div>
               ))}
@@ -596,7 +559,6 @@ export default function BackendForm() {
                 onClick={() =>
                   appendDb({
                     databaseType: DatabaseType.MYSQL,
-                    databasePort: "",
                   })
                 }
                 className="mt-4 py-2 px-4 border text-black rounded-md focus:outline-none"

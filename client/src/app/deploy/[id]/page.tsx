@@ -6,6 +6,7 @@ import Link from "next/link";
 import Image from "next/image";
 import Button from "@/components/Button";
 import ConfirmModal from "@/components/ConfirmModal";
+import { DeployStatus, ServiceType } from "@/types/deploy";
 import useGetDeploy from "@/apis/deploy/useGetDeploy";
 import useGetWebhooks from "@/apis/webhook/useGetWebhooks";
 import useCreateWebhook from "@/apis/webhook/useCreateWebhook";
@@ -104,9 +105,9 @@ export default function DeployDetailPage() {
   const formatDomain = (serviceType?: string, detailDomainName?: string) => {
     if (!serviceType || !detailDomainName) return "";
 
-    if (serviceType === "FRONTEND") {
+    if (serviceType === ServiceType.FRONTEND) {
       return `${detailDomainName}.ttalkak.com`;
-    } else if (serviceType === "BACKEND") {
+    } else if (serviceType === ServiceType.BACKEND) {
       const domainWithoutPrefix = detailDomainName.replace(/^api_/, "");
       return `api.${domainWithoutPrefix}.ttalkak.com`;
     }
@@ -115,11 +116,12 @@ export default function DeployDetailPage() {
 
   // status 아이콘 색 처리
   const statusColor =
-    data?.status === "STOPPED"
+    data?.status === DeployStatus.STOPPED || data?.status === DeployStatus.ERROR
       ? "bg-red-500"
-      : data?.status === "RUNNING"
+      : data?.status === DeployStatus.RUNNING
         ? "bg-green-500"
-        : data?.status === "PENDING"
+        : data?.status === DeployStatus.PENDING ||
+            data?.status === DeployStatus.WAITTING
           ? "bg-yellow-400 animate-pulse"
           : "bg-gray-500";
 
