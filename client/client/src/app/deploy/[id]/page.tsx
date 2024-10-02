@@ -104,14 +104,7 @@ export default function DeployDetailPage() {
   // 도메인 처리
   const formatDomain = (serviceType?: string, detailDomainName?: string) => {
     if (!serviceType || !detailDomainName) return "";
-
-    if (serviceType === ServiceType.FRONTEND) {
-      return `${detailDomainName}.ttalkak.com`;
-    } else if (serviceType === ServiceType.BACKEND) {
-      const domainWithoutPrefix = detailDomainName.replace(/^api_/, "");
-      return `api.${domainWithoutPrefix}.ttalkak.com`;
-    }
-    return detailDomainName;
+    return `${detailDomainName}.ttalkak.com`;
   };
 
   // status 아이콘 색 처리
