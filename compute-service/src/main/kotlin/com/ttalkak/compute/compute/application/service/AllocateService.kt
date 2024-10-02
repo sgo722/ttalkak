@@ -102,10 +102,6 @@ class AllocateService (
                 status.availablePortStart..status.availablePortEnd
             }.subtract(loadPortPort.loadPorts(availableCompute.userId).toSet())
 
-            log.debug {
-                "할당 가능한 포트: $availablePorts"
-            }
-
             // * 포트 할당
             compute.instances.forEach {
                 it.outboundPort = availablePorts.random()
