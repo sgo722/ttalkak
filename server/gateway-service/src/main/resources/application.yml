@@ -67,7 +67,7 @@ spring:
             - Path=/v1/notification/**
 
         - id: contract-service-api
-          uri: http://localhost:5555
+          uri: http://contract-service:5555
           predicates:
             - Path=/v1/payment/**
 
