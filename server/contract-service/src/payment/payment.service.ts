@@ -1,5 +1,4 @@
 import { Injectable } from '@nestjs/common';
-import Payment from '@contracts/build/contracts/PaymentContract.json';
 import Web3 from 'web3';
 import { ConfigService } from '@nestjs/config';
 import { PrismaService } from '@src/prisma/prisma.service';
@@ -11,7 +10,6 @@ import {
 } from '@src/common/exception/error.code';
 import { Decimal } from '@prisma/client/runtime/library';
 import { Receipt } from './payment.type';
-import { from } from 'rxjs';
 
 @Injectable()
 export class PaymentService {
@@ -137,7 +135,7 @@ export class PaymentService {
       console.log('트랜잭션이 성공적으로 전송되었습니다.');
     } catch (error) {
       // TODO: 만약, 결제에 실패한 경우 Instance를 삭제하고, 사용자에게 알림을 보내야 합니다.
-      console.log(error)
+      console.log(error);
       if (error.data) {
         console.error(this.web3.utils.hexToUtf8(error.data));
       }
