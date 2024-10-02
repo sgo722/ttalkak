@@ -35,6 +35,7 @@ export class PaymentController {
     return this.paymentService.getPayments(+request.user.userId, query.range);
   }
 
+  @UseGuards(JwtAuthGuard)
   @Get('summary')
   async getSummary(
     @Request() request,
