@@ -38,9 +38,14 @@ public class DeleteDeploymentInputPort implements DeleteDeploymentUsecase {
 
     @Override
     public void deleteDeployment(Long userId, Long deploymentId) {
+        log.info("======================= deleteDeployment");
+        log.info(userId + " " + deploymentId);
+
         DeploymentEntity deploymentEntity = deploymentOutputPort.findDeployment(deploymentId)
                 .orElseThrow(() -> new EntityNotFoundException(ErrorCode.NOT_EXISTS_DEPLOYMENT));
         Long projectId = deploymentEntity.getProjectId();
+
+        log.info(deploymentEntity + " deleted project " + projectId);
 
         ProjectInfoResponse projectInfo = projectOutputPort.getProjectInfo(projectId);
 
@@ -55,7 +60,10 @@ public class DeleteDeploymentInputPort implements DeleteDeploymentUsecase {
         }catch (JsonProcessingException e){
             throw new BusinessException(ErrorCode.KAFKA_PRODUCER_ERROR);
         }
+        log.info(deploymentEntity + " deleted project " + deploymentEntity.getProjectId());
+
         HostingEntity findHosting = hostingOutputPort.findByProjectIdAndServiceType(deploymentEntity.getProjectId(), deploymentEntity.getServiceType());
+        log.info(String.valueOf(findHosting.getServiceType()));
         findHosting.delete();
         if(findHosting != null) {
             domainOutputPort.deleteDomainKey(findHosting.getId().toString());
