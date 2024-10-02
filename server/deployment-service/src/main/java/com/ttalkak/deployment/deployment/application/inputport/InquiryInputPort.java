@@ -41,11 +41,8 @@ public class InquiryInputPort implements InquiryUsecase {
 
         // 호스팅 내역이 없고 배포 상태가 에러인 경우에는 삭제인 상태로 수정해줘야 한다.
         if(hosting == null && deploymentEntity.getStatus() == DeploymentStatus.ERROR ){
-
             deploymentEntity.setStatus(DeploymentStatus.DELETED);
             deploymentOutputPort.save(deploymentEntity);
-
-            throw new BusinessException(ErrorCode.NOT_EXISTS_HOSTING);
         }
         List<VersionEntity> versionEntities = versionOutputPort.findAllByDeploymentId(deploymentEntity);
         log.info("version entities: {}", versionEntities);
