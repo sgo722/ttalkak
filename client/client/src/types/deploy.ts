@@ -7,6 +7,8 @@ export enum DeployStatus {
   STOPPED = "STOPPED",
   RUNNING = "RUNNING",
   PENDING = "PENDING",
+  WAITTING = "WAITTING",
+  ERROR = "ERROR",
 }
 
 export enum DeployCommand {

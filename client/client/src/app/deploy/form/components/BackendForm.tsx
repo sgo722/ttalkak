@@ -3,7 +3,12 @@
 import { useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useForm, Controller, useFieldArray, useWatch } from "react-hook-form";
-import { DatabaseType, ServiceType, Framework } from "@/types/deploy";
+import {
+  DatabaseType,
+  ServiceType,
+  Framework,
+  DockerfileCreateRequest,
+} from "@/types/deploy";
 import useDeployStore from "@/store/useDeployStore";
 import useCreateDeploy from "@/apis/deploy/useCreateDeploy";
 import useCreateWebhook from "@/apis/webhook/useCreateWebhook";
@@ -37,7 +42,6 @@ export default function BackendForm() {
     githubRepositoryRequest,
     versionRequest,
     dockerfileCreateRequest,
-    setDockerfileCreateRequest,
     reset: resetDeployStore,
   } = useDeployStore();
 
@@ -159,10 +163,11 @@ export default function BackendForm() {
         }))
       : null;
 
-    setDockerfileCreateRequest({
+    const updatedDockerfileCreateRequest: DockerfileCreateRequest = {
+      exist: dockerfileCreateRequest?.exist ?? true,
       ...dockerfileCreateRequest,
       languageVersion: data.javaVersion,
-    });
+    };
 
     createDeploy(
       {
@@ -172,7 +177,7 @@ export default function BackendForm() {
         githubRepositoryRequest,
         versionRequest,
         databaseCreateRequests,
-        dockerfileCreateRequest,
+        dockerfileCreateRequest: updatedDockerfileCreateRequest,
         envs: data.envVars,
         framework: Framework.SPRINGBOOT,
       },

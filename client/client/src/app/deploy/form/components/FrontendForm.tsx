@@ -2,7 +2,11 @@
 
 import { useRouter, useSearchParams } from "next/navigation";
 import { useForm, useFieldArray, Controller } from "react-hook-form";
-import { ServiceType, Framework } from "@/types/deploy";
+import {
+  ServiceType,
+  Framework,
+  DockerfileCreateRequest,
+} from "@/types/deploy";
 import useDeployStore from "@/store/useDeployStore";
 import useCreateDeploy from "@/apis/deploy/useCreateDeploy";
 import useCreateWebhook from "@/apis/webhook/useCreateWebhook";
@@ -19,7 +23,7 @@ interface FormData {
 export default function FrontendForm() {
   const searchParams = useSearchParams();
   const router = useRouter();
-  const projectId = searchParams.get("projectId"); // 프로젝트 ID
+  const projectId = searchParams.get("projectId");
   const typeParam = searchParams.get("type");
 
   const {
@@ -30,7 +34,7 @@ export default function FrontendForm() {
     defaultValues: {
       framework: Framework.REACT,
       nodeVersion: "",
-      port: 3000,
+      port: 80,
       envVars: [],
     },
   });
@@ -46,16 +50,16 @@ export default function FrontendForm() {
   const {
     githubRepositoryRequest,
     versionRequest,
-    setDockerfileCreateRequest,
     dockerfileCreateRequest,
     reset: resetDelpoyStore,
   } = useDeployStore();
 
   const onSubmit = (data: FormData) => {
-    setDockerfileCreateRequest({
+    const updatedDockerfileCreateRequest: DockerfileCreateRequest = {
+      exist: dockerfileCreateRequest?.exist ?? true,
       ...dockerfileCreateRequest,
       languageVersion: data.nodeVersion,
-    });
+    };
 
     createDeploy(
       {
@@ -65,7 +69,7 @@ export default function FrontendForm() {
         githubRepositoryRequest,
         versionRequest,
         databaseCreateRequests: null,
-        dockerfileCreateRequest,
+        dockerfileCreateRequest: updatedDockerfileCreateRequest,
         envs: data.envVars,
         framework: data.framework,
       },
