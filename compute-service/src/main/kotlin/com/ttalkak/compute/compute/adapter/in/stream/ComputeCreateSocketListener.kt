@@ -46,7 +46,7 @@ class ComputeCreateSocketListener(
             val database = it.databaseType.parse(it.name, it.username, it.password)
             DockerContainer(
                 deploymentId = response.deploymentId,
-                serviceType = response.serviceType,
+                serviceType = ServiceType.DATABASE,
                 hasDockerImage = true,
                 containerName = "${response.serviceType}-${response.deploymentId}-db-${it.databaseId}",
                 hasDockerFile = false,
