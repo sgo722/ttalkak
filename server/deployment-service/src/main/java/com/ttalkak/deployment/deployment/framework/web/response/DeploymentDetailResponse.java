@@ -85,6 +85,32 @@ public class DeploymentDetailResponse {
     }
 
     public static DeploymentDetailResponse mapToDTO(DeploymentEntity deploymentEntity,
+                                                    List<VersionEntity> versionEntities){
+        return DeploymentDetailResponse.builder()
+                .deploymentId(deploymentEntity.getId())
+                .projectId(deploymentEntity.getProjectId())
+                .status(deploymentEntity.getStatus())
+                .serviceType(deploymentEntity.getServiceType())
+                .payloadURL(deploymentEntity.getPayloadURL())
+                .repositoryUrl(deploymentEntity.getGithubInfo().getRepositoryUrl())
+                .repositoryName(deploymentEntity.getGithubInfo().getRepositoryName())
+                .repositoryOwner(deploymentEntity.getGithubInfo().getRepositoryOwner())
+                .envs(deploymentEntity.getEnvs().stream()
+                        .map(EnvResponse::mapToDTO)
+                        .toList())
+                .versions(versionEntities.stream()
+                        .map(VersionResponse::mapToDTO)
+                        .toList())
+                .branch(deploymentEntity.getGithubInfo().getBranch())
+                .framework(deploymentEntity.getFramework())
+                .databaseResponses(deploymentEntity.getDataBaseEntities().stream()
+                        .map(DatabaseResponse::mapToDTO)
+                        .toList())
+                .statusMessage(deploymentEntity.getStatusMessage())
+                .build();
+    }
+
+    public static DeploymentDetailResponse mapToDTO(DeploymentEntity deploymentEntity,
                                                     HostingEntity hostingEntity,
                                                     List<VersionEntity> versionEntities){
         return DeploymentDetailResponse.builder()
