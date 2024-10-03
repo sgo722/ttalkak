@@ -37,10 +37,12 @@ public class InquiryInputPort implements InquiryUsecase {
         DeploymentEntity deploymentEntity = deploymentOutputPort.findDeployment(deploymentId)
                 // 배포 이력이 존재하지 않은 경우
                 .orElseThrow(() -> new EntityNotFoundException(ErrorCode.NOT_EXISTS_DEPLOYMENT));
-        HostingEntity hosting = hostingOutputPort.findByProjectIdAndServiceType(deploymentEntity.getProjectId(), deploymentEntity.getServiceType());
-
         List<VersionEntity> versionEntities = versionOutputPort.findAllByDeploymentId(deploymentEntity);
+        HostingEntity hosting = hostingOutputPort.findByProjectIdAndServiceType(deploymentEntity.getProjectId(), deploymentEntity.getServiceType());
         log.info("version entities: {}", versionEntities);
+        if(hosting == null){
+            return DeploymentDetailResponse.mapToDTO(deploymentEntity, versionEntities);
+        }
         return DeploymentDetailResponse.mapToDTO(deploymentEntity, hosting, versionEntities);
     }
 

@@ -285,7 +285,7 @@ pipeline {
                     }
                     steps {
                         script {
-
+                            sendMattermostNotification('good', 'User Service', '빌드 중')
                             // 기존 user-service 컨테이너 중지 및 삭제
                             sh """
                             docker-compose -f docker-compose-prod.yml stop user-service || true
@@ -299,7 +299,15 @@ pipeline {
                             """
                         }
                     }
+                    post {
+                        always {
+                            script {
+                                handlePostBuild('User Service')
+                            }
+                        }
+                    }
                 }
+
 
                 stage('Build and Deploy Compute Service') {
                     when {
@@ -307,6 +315,7 @@ pipeline {
                     }
                     steps {
                         script {
+                            sendMattermostNotification('good', 'Compute Service', '빌드 중')
 
                             // 기존 user-service 컨테이너 중지 및 삭제
                             sh """
@@ -321,6 +330,13 @@ pipeline {
                             """
                         }
                     }
+                    post {
+                        always {
+                            script {
+                                handlePostBuild('Compute Service')
+                            }
+                        }
+                    }
                 }
 
 
@@ -330,6 +346,7 @@ pipeline {
                     }
                     steps {
                         script {
+                            sendMattermostNotification('good', 'Deployment Service', '빌드 중')
 
                             // 기존 user-service 컨테이너 중지 및 삭제
                             sh """
@@ -344,6 +361,13 @@ pipeline {
                             """
                         }
                     }
+                    post {
+                        always {
+                            script {
+                                handlePostBuild('Deployment Service')
+                            }
+                        }
+                    }
                 }
 
 
@@ -353,6 +377,7 @@ pipeline {
                     }
                     steps {
                         script {
+                            sendMattermostNotification('good', 'Project Service', '빌드 중')
 
                             // 기존 user-service 컨테이너 중지 및 삭제
                             sh """
@@ -365,6 +390,13 @@ pipeline {
                             docker-compose -f docker-compose-prod.yml build --no-cache project-service
                             docker-compose -f docker-compose-prod.yml up -d --no-deps --build project-service
                             """
+                        }
+                    }
+                    post {
+                        always {
+                            script {
+                                handlePostBuild('Project Service')
+                            }
                         }
                     }
                 }
@@ -407,5 +439,26 @@ pipeline {
                 }
             }
         }
+    }
+}
+
+
+// 공통 함수 정의
+def sendMattermostNotification(String color, String service, String status) {
+    mattermostSend(
+        color: color,
+        message: "${service} ${status}: ${env.JOB_NAME} #${env.BUILD_NUMBER}\n(<${env.BUILD_URL}|Details>)",
+        endpoint: 'https://meeting.ssafy.com/hooks/drwzc53ezbypfntwngj8tm5fta',
+        channel: 'ttalkak-jenkins'
+    )
+}
+
+def handlePostBuild(String service) {
+    if (currentBuild.result == 'SUCCESS') {
+        sendMattermostNotification('good', service, '빌드 성공')
+    } else if (currentBuild.result == 'FAILURE') {
+        sendMattermostNotification('danger', service, '빌드 실패')
+    } else {
+        sendMattermostNotification('warning', service, '빌드 결과: ' + currentBuild.result)
     }
 }
