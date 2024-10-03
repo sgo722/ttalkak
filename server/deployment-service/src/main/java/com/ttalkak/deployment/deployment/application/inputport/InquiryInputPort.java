@@ -39,13 +39,6 @@ public class InquiryInputPort implements InquiryUsecase {
                 .orElseThrow(() -> new EntityNotFoundException(ErrorCode.NOT_EXISTS_DEPLOYMENT));
         HostingEntity hosting = hostingOutputPort.findByProjectIdAndServiceType(deploymentEntity.getProjectId(), deploymentEntity.getServiceType());
 
-        // 호스팅 내역이 없으면 삭제인 상태로 수정해줘야 한다.
-        if(hosting == null){
-            deploymentEntity.setStatus(DeploymentStatus.DELETED);
-            deploymentOutputPort.save(deploymentEntity);
-            return null;
-        }
-
         List<VersionEntity> versionEntities = versionOutputPort.findAllByDeploymentId(deploymentEntity);
         log.info("version entities: {}", versionEntities);
         return DeploymentDetailResponse.mapToDTO(deploymentEntity, hosting, versionEntities);
