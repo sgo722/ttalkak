@@ -1,13 +1,7 @@
 import { useForm, Controller } from "react-hook-form";
-import { CreateDatabaseRequest, DatabaseType } from "@/types/database";
 import Button from "@/components/Button";
-import {
-  SiMongodb,
-  SiPostgresql,
-  SiRedis,
-  SiMariadbfoundation,
-} from "react-icons/si";
-import { GrMysql } from "react-icons/gr";
+import { CreateDatabaseRequest, DatabaseType } from "@/types/database";
+import { databaseOptions } from "@/utils/getDatabaseIcons";
 import { IoClose } from "react-icons/io5";
 
 interface DatabaseModalProps {
@@ -15,14 +9,6 @@ interface DatabaseModalProps {
   onClose: () => void;
   onSubmit: (data: CreateDatabaseRequest) => void;
 }
-
-const databaseOptions = [
-  { name: "MySQL", type: DatabaseType.MYSQL, icon: GrMysql },
-  { name: "PostgreSQL", type: DatabaseType.POSTGRESQL, icon: SiPostgresql },
-  { name: "MongoDB", type: DatabaseType.MONGODB, icon: SiMongodb },
-  { name: "Redis", type: DatabaseType.REDIS, icon: SiRedis },
-  { name: "MariaDB", type: DatabaseType.MARIADB, icon: SiMariadbfoundation },
-];
 
 export default function DatabaseModal({
   isOpen,

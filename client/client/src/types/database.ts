@@ -11,8 +11,18 @@ export interface CreateDatabaseRequest {
   name: string;
 }
 
+export interface GetDatabasesParams {
+  page: number;
+  size: number;
+  sort: string;
+  direction: string;
+  searchKeyword?: string;
+}
+
 export interface GetDatabasesResponse {
-  data: GetDatabaseResponse[];
+  content: GetDatabaseResponse[];
+  totalPages: number;
+  totalElements: number;
 }
 
 export interface GetDatabaseResponse {
