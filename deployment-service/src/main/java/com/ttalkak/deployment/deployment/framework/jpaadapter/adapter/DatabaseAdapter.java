@@ -1,5 +1,4 @@
-package com.ttalkak.deployment.deployment.framework.jpaadapter.adapter
-        ;
+package com.ttalkak.deployment.deployment.framework.jpaadapter.adapter;
 
 import com.ttalkak.deployment.deployment.application.outputport.DatabaseOutputPort;
 import com.ttalkak.deployment.deployment.domain.model.DatabaseEntity;
@@ -15,7 +14,6 @@ import java.util.Optional;
 public class DatabaseAdapter implements DatabaseOutputPort {
 
     private final DatabaseRepository databaseRepository;
-    private final DatabaseOutputPort databaseOutputPort;
 
     @Override
     public DatabaseEntity save(DatabaseEntity databaseEntity) {
