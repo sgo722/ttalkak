@@ -42,9 +42,7 @@ public class CreateDatabaseInputPort implements CreateDatabaseUseCase {
                 "database " + database.getId() + " " + database.getDatabaseType(),
                 "database " + database.getId() + " " + database.getDatabaseType()
         ));
-        String key = databaseDomainKeyResponse.getKey();
         int port = databaseDomainKeyResponse.getPort();
-        log.info("key :: {} - port ::{}", key, port);
 
         saveDatabase.setPort(port);
         DatabaseEntity savedDatabase = databaseOutputPort.save(saveDatabase);

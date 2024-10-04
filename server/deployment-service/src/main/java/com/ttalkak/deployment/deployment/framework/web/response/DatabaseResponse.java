@@ -46,6 +46,7 @@ public class DatabaseResponse {
                 .type(databaseEntity.getDatabaseType().toString())
                 .username(databaseEntity.getUsername())
                 .password(databaseEntity.getPassword())
+                .port(databaseEntity.getPort())
                 .build();
     }
 }
