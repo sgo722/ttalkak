@@ -4,7 +4,6 @@ import {
   DeployData,
   Framework,
   GithubRepositoryRequest,
-  DatabaseCreateRequest,
   VersionRequest,
   DockerfileCreateRequest,
 } from "@/types/deploy";
@@ -12,9 +11,6 @@ import {
 interface DeployStoreState extends DeployData {
   setFramework: (framework: Framework) => void;
   setGithubRepositoryRequest: (data: Partial<GithubRepositoryRequest>) => void;
-  setDatabaseCreateRequests: (data: DatabaseCreateRequest[] | null) => void;
-  addDatabaseCreateRequest: (data: DatabaseCreateRequest) => void;
-  removeDatabaseCreateRequest: (index: number) => void;
   setVersionRequest: (data: Partial<VersionRequest>) => void;
   setHostingPort: (hostingPort: number | null) => void;
   setEnvironment: (env: { key: string; value: string }[] | null) => void;
@@ -38,7 +34,6 @@ const initialState: DeployData = {
     repositoryLastCommitUserProfile: "",
     repositoryLastCommitUserName: "",
   },
-  databaseCreateRequests: null,
   hostingPort: null,
   envs: null,
   dockerfileCreateRequest: {
@@ -58,20 +53,6 @@ const useDeployStore = create(
             ...state.githubRepositoryRequest,
             ...data,
           },
-        })),
-      setDatabaseCreateRequests: (data) =>
-        set({ databaseCreateRequests: data }),
-      addDatabaseCreateRequest: (data) =>
-        set((state) => ({
-          databaseCreateRequests: state.databaseCreateRequests
-            ? [...state.databaseCreateRequests, data]
-            : [data],
-        })),
-      removeDatabaseCreateRequest: (index) =>
-        set((state) => ({
-          databaseCreateRequests: state.databaseCreateRequests
-            ? state.databaseCreateRequests.filter((_, i) => i !== index)
-            : null,
         })),
       setVersionRequest: (data) =>
         set((state) => ({
