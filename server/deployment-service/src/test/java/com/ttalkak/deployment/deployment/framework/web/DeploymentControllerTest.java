@@ -207,14 +207,14 @@ class DeploymentControllerTest extends RestDocsSupport {
                         EnvResponse.builder().envId(2L).key("key2").value("value2").build()
                 ))
                 .databaseResponses(List.of(
-                        DatabaseResponse.builder()
+                        DatabaseDetailResponse.builder()
                                 .databaseId(1L)
                                 .databaseType("MYSQL")
                                 .username("dbUser")
                                 .password("dbPassword")
                                 .port(3306)
                                 .build(),
-                        DatabaseResponse.builder()
+                        DatabaseDetailResponse.builder()
                                 .databaseId(2L)
                                 .databaseType("REDIS")
                                 .username("redisUser")

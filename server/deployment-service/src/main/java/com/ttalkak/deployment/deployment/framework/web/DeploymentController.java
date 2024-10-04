@@ -5,7 +5,6 @@ import com.ttalkak.deployment.deployment.application.usecase.*;
 import com.ttalkak.deployment.deployment.framework.web.request.*;
 import com.ttalkak.deployment.deployment.framework.web.response.*;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -96,15 +95,15 @@ public class DeploymentController {
 
     // 데이터베이스 생성
     @PostMapping("/database")
-    public ApiResponse<DatabaseResponse> createDatabase(@RequestHeader("X-USER-ID") Long userId, @RequestBody DatabaseCreateRequest databaseCreateRequest){
-        DatabaseResponse database = createDatabaseUsecase.createDatabase(userId, databaseCreateRequest);
-        return ApiResponse.success(database);
+    public ApiResponse<DatabasePreviewResponse> createDatabase(@RequestHeader("X-USER-ID") Long userId, @RequestBody DatabaseCreateRequest databaseCreateRequest){
+        DatabasePreviewResponse database = createDatabaseUsecase.createDatabase(userId, databaseCreateRequest);
+        return ApiResponse.created(database);
     }
 
     // 데이터베이스 단건조회
     @GetMapping("/database/{databaseId}")
-    public ApiResponse<DatabaseResponse> getDatabase(@PathVariable("databaseId") Long databaseId){
-        DatabaseResponse database = inquiryUsecase.getDatabase(databaseId);
+    public ApiResponse<DatabaseDetailResponse> getDatabase(@PathVariable("databaseId") Long databaseId){
+        DatabaseDetailResponse database = inquiryUsecase.getDatabase(databaseId);
         return ApiResponse.success(database);
     }
 
