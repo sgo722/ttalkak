@@ -49,7 +49,6 @@ public class CreateDatabaseInputPort implements CreateDatabaseUseCase {
         saveDatabase.setPort(port);
         DatabaseEntity savedDatabase = databaseOutputPort.save(saveDatabase);
 
-
         DatabaseEvent databaseEvent = new DatabaseEvent(
                 savedDatabase.getDatabaseType(),
                 savedDatabase.getName(),

@@ -9,6 +9,8 @@ import lombok.*;
 
 import java.util.UUID;
 
+import static com.ttalkak.deployment.deployment.domain.model.vo.Status.PENDING;
+
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
@@ -47,7 +49,8 @@ public class DatabaseEntity extends BaseEntity {
         this.userId = userId;
         this.name = name;
         this.databaseType = databaseType;
-        this.status = Status.PENDING;
+        this.status = PENDING;
+        this.statusMessage = PENDING.toString().toLowerCase();
         this.username = UUID.randomUUID().toString().replace("-", "").substring(0, 8);
         this.password = UUID.randomUUID().toString().replace("-", "").substring(0, 8);
         this.port = -1;
