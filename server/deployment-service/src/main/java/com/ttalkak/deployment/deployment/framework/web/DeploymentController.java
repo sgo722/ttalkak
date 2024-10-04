@@ -132,9 +132,9 @@ public class DeploymentController {
             @RequestParam(required = false, defaultValue = "9") int size,
             @RequestParam(required = false, defaultValue = "createdAt") String sort,
             @RequestParam(required = false, defaultValue = "DESC") Sort.Direction direction,
-            @RequestParam String searchKeyword,
+            @RequestParam(required = false) String searchKeyword,
             @RequestHeader("X-USER-ID") Long userId) {
-
+        if (searchKeyword == null) searchKeyword = "";
         Pageable pageable = PageRequest.of(page, size, Sort.by(direction, sort));
         DatabasePageResponse pages = inquiryUsecase.getDatabases(pageable, searchKeyword, userId);
         return ApiResponse.success(pages);
