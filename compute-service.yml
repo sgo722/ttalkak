@@ -11,3 +11,6 @@ consumer:
 
     rebuild-compute:
       name : rebuild-compute
+    
+    create-database:
+      name: create-database
