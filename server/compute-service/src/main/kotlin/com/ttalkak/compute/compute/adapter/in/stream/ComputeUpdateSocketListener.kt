@@ -44,8 +44,6 @@ class ComputeUpdateSocketListener (
                 subdomainKey = response.subdomainKey,
                 sourceCodeLink = parseGithubLink(response.repositoryUrl, response.branch),
                 dockerRootDirectory = response.rootDirectory,
-                dockerImageName = null,
-                dockerImageTag = null,
                 hasDockerFile = response.dockerfileExist,
                 dockerFileScript = response.dockerfileScript,
                 envs = response.envs
