@@ -77,24 +77,38 @@ export class PaymentController {
   @Post('signature')
   async submitSignature(
     @Request() request,
-    @Body()
-    body: {
-      amount: number;
-      deploymentId: number;
-      transaction: string;
-      receipientId: number;
-    },
-  ) {
-    if (!body.transaction) {
-      throw new HttpException('No signature provided', HttpStatus.BAD_REQUEST);
+    @Body() body: {
+      privateKey: string;
     }
-
-    this.paymentService.saveSignedTransaction({
-      deploymentId: body.deploymentId,
-      senderId: +request.user.userId,
-      receipientId: body.receipientId,
-      amount: body.amount,
-      transaction: body.transaction,
-    });
+  ) {
+    return this.paymentService.savePrivateKey({
+      userId: +request.user.userId,
+      privateKey: body.privateKey
+    })
   }
+
+  // @UseGuards(JwtAuthGuard)
+  // @Post('signature')
+  // async submitSignature(
+  //   @Request() request,
+  //   @Body()
+  //   body: {
+  //     amount: number;
+  //     deploymentId: number;
+  //     transaction: string;
+  //     receipientId: number;
+  //   },
+  // ) {
+  //   if (!body.transaction) {
+  //     throw new HttpException('No signature provided', HttpStatus.BAD_REQUEST);
+  //   }
+
+  //   this.paymentService.saveSignedTransaction({
+  //     deploymentId: body.deploymentId,
+  //     senderId: +request.user.userId,
+  //     receipientId: body.receipientId,
+  //     amount: body.amount,
+  //     transaction: body.transaction,
+  //   });
+  // }
 }

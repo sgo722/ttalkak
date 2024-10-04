@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import Web3 from 'web3';
+import { createCipheriv, createDecipheriv, randomBytes } from 'crypto';
 import { ConfigService } from '@nestjs/config';
 import { PrismaService } from '@src/prisma/prisma.service';
 import { Prisma, Transaction, TransactionHistory } from '@prisma/client';
@@ -14,6 +15,8 @@ import { Receipt } from './payment.type';
 @Injectable()
 export class PaymentService {
   private web3: Web3;
+  private key: Buffer
+  private iv: Buffer
 
   constructor(
     private readonly configService: ConfigService,
@@ -24,6 +27,9 @@ export class PaymentService {
         this.configService.get<string>('BLOCKCHAIN_PROVIDER'),
       ),
     );
+
+    this.key = Buffer.from(this.configService.get<string>('ENCRYPT_SECRET_KEY'))
+    this.iv = Buffer.from(this.configService.get<string>('ENCRYPT_IV_KEY'))
   }
 
   async getPayments(userId: number, range: number): Promise<Receipt> {
@@ -57,6 +63,24 @@ export class PaymentService {
         return +new Decimal(acc).add(cur.amount).toString();
       }, 0),
     };
+  }
+
+  async savePrivateKey({
+    userId,
+    privateKey
+  }: {userId: number, privateKey: string}) {
+    const cipher = createCipheriv('aes-256-cbc', this.key, this.iv);
+    let encrypted = cipher.update('your_data', 'utf8', 'hex');
+    encrypted += cipher.final('hex');
+
+    await this.prisma.userTransactionKey.create({
+      data: {
+        userId: userId,
+        privateKey: encrypted
+      }
+    })
+
+    return "create"
   }
 
   async getPaymentSummary(

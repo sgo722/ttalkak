@@ -23,6 +23,12 @@ model Transaction {
   @@unique([deploymentId, receipientId])
 }
 
+model UserTransactionKey {
+  id Int @id @default(autoincrement())
+  userId Int
+  privateKey String
+}
+
 model TransactionHistory {
   id            Int         @id @default(autoincrement())
   fromAddress   String
