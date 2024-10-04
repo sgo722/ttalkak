@@ -49,7 +49,7 @@ class KafkaComputeListener(
         log.info {
             "데이터베이스 생성 이벤트 발생: ${response.databaseId}"
         }
-        redisTemplate.convertAndSend(computeCreateChannel.topic, Json.serialize(response))
+        redisTemplate.convertAndSend(databaseCreateChannel.topic, Json.serialize(response))
     }
 
     @KafkaListener(topics = ["\${consumer.topics.create-user.name}"], groupId = "\${spring.kafka.consumer.group-id}")
