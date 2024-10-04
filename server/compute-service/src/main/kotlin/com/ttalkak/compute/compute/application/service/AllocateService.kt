@@ -7,9 +7,7 @@ import com.ttalkak.compute.compute.adapter.out.feign.request.DeploymentUpdateSta
 import com.ttalkak.compute.compute.application.port.`in`.AddComputeCommand
 import com.ttalkak.compute.compute.application.port.`in`.AllocateUseCase
 import com.ttalkak.compute.compute.application.port.out.*
-import com.ttalkak.compute.compute.domain.Environment
-import com.ttalkak.compute.compute.domain.RunningStatus
-import com.ttalkak.compute.compute.domain.ServiceType
+import com.ttalkak.compute.compute.domain.*
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.messaging.simp.SimpMessagingTemplate
 import org.springframework.scheduling.annotation.Scheduled
@@ -38,18 +36,20 @@ class AllocateService (
         }
 
         createAllocatePort.append(
-            deploymentId = command.deploymentId,
-            count = command.computeCount,
+            id = command.id,
+            isDatabase = command.isDatabase,
             useMemory = command.useMemory,
             useCPU = command.useCPU,
             instance = command.container
         )
 
-        deploymentFeignClient.updateStatus(DeploymentUpdateStatusRequest(
-            deploymentId = command.deploymentId,
-            status = RunningStatus.WAITING,
-            message = "컴퓨터 할당 대기중"
-        ))
+        if (!command.isDatabase) {
+            deploymentFeignClient.updateStatus(DeploymentUpdateStatusRequest(
+                deploymentId = command.id,
+                status = RunningStatus.WAITING,
+                message = "컴퓨터 할당 대기중"
+            ))
+        }
     }
 
     override fun addRebuildQueue(command: AddComputeCommand) {
@@ -58,16 +58,16 @@ class AllocateService (
         }
 
         createAllocatePort.appendPriority(
-            deploymentId = command.deploymentId,
+            id = command.id,
+            isDatabase = command.isDatabase,
             rebuild = true,
-            count = command.computeCount,
             useMemory = command.useMemory,
             useCPU = command.useCPU,
             instance = command.container
         )
 
         deploymentFeignClient.updateStatus(DeploymentUpdateStatusRequest(
-            deploymentId = command.deploymentId,
+            deploymentId = command.id,
             status = RunningStatus.WAITING,
             message = "컴퓨터 재할당 대기중"
         ))
@@ -90,25 +90,25 @@ class AllocateService (
 
             // * 할당 로직
             val availableCompute = loadComputePort.loadAllCompute().filter {
-                it.isAvailable(compute.count, compute.useMemory, compute.useCPU)
+                it.isAvailable(compute.useMemory, compute.useCPU)
             }.maxByOrNull {
                 it.weight
             }
 
             // * 할당 가능한 컴퓨터 실패 로직
             if (availableCompute == null) {
-                if (tries[compute.deploymentId] == false) {
+                if (tries[compute.id] == false) {
                     log.error { "할당 가능한 컴퓨터가 없습니다." }
                     loadAllocatePort.pop().ifPresent {
                         createAllocatePort.append(
-                            deploymentId = it.deploymentId,
-                            count = it.count,
+                            id = it.id,
+                            isDatabase = it.isDatabase,
                             useMemory = it.useMemory,
                             useCPU = it.useCPU,
                             instance = it.instance
                         )
                     }
-                    tries[compute.deploymentId] = true
+                    tries[compute.id] = true
                     continue
                 } else {
                     log.error { "할당 가능한 컴퓨터가 없습니다. 재시도를 중단합니다." }
@@ -128,7 +128,15 @@ class AllocateService (
 
             // * 포트 할당
             val randomPort = availablePorts.random()
-            compute.instance.outboundPort = randomPort
+
+            if (compute.isDatabase) {
+                val instance = compute.instance as DockerDatabaseContainer
+                instance.outboundPort = randomPort
+            } else {
+                val instance = compute.instance as DockerContainer
+                instance.outboundPort = randomPort
+            }
+
             savePortPort.savePort(availableCompute.userId, randomPort)
 
             simpleMessagingTemplate.convertAndSend("/sub/compute-create/${availableCompute.userId}", Json.serialize(compute.instance))

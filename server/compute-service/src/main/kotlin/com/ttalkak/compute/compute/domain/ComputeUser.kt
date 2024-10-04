@@ -25,12 +25,11 @@ data class ComputeUser(
             CPU_WEIGHT * (remainCPU / maxCPU)
 
     fun isAvailable(
-        compute: Int,
         memory: Double,
         cpu: Double
     ): Boolean {
-        log.info { "userId: $userId, remainCompute: $remainCompute, maxCompute: $maxCompute, remainMemory: $remainMemory, maxMemory: $maxMemory, remainCPU: $remainCPU, maxCPU: $maxCPU, memory: $memory, cpu: $cpu, compute: $compute" }
-        return remainCompute >= compute &&
+        log.info { "userId: $userId, remainCompute: $remainCompute, maxCompute: $maxCompute, remainMemory: $remainMemory, maxMemory: $maxMemory, remainCPU: $remainCPU, maxCPU: $maxCPU, memory: $memory, cpu: $cpu" }
+        return remainCompute >= 1 &&
                 remainMemory >= memory &&
                 remainCPU >= cpu
     }

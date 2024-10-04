@@ -1,7 +1,11 @@
 package com.ttalkak.compute.compute.adapter.out.cache.repository
 
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import com.ttalkak.compute.common.util.Json
 import com.ttalkak.compute.compute.adapter.out.cache.entity.ComputeAllocateCache
+import com.ttalkak.compute.compute.domain.DockerContainer
+import com.ttalkak.compute.compute.domain.DockerDatabaseContainer
 import jakarta.annotation.Resource
 import org.springframework.data.redis.core.ValueOperations
 import org.springframework.data.redis.core.ZSetOperations
@@ -27,14 +31,14 @@ class ComputeAllocateCacheRepository {
         return cache?.let {
             zSetOperations.remove(COMPUTE_ALLOCATE_CACHE_KEY, it)
 
-            return Optional.of(Json.deserialize(it, ComputeAllocateCache::class.java))
+            return it.toContainer()
         } ?: Optional.empty()
     }
 
     fun peek(): Optional<ComputeAllocateCache> {
         val cache = zSetOperations.range(COMPUTE_ALLOCATE_CACHE_KEY, 0, 0)?.firstOrNull()
         return cache?.let {
-            return Optional.of(Json.deserialize(it, ComputeAllocateCache::class.java))
+            return it.toContainer()
         } ?: Optional.empty()
     }
 
@@ -45,6 +49,17 @@ class ComputeAllocateCacheRepository {
     fun findDeploymentIds(): List<Long> {
         return zSetOperations.range(COMPUTE_ALLOCATE_CACHE_KEY, 0, -1)?.map {
             Json.deserialize(it, ComputeAllocateCache::class.java)
-        }?.map { it.deploymentId } ?: emptyList()
+        }?.map { it.id } ?: emptyList()
+    }
+
+    private fun String.toContainer(): Optional<ComputeAllocateCache> {
+        val container = Json.deserialize(this, ComputeAllocateCache::class.java)
+
+        val instance = when(container.isDatabase) {
+            true -> Json.deserialize(container.instance.toString(), DockerDatabaseContainer::class.java)
+            false -> Json.deserialize(container.instance.toString(), DockerContainer::class.java)
+        }
+
+        return Optional.of(container.copy(instance = instance))
     }
 }
