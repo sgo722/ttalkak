@@ -4,6 +4,8 @@ import com.ttalkak.deployment.deployment.application.outputport.DatabaseOutputPo
 import com.ttalkak.deployment.deployment.domain.model.DatabaseEntity;
 import com.ttalkak.deployment.deployment.framework.jpaadapter.repository.DatabaseRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -35,4 +37,16 @@ public class DatabaseAdapter implements DatabaseOutputPort {
     public void delete(DatabaseEntity databaseEntity) {
         databaseRepository.delete(databaseEntity);
     }
+
+    @Override
+    public Page<DatabaseEntity> findAllByPaging(Pageable pageable, Long userId) {
+        return databaseRepository.findAllByPaging(pageable, userId);
+    }
+
+    @Override
+    public Page<DatabaseEntity> findDatabaseContainsSearchKeyWord(Pageable pageable, Long userId, String searchKeyword) {
+        return databaseRepository.findDatabaseContainsSearchKeyWord(pageable, userId, searchKeyword);
+    }
+
+
 }
