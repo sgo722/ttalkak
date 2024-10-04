@@ -7,8 +7,6 @@ import com.ttalkak.deployment.deployment.framework.web.response.DeploymentDetail
 import com.ttalkak.deployment.deployment.framework.web.response.DeploymentPreviewResponse;
 import java.util.List;
 
-
-@UseCase
 public interface inquiryUseCase {
     public DeploymentDetailResponse getDeployment(Long deploymentId);
     public List<DeploymentPreviewResponse> getDeploymentsByProjectId(Long projectId);
