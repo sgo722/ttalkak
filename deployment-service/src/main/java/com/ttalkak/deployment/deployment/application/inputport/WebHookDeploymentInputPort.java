@@ -11,7 +11,7 @@ import com.ttalkak.deployment.deployment.domain.event.*;
 import com.ttalkak.deployment.deployment.domain.model.DeploymentEntity;
 import com.ttalkak.deployment.deployment.domain.model.HostingEntity;
 import com.ttalkak.deployment.deployment.domain.model.VersionEntity;
-import com.ttalkak.deployment.deployment.domain.model.vo.DeploymentStatus;
+import com.ttalkak.deployment.deployment.domain.model.vo.Status;
 import com.ttalkak.deployment.deployment.domain.model.vo.ServiceType;
 import com.ttalkak.deployment.deployment.framework.projectadapter.dto.ProjectInfoResponse;
 import com.ttalkak.deployment.deployment.framework.projectadapter.dto.ProjectWebHookResponse;
@@ -45,7 +45,7 @@ public class WebHookDeploymentInputPort implements WebHookDeploymentUseCase {
             throw new RuntimeException(e);
         }
         // 배포 상태 변환
-        deployment.setStatus(DeploymentStatus.PENDING);
+        deployment.setStatus(Status.PENDING);
 
         VersionEntity versionEntity = versionOutputPort.findLastVersionByDeploymentId(deployment.getId());
 

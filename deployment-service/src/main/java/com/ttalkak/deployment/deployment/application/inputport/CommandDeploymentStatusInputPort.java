@@ -8,7 +8,7 @@ import com.ttalkak.deployment.deployment.application.outputport.DeploymentOutput
 import com.ttalkak.deployment.deployment.application.usecase.CommandDeploymentStatusUseCase;
 import com.ttalkak.deployment.deployment.domain.event.UpdateDeploymentStatusEvent;
 import com.ttalkak.deployment.deployment.domain.model.DeploymentEntity;
-import com.ttalkak.deployment.deployment.domain.model.vo.DeploymentStatus;
+import com.ttalkak.deployment.deployment.domain.model.vo.Status;
 import com.ttalkak.deployment.deployment.framework.kafka.ChangeStatusProducer;
 import com.ttalkak.deployment.deployment.framework.web.request.DeploymentCommandStatusRequest;
 import lombok.RequiredArgsConstructor;
@@ -30,7 +30,7 @@ public class CommandDeploymentStatusInputPort implements CommandDeploymentStatus
     public void commandDeploymentStatus(DeploymentCommandStatusRequest deploymentCommandStatusRequest){
         DeploymentEntity deploymentEntity = deploymentOutputPort.findDeployment(Long.valueOf(deploymentCommandStatusRequest.getDeploymentId()))
                 .orElseThrow(() -> new EntityNotFoundException(ErrorCode.NOT_EXISTS_DEPLOYMENT));
-            deploymentEntity.setStatus(DeploymentStatus.PENDING);
+            deploymentEntity.setStatus(Status.PENDING);
             UpdateDeploymentStatusEvent updateDeploymentStatusEvent = toKafkaEventMessage(deploymentCommandStatusRequest);
             try{
                 changeStatusProducer.occurUpdateDeploymentStatus(updateDeploymentStatusEvent);

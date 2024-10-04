@@ -2,6 +2,7 @@ package com.ttalkak.deployment.deployment.domain.model;
 
 import com.ttalkak.deployment.common.BaseEntity;
 import com.ttalkak.deployment.deployment.domain.model.vo.DatabaseEditor;
+import com.ttalkak.deployment.deployment.domain.model.vo.Status;
 import jakarta.persistence.*;
 import com.ttalkak.deployment.deployment.domain.model.vo.DatabaseType;
 import lombok.*;
@@ -32,11 +33,21 @@ public class DatabaseEntity extends BaseEntity {
     @Setter
     private int port;
 
+
+    @Setter
+    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
+    private Status status;
+
+    @Setter
+    private String statusMessage;
+
     @Builder
     private DatabaseEntity(Long userId, String name, DatabaseType databaseType) {
         this.userId = userId;
         this.name = name;
         this.databaseType = databaseType;
+        this.status = Status.PENDING;
         this.username = UUID.randomUUID().toString().replace("-", "").substring(0, 8);
         this.password = UUID.randomUUID().toString().replace("-", "").substring(0, 8);
         this.port = -1;

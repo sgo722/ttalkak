@@ -11,7 +11,7 @@ import com.ttalkak.deployment.deployment.domain.event.CommandEvent;
 import com.ttalkak.deployment.deployment.domain.event.UpdateDeploymentStatusEvent;
 import com.ttalkak.deployment.deployment.domain.model.DeploymentEntity;
 import com.ttalkak.deployment.deployment.domain.model.HostingEntity;
-import com.ttalkak.deployment.deployment.domain.model.vo.DeploymentStatus;
+import com.ttalkak.deployment.deployment.domain.model.vo.Status;
 import com.ttalkak.deployment.deployment.framework.kafka.ChangeStatusProducer;
 import com.ttalkak.deployment.deployment.framework.projectadapter.dto.ProjectInfoResponse;
 import com.ttalkak.deployment.common.global.error.ErrorCode;
@@ -70,7 +70,7 @@ public class DeleteDeploymentInputPort implements DeleteDeploymentUseCase {
     public void deleteDeploymentByProject(Long projectId) throws Exception {
         List<DeploymentEntity> deploymentEntities = deploymentOutputPort.findAllByProjectId(projectId);
         List<DeploymentEntity> deployments = deploymentEntities.stream()
-                .filter(deploymentEntity -> DeploymentStatus.isAlive(deploymentEntity.getStatus()))
+                .filter(deploymentEntity -> Status.isAlive(deploymentEntity.getStatus()))
                 .toList();
 
         for(DeploymentEntity deployment : deployments) {

@@ -33,6 +33,8 @@ consumers:
       name: create-hosting
     update-deployment-status:
       name: update-deployment-status
+    update-database-status:
+      name : update-database-status
     delete-deployment:
       name: delete-deployment
     update-domain-name:
@@ -43,6 +45,8 @@ consumers:
       name: save_hosting
     update-deployment-status:
       name: update_deployment_status
+    update-database-status:
+      name : update-database-status
     delete-deployment:
       name: project_deletion_initiated
     update-hosting-status:

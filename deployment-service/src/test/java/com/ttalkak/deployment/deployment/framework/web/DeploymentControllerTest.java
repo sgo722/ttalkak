@@ -3,7 +3,7 @@ package com.ttalkak.deployment.deployment.framework.web;
 import com.epages.restdocs.apispec.ResourceSnippetParameters;
 import com.ttalkak.deployment.deployment.application.usecase.*;
 import com.ttalkak.deployment.deployment.domain.model.vo.DatabaseType;
-import com.ttalkak.deployment.deployment.domain.model.vo.DeploymentStatus;
+import com.ttalkak.deployment.deployment.domain.model.vo.Status;
 import com.ttalkak.deployment.deployment.domain.model.vo.ServiceType;
 import com.ttalkak.deployment.deployment.framework.web.request.*;
 import com.ttalkak.deployment.deployment.framework.web.response.*;
@@ -186,7 +186,7 @@ class DeploymentControllerTest extends RestDocsSupport {
         DeploymentDetailResponse response = DeploymentDetailResponse.builder()
                 .deploymentId(1L)
                 .projectId(1L)
-                .status(DeploymentStatus.PENDING)
+                .status(Status.PENDING)
                 .serviceType(ServiceType.BACKEND)
                 .repositoryName("repo-name")
                 .repositoryOwner("https://github.com/repo-url")
@@ -483,7 +483,7 @@ class DeploymentControllerTest extends RestDocsSupport {
         DeploymentDetailResponse response = DeploymentDetailResponse.builder()
                 .deploymentId(1L)
                 .projectId(1L)
-                .status(DeploymentStatus.RUNNING)
+                .status(Status.RUNNING)
                 .serviceType(ServiceType.BACKEND)
                 .repositoryName("repo-name")
                 .repositoryUrl("https://github.com/repo-url")

@@ -10,7 +10,7 @@ import com.ttalkak.deployment.deployment.domain.event.*;
 import com.ttalkak.deployment.deployment.domain.model.DeploymentEntity;
 import com.ttalkak.deployment.deployment.domain.model.HostingEntity;
 import com.ttalkak.deployment.deployment.domain.model.VersionEntity;
-import com.ttalkak.deployment.deployment.domain.model.vo.DeploymentStatus;
+import com.ttalkak.deployment.deployment.domain.model.vo.Status;
 import com.ttalkak.deployment.deployment.framework.projectadapter.dto.ProjectInfoResponse;
 import com.ttalkak.deployment.deployment.framework.web.request.DeploymentUpdateStatusRequest;
 import lombok.RequiredArgsConstructor;
@@ -19,7 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
-import static com.ttalkak.deployment.deployment.domain.model.vo.DeploymentStatus.*;
+import static com.ttalkak.deployment.deployment.domain.model.vo.Status.*;
 
 @RequiredArgsConstructor
 @Service
@@ -44,7 +44,7 @@ public class UpdateDeploymentStatusInputPort implements UpdateDeploymentStatusUs
                 .orElseThrow(() -> new EntityNotFoundException(ErrorCode.NOT_EXISTS_DEPLOYMENT));
 
         String message = deploymentUpdateStatusRequest.getMessage();
-        DeploymentStatus status = deploymentUpdateStatusRequest.getStatus();
+        Status status = deploymentUpdateStatusRequest.getStatus();
 
         // 삭제된 상태인 경우에는 아무것도 하지 않는다.
         if(deploymentEntity.getStatus() == DELETED) return;

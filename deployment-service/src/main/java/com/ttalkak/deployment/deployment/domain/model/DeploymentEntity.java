@@ -3,7 +3,7 @@ package com.ttalkak.deployment.deployment.domain.model;
 import com.ttalkak.deployment.deployment.domain.model.vo.DeploymentEditor;
 import jakarta.persistence.*;
 import com.ttalkak.deployment.common.BaseEntity;
-import com.ttalkak.deployment.deployment.domain.model.vo.DeploymentStatus;
+import com.ttalkak.deployment.deployment.domain.model.vo.Status;
 import com.ttalkak.deployment.deployment.domain.model.vo.GithubInfo;
 import com.ttalkak.deployment.deployment.domain.model.vo.ServiceType;
 import lombok.*;
@@ -29,7 +29,7 @@ public class DeploymentEntity extends BaseEntity {
     @Setter
     @Column(name = "deploy_status", nullable = false)
     @Enumerated(EnumType.STRING)
-    private DeploymentStatus status;
+    private Status status;
 
     @Setter
     @Column(name = "service_type", nullable = false)
@@ -55,7 +55,7 @@ public class DeploymentEntity extends BaseEntity {
     private String statusMessage;
 
     @Builder
-    private DeploymentEntity(Long id, Long projectId, DeploymentStatus status, ServiceType serviceType, GithubInfo githubInfo, String framework, String payloadURL, String dockerfileScript, String statusMessage) {
+    private DeploymentEntity(Long id, Long projectId, Status status, ServiceType serviceType, GithubInfo githubInfo, String framework, String payloadURL, String dockerfileScript, String statusMessage) {
         this.id = id;
         this.projectId = projectId;
         this.status = status;
@@ -72,12 +72,12 @@ public class DeploymentEntity extends BaseEntity {
         return DeploymentEntity.builder()
                 .projectId(projectId)
                 .serviceType(ServiceType)
-                .status(DeploymentStatus.PENDING)
+                .status(Status.PENDING)
                 .githubInfo(githubInfo)
                 .framework(framework)
                 .payloadURL(payloadURL)
                 .dockerfileScript("Docker File Exist")
-                .statusMessage(DeploymentStatus.PENDING.toString())
+                .statusMessage(Status.PENDING.toString())
                 .build();
     }
 
@@ -88,15 +88,15 @@ public class DeploymentEntity extends BaseEntity {
 
 
     public void deleteDeployment(){
-        this.status = DeploymentStatus.DELETED;
+        this.status = Status.DELETED;
     }
 
     public void runDeployment(){
-        this.status = DeploymentStatus.RUNNING;
+        this.status = Status.RUNNING;
     }
 
     public void stopDeployment(){
-        this.status = DeploymentStatus.STOPPED;
+        this.status = Status.STOPPED;
     }
 
     public DeploymentEditor.DeploymentEditorBuilder toEditor() {

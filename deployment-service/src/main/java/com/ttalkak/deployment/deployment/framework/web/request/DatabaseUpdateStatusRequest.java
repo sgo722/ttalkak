@@ -6,9 +6,9 @@ import jakarta.persistence.Enumerated;
 import lombok.Getter;
 
 @Getter
-public class DeploymentUpdateStatusRequest {
+public class DatabaseUpdateStatusRequest {
 
-    private String deploymentId;
+    private String databaseId;
 
     @Enumerated(EnumType.STRING)
     private Status status;
