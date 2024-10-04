@@ -41,6 +41,7 @@ class DatabaseCreateSocketListener (
             subdomainKey = response.subdomainKey,
             envs = database.envs,
             inboundPort = response.database.databaseType.port(),
+            outboundPort = response.port,
             databaseId = response.databaseId,
             serviceType = ServiceType.DATABASE,
             dockerImageName = database.name,
