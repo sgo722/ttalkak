@@ -1,6 +1,6 @@
-declare module "@contracts/build/contracts/PaymentContract.json" {
-  import { Contract, ContractFactory } from "ethers";
-  import { BigNumber } from "ethers";
+declare module '@contracts/build/contracts/PaymentContract.json' {
+  import { Contract, ContractFactory } from 'ethers';
+  import { BigNumber } from 'ethers';
 
   interface Payment {
     from: string;
@@ -14,10 +14,7 @@ declare module "@contracts/build/contracts/PaymentContract.json" {
   export class PaymentContract extends Contract {
     constructor(address: string, signerOrProvider?: any);
 
-    sendPayment(
-      to: string,
-      overrides?: { value?: BigNumber }
-    ): Promise<void>;
+    sendPayment(to: string, overrides?: { value?: BigNumber }): Promise<void>;
 
     getPaymentHistory(): Promise<Payment[]>;
 

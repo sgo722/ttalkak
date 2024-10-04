@@ -27,7 +27,7 @@ module.exports = {
      network_id: "5777"       // Any network (default: none)
     },
     ssafy: {
-      provider: () => new HDWalletProvider(MNEMONIC, `https://rpc.ssafy-blockchain.com`),
+      provider: () => new HDWalletProvider(MNEMONIC, "https://rpc.ssafy-blockchain.com"),
       network_id: '31221',
       gas: 0
     }

@@ -22,6 +22,11 @@ export const ENTITY_ALREADY_EXISTS = new ErrorCodeVo(
 
 export const ALREADY_PAID = new ErrorCodeVo(409, '이미 결제가 완료되었습니다.');
 
+export const ALREADY_TRANSACTION_EXIST = new ErrorCodeVo(
+  500,
+  '이미 존재하는 트랜잭션입니다.',
+);
+
 export const INVALID_PAYMENT_CONTRACT = new ErrorCodeVo(
   500,
   '유효하지 않은 계정입니다.',

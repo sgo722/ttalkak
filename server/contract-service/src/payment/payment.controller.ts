@@ -61,13 +61,15 @@ export class PaymentController {
     @Request() request,
     @Body()
     body: {
-      deploymentId: number;
+      serviceId: number;
+      serviceType: string;
       senderId: number;
     },
   ): Promise<any> {
     const receipientId = +request.user.userId;
     await this.paymentService.processPayment(
-      body.deploymentId,
+      body.serviceId,
+      body.serviceType,
       body.senderId,
       receipientId,
     );
@@ -77,38 +79,37 @@ export class PaymentController {
   @Post('signature')
   async submitSignature(
     @Request() request,
-    @Body() body: {
+    @Body()
+    body: {
       privateKey: string;
-    }
+      address: string;
+    },
   ) {
     return this.paymentService.savePrivateKey({
       userId: +request.user.userId,
-      privateKey: body.privateKey
-    })
+      privateKey: body.privateKey,
+      address: body.address,
+    });
   }
 
-  // @UseGuards(JwtAuthGuard)
-  // @Post('signature')
-  // async submitSignature(
-  //   @Request() request,
-  //   @Body()
-  //   body: {
-  //     amount: number;
-  //     deploymentId: number;
-  //     transaction: string;
-  //     receipientId: number;
-  //   },
-  // ) {
-  //   if (!body.transaction) {
-  //     throw new HttpException('No signature provided', HttpStatus.BAD_REQUEST);
-  //   }
-
-  //   this.paymentService.saveSignedTransaction({
-  //     deploymentId: body.deploymentId,
-  //     senderId: +request.user.userId,
-  //     receipientId: body.receipientId,
-  //     amount: body.amount,
-  //     transaction: body.transaction,
-  //   });
-  // }
+  @UseGuards(JwtAuthGuard)
+  @Post('sign')
+  async signTransaction(
+    @Request() request,
+    @Body()
+    body: {
+      serviceType: string;
+      serviceId: number;
+      receipientId: number;
+      address: string;
+    },
+  ) {
+    return await this.paymentService.signTransaction({
+      serviceId: body.serviceId,
+      serviceType: body.serviceType,
+      senderId: +request.user.userId,
+      receipientId: body.receipientId,
+      toAddress: body.address,
+    });
+  }
 }

@@ -1,22 +1,27 @@
 import { Injectable } from '@nestjs/common';
-import Web3 from 'web3';
+import Web3, { Contract } from 'web3';
 import { createCipheriv, createDecipheriv, randomBytes } from 'crypto';
 import { ConfigService } from '@nestjs/config';
 import { PrismaService } from '@src/prisma/prisma.service';
 import { Prisma, Transaction, TransactionHistory } from '@prisma/client';
+import PaymentContract from '@contracts/build/contracts/PaymentContract.json';
 import { CustomException } from '@src/common/exception/exception';
 import {
   ALREADY_PAID,
+  ALREADY_TRANSACTION_EXIST,
   INVALID_PAYMENT_CONTRACT,
 } from '@src/common/exception/error.code';
 import { Decimal } from '@prisma/client/runtime/library';
 import { Receipt } from './payment.type';
 
+const AMOUNT = 10;
+
 @Injectable()
 export class PaymentService {
   private web3: Web3;
-  private key: Buffer
-  private iv: Buffer
+  private key: Buffer;
+  private iv: Buffer;
+  private payment: any;
 
   constructor(
     private readonly configService: ConfigService,
@@ -27,9 +32,15 @@ export class PaymentService {
         this.configService.get<string>('BLOCKCHAIN_PROVIDER'),
       ),
     );
+    this.payment = new this.web3.eth.Contract(
+      PaymentContract.abi,
+      this.configService.get<string>('PAYMENT_CONTRACT_ADDRESS'),
+    );
 
-    this.key = Buffer.from(this.configService.get<string>('ENCRYPT_SECRET_KEY'))
-    this.iv = Buffer.from(this.configService.get<string>('ENCRYPT_IV_KEY'))
+    this.key = Buffer.from(
+      this.configService.get<string>('ENCRYPT_SECRET_KEY'),
+    );
+    this.iv = Buffer.from(this.configService.get<string>('ENCRYPT_IV_KEY'));
   }
 
   async getPayments(userId: number, range: number): Promise<Receipt> {
@@ -67,20 +78,86 @@ export class PaymentService {
 
   async savePrivateKey({
     userId,
-    privateKey
-  }: {userId: number, privateKey: string}) {
+    privateKey,
+    address,
+  }: {
+    userId: number;
+    privateKey: string;
+    address: string;
+  }) {
     const cipher = createCipheriv('aes-256-cbc', this.key, this.iv);
-    let encrypted = cipher.update('your_data', 'utf8', 'hex');
+    let encrypted = cipher.update(privateKey, 'utf8', 'hex');
     encrypted += cipher.final('hex');
 
     await this.prisma.userTransactionKey.create({
       data: {
         userId: userId,
-        privateKey: encrypted
-      }
-    })
+        privateKey: encrypted,
+        address: address,
+      },
+    });
 
-    return "create"
+    return {
+      success: true,
+    };
+  }
+
+  async signTransaction({
+    serviceId,
+    serviceType,
+    senderId,
+    receipientId,
+    toAddress,
+  }: {
+    serviceId: number;
+    serviceType: string;
+    senderId: number;
+    receipientId: number;
+    toAddress: string;
+  }) {
+    const exist = await this.prisma.transaction.findFirst({
+      where: {
+        serviceId: serviceId,
+        serviceType: serviceType,
+        senderId: senderId,
+        receipientId: receipientId,
+      },
+    });
+
+    if (exist) return exist;
+
+    const user = await this.prisma.userTransactionKey.findUnique({
+      where: {
+        userId: senderId,
+      },
+    });
+
+    const decipher = createDecipheriv('aes-256-cbc', this.key, this.iv);
+    let decrypted = decipher.update(user.privateKey, 'hex', 'utf8');
+    decrypted += decipher.final('utf8');
+
+    const signedTx = await this.web3.eth.accounts.signTransaction(
+      {
+        from: user.address,
+        to: this.configService.get<string>('PAYMENT_CONTRACT_ADDRESS'),
+        value: 0,
+        gasPrice: 0,
+        gasLimit: 50000,
+        data: this.payment.methods.sendPayment(toAddress, 10).encodeABI(),
+      },
+      decrypted,
+    );
+
+    return this.prisma.transaction.create({
+      data: {
+        serviceId: serviceId,
+        serviceType: serviceType,
+        senderId: senderId,
+        receipientId: receipientId,
+        amount: AMOUNT,
+        transaction: signedTx.rawTransaction,
+      },
+    });
   }
 
   async getPaymentSummary(
@@ -94,7 +171,7 @@ export class PaymentService {
     );
 
     const histories = await this.prisma.transactionHistory.groupBy({
-      by: ['deploymentId'],
+      by: ['serviceId'],
       _sum: {
         amount: true,
       },
@@ -115,12 +192,14 @@ export class PaymentService {
   }
 
   async processPayment(
-    deploymentId: number,
+    serviceId: number,
+    serviceType: string,
     senderId: number,
     receipientId: number,
   ): Promise<any> {
     const transaction = await this.getTransaction(
-      deploymentId,
+      serviceId,
+      serviceType,
       senderId,
       receipientId,
     );
@@ -158,12 +237,10 @@ export class PaymentService {
           receipientId: receipientId,
           blockHash: response.blockHash.toString(),
           amount: transaction.amount,
-          deploymentId: transaction.deploymentId,
+          serviceId: transaction.id,
           transactionId: transaction.id,
         },
       });
-
-      console.log('트랜잭션이 성공적으로 전송되었습니다.');
     } catch (error) {
       // TODO: 만약, 결제에 실패한 경우 Instance를 삭제하고, 사용자에게 알림을 보내야 합니다.
       console.log(error);
@@ -177,28 +254,16 @@ export class PaymentService {
     }
   }
 
-  async saveSignedTransaction(
-    transaction: Prisma.TransactionCreateInput,
-  ): Promise<any> {
-    return this.prisma.transaction.create({
-      data: {
-        deploymentId: transaction.deploymentId,
-        senderId: transaction.senderId,
-        receipientId: transaction.receipientId,
-        amount: transaction.amount,
-        transaction: transaction.transaction,
-      },
-    });
-  }
-
   private async getTransaction(
-    deploymentId: number,
+    serviceId: number,
+    serviceType: string,
     senderId: number,
     receipientId: number,
   ): Promise<Transaction> {
     return await this.prisma.transaction.findFirst({
       where: {
-        deploymentId: deploymentId,
+        serviceId: serviceId,
+        serviceType: serviceType,
         senderId: senderId,
         receipientId: receipientId,
       },
