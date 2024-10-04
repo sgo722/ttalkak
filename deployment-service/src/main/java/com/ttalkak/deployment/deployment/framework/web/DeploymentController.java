@@ -3,11 +3,12 @@ package com.ttalkak.deployment.deployment.framework.web;
 import com.ttalkak.deployment.common.ApiResponse;
 import com.ttalkak.deployment.deployment.application.usecase.*;
 import com.ttalkak.deployment.deployment.framework.web.request.*;
-import com.ttalkak.deployment.deployment.framework.web.response.DatabaseResponse;
-import com.ttalkak.deployment.deployment.framework.web.response.DeploymentCreateResponse;
-import com.ttalkak.deployment.deployment.framework.web.response.DeploymentDetailResponse;
-import com.ttalkak.deployment.deployment.framework.web.response.DeploymentPreviewResponse;
+import com.ttalkak.deployment.deployment.framework.web.response.*;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
@@ -100,13 +101,6 @@ public class DeploymentController {
         return ApiResponse.success(database);
     }
 
-    // 데이터베이스 전체조회
-    @GetMapping("/database")
-    public ApiResponse<List<DatabaseResponse>> getDatabases(@RequestHeader("X-USER-ID") Long userId){
-        List<DatabaseResponse> databases = inquiryUsecase.getDatabases(userId);
-        return ApiResponse.success(databases);
-    }
-
     // 데이터베이스 단건조회
     @GetMapping("/database/{databaseId}")
     public ApiResponse<DatabaseResponse> getDatabase(@PathVariable("databaseId") Long databaseId){
@@ -119,5 +113,30 @@ public class DeploymentController {
     public ApiResponse<Void> deleteDatabase(@RequestHeader("X-USER-ID") Long userId, @PathVariable("databaseId") Long databaseId){
         deleteDatabaseUsecase.deleteDatabase(userId, databaseId);
         return ApiResponse.empty();
+    }
+
+    /**
+     * 프로젝트 페이징 조회
+     * @param page
+     * @param size
+     * @param sort
+     * @param direction
+     * @param searchKeyword
+     * @param userId
+     * @return
+     */
+    @GetMapping("/database/search")
+    @ResponseStatus(HttpStatus.OK)
+    public ApiResponse<DatabasePageResponse> getProjectsByPageable(
+            @RequestParam(required = false, defaultValue = "0") int page,
+            @RequestParam(required = false, defaultValue = "9") int size,
+            @RequestParam(required = false, defaultValue = "createdAt") String sort,
+            @RequestParam(required = false, defaultValue = "DESC") Sort.Direction direction,
+            @RequestParam String searchKeyword,
+            @RequestHeader("X-USER-ID") Long userId) {
+
+        Pageable pageable = PageRequest.of(page, size, Sort.by(direction, sort));
+        DatabasePageResponse pages = inquiryUsecase.getDatabases(pageable, searchKeyword, userId);
+        return ApiResponse.success(pages);
     }
 }

@@ -1,5 +1,6 @@
 package com.ttalkak.deployment.deployment.application.inputport;
 
+import com.ttalkak.deployment.common.global.exception.BusinessException;
 import com.ttalkak.deployment.deployment.application.outputport.DatabaseOutputPort;
 import com.ttalkak.deployment.deployment.application.outputport.DeploymentOutputPort;
 import com.ttalkak.deployment.deployment.application.outputport.HostingOutputPort;
@@ -10,6 +11,7 @@ import com.ttalkak.deployment.deployment.domain.model.DeploymentEntity;
 import com.ttalkak.deployment.deployment.domain.model.HostingEntity;
 import com.ttalkak.deployment.deployment.domain.model.VersionEntity;
 import com.ttalkak.deployment.deployment.domain.model.vo.DeploymentStatus;
+import com.ttalkak.deployment.deployment.framework.web.response.DatabasePageResponse;
 import com.ttalkak.deployment.deployment.framework.web.response.DatabaseResponse;
 import com.ttalkak.deployment.deployment.framework.web.response.DeploymentDetailResponse;
 import com.ttalkak.deployment.deployment.framework.web.response.DeploymentPreviewResponse;
@@ -17,6 +19,8 @@ import com.ttalkak.deployment.common.global.error.ErrorCode;
 import com.ttalkak.deployment.common.global.exception.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -71,18 +75,46 @@ public class InquiryInputPort implements inquiryUseCase {
                 .collect(Collectors.toList());
     }
 
-    @Override
-    public List<DatabaseResponse> getDatabases(Long userId) {
-        List<DatabaseEntity> databases = databaseOutputPort.findAllByUserId(userId);
-        return databases.stream()
-                .map(DatabaseResponse::mapToDTO)
-                .toList();
-    }
 
     @Override
     public DatabaseResponse getDatabase(Long databaseId) {
         DatabaseEntity databaseEntity = databaseOutputPort.findById(databaseId)
                 .orElseThrow(() -> new EntityNotFoundException(ErrorCode.NOT_EXISTS_DATABASE));
         return DatabaseResponse.mapToDTO(databaseEntity);
+    }
+
+
+    /**
+     * 프로젝트 페이징 조회
+     * @param pageable
+     * @return
+     */
+    @Override
+    public DatabasePageResponse getDatabases(Pageable pageable, String searchKeyword, Long userId) {
+        Page<DatabaseEntity> databases = null;
+        if(searchKeyword == null || searchKeyword.isEmpty()) {
+            databases = databaseOutputPort.findAllByPaging(pageable, userId);
+        } else {
+            databases = databaseOutputPort.findDatabaseContainsSearchKeyWord(pageable, userId, searchKeyword);
+        }
+
+        // 유저 프로젝트가 아닌 경우 예외 발생
+        Page<DatabaseResponse> page = databases.map(DatabaseResponse::mapToDTO);
+        if (page.getContent().size() > 0) {
+            if( userId != databases.getContent().get(0).getUserId()) {
+                throw new BusinessException(ErrorCode.UN_AUTHORIZATION);
+            }
+        }
+
+        DatabasePageResponse databasePageResponse = DatabasePageResponse.builder()
+                .content(page.getContent())
+                .pageNumber(page.getNumber())
+                .pageSize(page.getSize())
+                .totalElements(page.getTotalElements())
+                .totalPages(page.getTotalPages())
+                .build();
+
+        return databasePageResponse;
+
     }
 }
