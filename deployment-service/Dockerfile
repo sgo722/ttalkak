@@ -2,7 +2,6 @@
 FROM gradle:8.8-jdk17 AS build
 WORKDIR /app
 
-
 COPY build.gradle settings.gradle gradle.properties ./
 COPY gradle ./gradle
 
