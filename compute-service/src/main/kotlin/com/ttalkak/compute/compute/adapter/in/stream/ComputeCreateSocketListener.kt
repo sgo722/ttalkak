@@ -27,6 +27,10 @@ class ComputeCreateSocketListener(
             "이벤트 수신에 문제가 발생하였습니다."
         }
 
+        log.debug {
+            "신규 컴퓨터 생성 요청: $response"
+        }
+
         val container = DockerContainer(
             deploymentId = response.deploymentId,
             serviceType = response.serviceType,
@@ -45,75 +49,19 @@ class ComputeCreateSocketListener(
         )
 
         val command = AddComputeCommand(
-            deploymentId = response.deploymentId,
-            computeCount = 1,
+            id = response.deploymentId,
+            isDatabase = false,
             useMemory = 0.512,
             useCPU = 5.0,
             container = container
         )
 
+        log.debug {
+            "신규 컴퓨터 할당 요청: $command"
+        }
+
         allocateUseCase.addQueue(command)
     }
 
     private fun parseGithubLink(baseURL: String, branch: String): String = "$baseURL/archive/refs/heads/$branch.zip"
-
-    private fun DatabaseType.port() = when(this) {
-        DatabaseType.MYSQL -> 3306
-        DatabaseType.POSTGRESQL -> 5432
-        DatabaseType.REDIS -> 6379
-        DatabaseType.MONGODB -> 27017
-        DatabaseType.MARIADB -> 3306
-    }
-
-    private fun DatabaseType.parse(
-        name: String,
-        username: String,
-        password: String,
-    ): DatabaseContainer {
-        return when(this) {
-            DatabaseType.MYSQL -> DatabaseContainer(
-                name = "mysql",
-                tag = "5.7",
-                envs = listOf(
-                    Environment("MYSQL_ROOT_PASSWORD", password),
-                    Environment("MYSQL_DATABASE", name),
-                    Environment("MYSQL_USER", username),
-                    Environment("MYSQL_PASSWORD", password)
-                )
-            )
-            DatabaseType.POSTGRESQL -> DatabaseContainer(
-                name = "postgres",
-                tag = "13",
-                envs = listOf(
-                    Environment("POSTGRES_DB", name),
-                    Environment("POSTGRES_USER", username),
-                    Environment("POSTGRES_PASSWORD", password)
-                )
-            )
-            DatabaseType.REDIS -> DatabaseContainer(
-                name = "redis",
-                tag = "6.2",
-                envs = listOf()
-            )
-            DatabaseType.MONGODB -> DatabaseContainer(
-                name = "mongo",
-                tag = "4.4",
-                envs = listOf(
-                    Environment("MONGO_INITDB_DATABASE", name),
-                    Environment("MONGO_INITDB_ROOT_USERNAME", username),
-                    Environment("MONGO_INITDB_ROOT_PASSWORD", password)
-                )
-            )
-            DatabaseType.MARIADB -> DatabaseContainer(
-                name = "mariadb",
-                tag = "10.5",
-                envs = listOf(
-                    Environment("MYSQL_ROOT_PASSWORD", password),
-                    Environment("MYSQL_DATABASE", name),
-                    Environment("MYSQL_USER", username),
-                    Environment("MYSQL_PASSWORD", password)
-                )
-            )
-        }
-    }
 }

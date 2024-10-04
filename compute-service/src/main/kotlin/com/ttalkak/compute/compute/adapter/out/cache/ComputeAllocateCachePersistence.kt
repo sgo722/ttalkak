@@ -17,17 +17,17 @@ class ComputeAllocateCachePersistence (
     }
 
     override fun append(
-        deploymentId: Long,
-        count: Int,
+        id: Long,
+        isDatabase: Boolean,
         useMemory: Double,
         useCPU: Double,
-        instance: DockerContainer
+        instance: Any
     ) {
         val priority = System.currentTimeMillis().toDouble()
         val compute = ComputeAllocateCache(
-            deploymentId = deploymentId,
+            id = id,
             rebuild = false,
-            count = count,
+            isDatabase = isDatabase,
             useMemory = useMemory,
             useCPU = useCPU,
             instance = instance
@@ -35,19 +35,19 @@ class ComputeAllocateCachePersistence (
         computeAllocateCacheRepository.add(compute, priority)
     }
 
-    override fun appendPriority(
-        deploymentId: Long,
+    override fun  appendPriority(
+        id: Long,
         rebuild: Boolean,
-        count: Int,
+        isDatabase: Boolean,
         useMemory: Double,
         useCPU: Double,
-        instance: DockerContainer
+        instance: Any
     ) {
         val priority = System.currentTimeMillis().toDouble() - PRIORITY_WEIGHT
         val compute = ComputeAllocateCache(
-            deploymentId = deploymentId,
+            id = id,
             rebuild = rebuild,
-            count = count,
+            isDatabase = isDatabase,
             useMemory = useMemory,
             useCPU = useCPU,
             instance = instance

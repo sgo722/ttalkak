@@ -28,13 +28,12 @@ class ComputeUpdateSocketListener (
 
         val running = loadRunningUseCase.loadRunning(response.deploymentId)
 
-        // * 컴퓨터 상태 변경 이벤트 발생
-        val size = 1
+        // * 컴퓨터 상태 변경 이벤트 발생\
         val command = AddComputeCommand(
-            deploymentId = response.deploymentId,
-            computeCount = size,
-            useMemory = 0.512 * size,
-            useCPU = (5.0 * size),
+            id = response.deploymentId,
+            isDatabase = false,
+            useMemory = 0.512,
+            useCPU = 5.0,
             container = DockerContainer(
                 deploymentId = response.deploymentId,
                 serviceType = response.serviceType,
