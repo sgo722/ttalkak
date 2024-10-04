@@ -8,7 +8,7 @@ import com.ttalkak.deployment.deployment.framework.domainadapter.dto.WebDomainRe
 public interface DomainOutputPort {
     WebDomainKeyResponse makeDomainKey(WebDomainRequest webDomainRequest);
 
-    void deleteDomainKey(String subDomain);
+    void deleteDomainKey(String identifier);
 
     WebDomainKeyResponse updateDomainKey(WebDomainRequest webDomainRequest);
 

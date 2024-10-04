@@ -13,7 +13,7 @@ import java.util.List;
 public interface DatabaseRepository extends JpaRepository<DatabaseEntity, Long> {
 
 
-    @Query("select d from DatabaseEntity d where d.userId = :projectId")
+    @Query("select d from DatabaseEntity d where d.userId = :userId")
     List<DatabaseEntity> findAllByUserId(@Param("userId") Long userId);
 
 }
