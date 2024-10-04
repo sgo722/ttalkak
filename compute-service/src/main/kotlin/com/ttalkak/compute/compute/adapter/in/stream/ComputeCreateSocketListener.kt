@@ -34,7 +34,6 @@ class ComputeCreateSocketListener(
         val container = DockerContainer(
             deploymentId = response.deploymentId,
             serviceType = response.serviceType,
-            hasDockerImage = false,
             containerName = "${response.serviceType}-${response.deploymentId}",
             inboundPort = response.port,
             subdomainName = response.subdomainName,
