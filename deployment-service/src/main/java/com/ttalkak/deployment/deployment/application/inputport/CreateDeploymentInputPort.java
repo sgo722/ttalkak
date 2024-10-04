@@ -2,7 +2,7 @@ package com.ttalkak.deployment.deployment.application.inputport;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.ttalkak.deployment.deployment.application.outputport.*;
-import com.ttalkak.deployment.deployment.application.usecase.CreateDeploymentUsecase;
+import com.ttalkak.deployment.deployment.application.usecase.CreateDeploymentUseCase;
 import com.ttalkak.deployment.deployment.application.usecase.CreateDockerfileUseCase;
 import com.ttalkak.deployment.deployment.domain.event.CreateInstanceEvent;
 import com.ttalkak.deployment.deployment.domain.event.DeploymentEvent;
@@ -28,7 +28,7 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 @Transactional
-public class CreateDeploymentInputPort implements CreateDeploymentUsecase {
+public class CreateDeploymentInputPort implements CreateDeploymentUseCase {
 
     private final CreateDockerfileUseCase createDockerfileUseCase;
 

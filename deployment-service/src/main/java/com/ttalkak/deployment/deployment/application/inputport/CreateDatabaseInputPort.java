@@ -4,8 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.ttalkak.deployment.deployment.application.outputport.DatabaseOutputPort;
 import com.ttalkak.deployment.deployment.application.outputport.DomainOutputPort;
 import com.ttalkak.deployment.deployment.application.outputport.EventOutputPort;
-import com.ttalkak.deployment.deployment.application.usecase.CreateDatabaseUsecase;
-import com.ttalkak.deployment.deployment.domain.event.CreateInstanceEvent;
+import com.ttalkak.deployment.deployment.application.usecase.CreateDatabaseUseCase;
 import com.ttalkak.deployment.deployment.domain.event.CreateDatabaseEvent;
 import com.ttalkak.deployment.deployment.domain.model.DatabaseEntity;
 import com.ttalkak.deployment.deployment.domain.model.vo.DatabaseType;
@@ -20,7 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 @Transactional
 @Service
-public class CreateDatabaseInputPort implements CreateDatabaseUsecase {
+public class CreateDatabaseInputPort implements CreateDatabaseUseCase {
 
     private final DomainOutputPort domainOutputPort;
 

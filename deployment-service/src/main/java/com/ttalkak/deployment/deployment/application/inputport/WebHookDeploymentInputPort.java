@@ -6,26 +6,22 @@ import com.ttalkak.deployment.common.global.error.ErrorCode;
 import com.ttalkak.deployment.common.global.exception.BusinessException;
 import com.ttalkak.deployment.deployment.application.outputport.*;
 import com.ttalkak.deployment.deployment.application.usecase.WebHookCommand;
-import com.ttalkak.deployment.deployment.application.usecase.WebHookDeploymentUsecase;
+import com.ttalkak.deployment.deployment.application.usecase.WebHookDeploymentUseCase;
 import com.ttalkak.deployment.deployment.domain.event.*;
 import com.ttalkak.deployment.deployment.domain.model.DeploymentEntity;
 import com.ttalkak.deployment.deployment.domain.model.HostingEntity;
 import com.ttalkak.deployment.deployment.domain.model.VersionEntity;
 import com.ttalkak.deployment.deployment.domain.model.vo.DeploymentStatus;
-import com.ttalkak.deployment.deployment.domain.model.vo.GithubInfo;
 import com.ttalkak.deployment.deployment.domain.model.vo.ServiceType;
 import com.ttalkak.deployment.deployment.framework.projectadapter.dto.ProjectInfoResponse;
 import com.ttalkak.deployment.deployment.framework.projectadapter.dto.ProjectWebHookResponse;
 import lombok.RequiredArgsConstructor;
 
 import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @UseCase
 @RequiredArgsConstructor
-public class WebHookDeploymentInputPort implements WebHookDeploymentUsecase {
+public class WebHookDeploymentInputPort implements WebHookDeploymentUseCase {
     private final ProjectOutputPort projectOutputPort;
     private final DeploymentOutputPort deploymentOutputPort;
     private final HostingOutputPort hostingOutputPort;

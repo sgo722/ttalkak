@@ -16,7 +16,4 @@ public interface DatabaseRepository extends JpaRepository<DatabaseEntity, Long> 
     @Query("select d from DatabaseEntity d where d.userId = :projectId")
     List<DatabaseEntity> findAllByUserId(@Param("userId") Long userId);
 
-    @Query("select d from DatabaseEntity d where d.id = :databaseId")
-    DatabaseEntity findByDatabaseId(@Param("databaseId") Long databaseId);
-
 }

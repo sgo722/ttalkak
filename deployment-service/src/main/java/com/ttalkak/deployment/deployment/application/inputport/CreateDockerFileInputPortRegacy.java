@@ -5,7 +5,7 @@ import com.ttalkak.deployment.common.global.exception.BusinessException;
 import com.ttalkak.deployment.deployment.application.outputport.GithubOutputPort;
 import com.ttalkak.deployment.deployment.application.outputport.UserOutputPort;
 import com.ttalkak.deployment.deployment.framework.useradapter.dto.UserInfoResponse;
-import com.ttalkak.deployment.deployment.application.usecase.CreateDockerFileUsecaseRegacy;
+import com.ttalkak.deployment.deployment.application.usecase.CreateDockerFileUseCaseRegacy;
 import com.ttalkak.deployment.deployment.framework.web.request.DockerfileCreateRequestRegacy;
 import com.ttalkak.deployment.deployment.framework.web.response.DockerFileResponse;
 import io.github.flashvayne.chatgpt.service.ChatgptService;
@@ -23,7 +23,7 @@ import java.util.Map;
 @Service
 @RequiredArgsConstructor
 @Transactional
-public class CreateDockerFileInputPortRegacy implements CreateDockerFileUsecaseRegacy {
+public class CreateDockerFileInputPortRegacy implements CreateDockerFileUseCaseRegacy {
 
     private static final Logger log = LoggerFactory.getLogger(CreateDockerFileInputPortRegacy.class);
 

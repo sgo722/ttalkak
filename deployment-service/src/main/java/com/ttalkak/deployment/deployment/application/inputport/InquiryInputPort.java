@@ -1,11 +1,10 @@
 package com.ttalkak.deployment.deployment.application.inputport;
 
-import com.ttalkak.deployment.common.global.exception.BusinessException;
 import com.ttalkak.deployment.deployment.application.outputport.DatabaseOutputPort;
 import com.ttalkak.deployment.deployment.application.outputport.DeploymentOutputPort;
 import com.ttalkak.deployment.deployment.application.outputport.HostingOutputPort;
 import com.ttalkak.deployment.deployment.application.outputport.VersionOutputPort;
-import com.ttalkak.deployment.deployment.application.usecase.InquiryUsecase;
+import com.ttalkak.deployment.deployment.application.usecase.inquiryUseCase;
 import com.ttalkak.deployment.deployment.domain.model.DatabaseEntity;
 import com.ttalkak.deployment.deployment.domain.model.DeploymentEntity;
 import com.ttalkak.deployment.deployment.domain.model.HostingEntity;
@@ -18,7 +17,6 @@ import com.ttalkak.deployment.common.global.error.ErrorCode;
 import com.ttalkak.deployment.common.global.exception.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.hibernate.dialect.Database;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,7 +27,7 @@ import java.util.stream.Collectors;
 @Service
 @Transactional
 @RequiredArgsConstructor
-public class InquiryInputPort implements InquiryUsecase {
+public class InquiryInputPort implements inquiryUseCase {
 
     private final DeploymentOutputPort deploymentOutputPort;
     private final HostingOutputPort hostingOutputPort;
@@ -83,6 +81,8 @@ public class InquiryInputPort implements InquiryUsecase {
 
     @Override
     public DatabaseResponse getDatabase(Long databaseId) {
-        return DatabaseResponse.mapToDTO(databaseOutputPort.findById(databaseId));
+        DatabaseEntity databaseEntity = databaseOutputPort.findById(databaseId)
+                .orElseThrow(() -> new EntityNotFoundException(ErrorCode.NOT_EXISTS_DATABASE));
+        return DatabaseResponse.mapToDTO(databaseEntity);
     }
 }

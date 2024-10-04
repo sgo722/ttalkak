@@ -6,7 +6,7 @@ import com.ttalkak.deployment.deployment.application.outputport.DeploymentOutput
 import com.ttalkak.deployment.deployment.application.outputport.DomainOutputPort;
 import com.ttalkak.deployment.deployment.application.outputport.HostingOutputPort;
 import com.ttalkak.deployment.deployment.application.outputport.ProjectOutputPort;
-import com.ttalkak.deployment.deployment.application.usecase.DeleteDeploymentUsecase;
+import com.ttalkak.deployment.deployment.application.usecase.DeleteDeploymentUseCase;
 import com.ttalkak.deployment.deployment.domain.event.CommandEvent;
 import com.ttalkak.deployment.deployment.domain.event.UpdateDeploymentStatusEvent;
 import com.ttalkak.deployment.deployment.domain.model.DeploymentEntity;
@@ -28,7 +28,7 @@ import java.util.Objects;
 @Service
 @Transactional
 @RequiredArgsConstructor
-public class DeleteDeploymentInputPort implements DeleteDeploymentUsecase {
+public class DeleteDeploymentInputPort implements DeleteDeploymentUseCase {
     private final DeploymentOutputPort deploymentOutputPort;
     private final ProjectOutputPort projectOutputPort;
     private final DomainOutputPort domainOutputPort;

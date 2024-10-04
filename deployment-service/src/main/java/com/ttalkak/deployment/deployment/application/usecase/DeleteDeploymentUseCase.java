@@ -1,8 +1,10 @@
 package com.ttalkak.deployment.deployment.application.usecase;
 
-import com.ttalkak.deployment.deployment.framework.web.request.DeploymentDeleteRequest;
+import com.ttalkak.deployment.common.UseCase;
 
-public interface DeleteDeploymentUsecase {
+
+@UseCase
+public interface DeleteDeploymentUseCase {
     void deleteDeployment(Long userId, Long deploymentId);
     
     public void deleteDeploymentByProject(Long projectId) throws Exception;

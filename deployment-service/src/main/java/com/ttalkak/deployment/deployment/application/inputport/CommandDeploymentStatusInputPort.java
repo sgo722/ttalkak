@@ -5,7 +5,7 @@ import com.ttalkak.deployment.common.global.error.ErrorCode;
 import com.ttalkak.deployment.common.global.exception.BusinessException;
 import com.ttalkak.deployment.common.global.exception.EntityNotFoundException;
 import com.ttalkak.deployment.deployment.application.outputport.DeploymentOutputPort;
-import com.ttalkak.deployment.deployment.application.usecase.CommandDeploymentStatusUsecase;
+import com.ttalkak.deployment.deployment.application.usecase.CommandDeploymentStatusUseCase;
 import com.ttalkak.deployment.deployment.domain.event.UpdateDeploymentStatusEvent;
 import com.ttalkak.deployment.deployment.domain.model.DeploymentEntity;
 import com.ttalkak.deployment.deployment.domain.model.vo.DeploymentStatus;
@@ -18,7 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 @Service
 @Transactional
-public class CommandDeploymentStatusInputPort implements CommandDeploymentStatusUsecase {
+public class CommandDeploymentStatusInputPort implements CommandDeploymentStatusUseCase {
 
 
     private final DeploymentOutputPort deploymentOutputPort;

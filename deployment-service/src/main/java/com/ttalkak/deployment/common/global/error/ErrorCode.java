@@ -14,6 +14,9 @@ public enum ErrorCode {
     // 호스팅
     NOT_EXISTS_HOSTING(HttpStatus.NOT_FOUND, HttpStatus.NOT_FOUND.value(), "호스팅 내역이 존재하지 않습니다"),
 
+    NOT_EXISTS_DATABASE(HttpStatus.NOT_FOUND, HttpStatus.NOT_FOUND.value(), "데이터베이스 정보가 존재하지 않습니다"),
+
+
     KAFKA_PRODUCER_ERROR(HttpStatus.SERVICE_UNAVAILABLE, HttpStatus.SERVICE_UNAVAILABLE.value(), "카프카 메시지 발행 도중 오류가 발생했습니다."),
 
     // 배포

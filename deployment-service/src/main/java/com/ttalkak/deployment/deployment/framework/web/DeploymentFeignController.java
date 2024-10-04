@@ -1,8 +1,8 @@
 package com.ttalkak.deployment.deployment.framework.web;
 
 import com.ttalkak.deployment.common.ApiResponse;
-import com.ttalkak.deployment.deployment.application.usecase.InquiryUsecase;
-import com.ttalkak.deployment.deployment.application.usecase.UpdateDeploymentStatusUsecase;
+import com.ttalkak.deployment.deployment.application.usecase.inquiryUseCase;
+import com.ttalkak.deployment.deployment.application.usecase.UpdateDeploymentStatusUseCase;
 import com.ttalkak.deployment.deployment.framework.web.request.DeploymentUpdateStatusRequest;
 import com.ttalkak.deployment.deployment.framework.web.response.DeploymentPreviewResponse;
 import lombok.RequiredArgsConstructor;
@@ -16,9 +16,9 @@ import java.util.List;
 @RequestMapping("/feign")
 public class DeploymentFeignController {
 
-    private final InquiryUsecase inquiryUsecase;
+    private final inquiryUseCase inquiryUsecase;
 
-    private final UpdateDeploymentStatusUsecase updateDeploymentStatusUsecase;
+    private final UpdateDeploymentStatusUseCase updateDeploymentStatusUsecase;
 
     // 하나의 프로젝트에 포함되는 배포이력 전체조회
     @GetMapping("/deployment/project/{projectId}")
