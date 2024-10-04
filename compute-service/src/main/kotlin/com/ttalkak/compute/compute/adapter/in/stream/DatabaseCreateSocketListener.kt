@@ -89,7 +89,7 @@ class DatabaseCreateSocketListener (
             )
             DatabaseType.POSTGRESQL -> DatabaseContainer(
                 name = "postgres",
-                tag = "13",
+                tag = "17",
                 envs = listOf(
                     Environment("POSTGRES_DB", name),
                     Environment("POSTGRES_USER", username),
@@ -103,7 +103,7 @@ class DatabaseCreateSocketListener (
             )
             DatabaseType.MONGODB -> DatabaseContainer(
                 name = "mongo",
-                tag = "4.4",
+                tag = "8.0.0",
                 envs = listOf(
                     Environment("MONGO_INITDB_DATABASE", name),
                     Environment("MONGO_INITDB_ROOT_USERNAME", username),
@@ -112,7 +112,7 @@ class DatabaseCreateSocketListener (
             )
             DatabaseType.MARIADB -> DatabaseContainer(
                 name = "mariadb",
-                tag = "10.5",
+                tag = "11.5.2",
                 envs = listOf(
                     Environment("MYSQL_ROOT_PASSWORD", password),
                     Environment("MYSQL_DATABASE", name),
