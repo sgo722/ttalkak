@@ -127,18 +127,14 @@ class AllocateService (
                 status.availablePortStart..status.availablePortEnd
             }.subtract(loadPortPort.loadPorts(availableCompute.userId).toSet())
 
-
-            // * 포트 할당
-            val randomPort = availablePorts.random()
-            savePortPort.savePort(availableCompute.userId, randomPort)
-
             if (compute.isDatabase) {
-                val instance = compute.instance as DockerDatabaseContainer
-                instance.outboundPort = randomPort
                 simpleMessagingTemplate.convertAndSend("/sub/database-create/${availableCompute.userId}", Json.serialize(compute.instance))
             } else {
-                val instance = compute.instance as DockerContainer
-                instance.outboundPort = randomPort
+                // * 포트 할당
+                val randomPort = availablePorts.random()
+                savePortPort.savePort(availableCompute.userId, randomPort)
+
+                (compute.instance as DockerContainer).outboundPort = randomPort
                 simpleMessagingTemplate.convertAndSend("/sub/compute-create/${availableCompute.userId}", Json.serialize(compute.instance))
             }
         }

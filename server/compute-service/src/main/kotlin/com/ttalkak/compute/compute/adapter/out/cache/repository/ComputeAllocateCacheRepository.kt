@@ -26,7 +26,8 @@ class ComputeAllocateCacheRepository {
     }
 
     fun add(cache: ComputeAllocateCache, priority: Double) {
-        zSetOperations.add(COMPUTE_ALLOCATE_CACHE_KEY, Json.serialize(cache), priority)
+        val instance = Json.serialize(cache.instance)
+        zSetOperations.add(COMPUTE_ALLOCATE_CACHE_KEY, Json.serialize(cache.copy(instance = instance)), priority)
     }
 
     fun poll(): Optional<ComputeAllocateCache> {
@@ -62,11 +63,11 @@ class ComputeAllocateCacheRepository {
             "인스턴스 정보: ${container.instance}"
         }
 
-//        val instance: Any = when(container.isDatabase) {
-//            true -> Json.deserialize(container.instance.toString(), DockerDatabaseContainer::class.java)
-//            false -> Json.deserialize(container.instance.toString(), DockerContainer::class.java)
-//        }
+        val instance: Any = when(container.isDatabase) {
+            true -> Json.deserialize(container.instance.toString(), DockerDatabaseContainer::class.java)
+            false -> Json.deserialize(container.instance.toString(), DockerContainer::class.java)
+        }
 
-        return Optional.of(container)
+        return Optional.of(container.copy(instance = instance))
     }
 }
