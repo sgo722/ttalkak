@@ -17,14 +17,6 @@ export enum DeployCommand {
   STOP = "STOP",
 }
 
-export enum DatabaseType {
-  MYSQL = "MYSQL",
-  MARIADB = "MARIADB",
-  MONGODB = "MONGODB",
-  POSTGRESQL = "POSTGRESQL",
-  REDIS = "REDIS",
-}
-
 export enum Framework {
   REACT = "REACT",
   NEXTJS = "NEXTJS",
