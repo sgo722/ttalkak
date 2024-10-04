@@ -4,7 +4,7 @@ import com.ttalkak.deployment.common.global.exception.BusinessException;
 import com.ttalkak.deployment.deployment.application.outputport.DeploymentOutputPort;
 import com.ttalkak.deployment.deployment.application.outputport.DomainOutputPort;
 import com.ttalkak.deployment.deployment.application.outputport.HostingOutputPort;
-import com.ttalkak.deployment.deployment.application.usecase.UpdateHostingUsecase;
+import com.ttalkak.deployment.deployment.application.usecase.UpdateHostingUseCase;
 import com.ttalkak.deployment.deployment.domain.event.HostingEvent;
 import com.ttalkak.deployment.deployment.domain.model.DeploymentEntity;
 import com.ttalkak.deployment.deployment.domain.model.HostingEntity;
@@ -20,7 +20,7 @@ import java.util.List;
 @Service
 @Transactional
 @RequiredArgsConstructor
-public class UpdateHostingInputPort implements UpdateHostingUsecase {
+public class UpdateHostingInputPort implements UpdateHostingUseCase {
 
     private final HostingOutputPort hostingOutputPort;
 

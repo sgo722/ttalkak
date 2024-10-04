@@ -1,11 +1,10 @@
 package com.ttalkak.deployment.deployment.application.outputport;
 
 import com.ttalkak.deployment.deployment.domain.model.DatabaseEntity;
-import com.ttalkak.deployment.deployment.domain.model.DeploymentEntity;
-import com.ttalkak.deployment.deployment.domain.model.VersionEntity;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface DatabaseOutputPort {
@@ -14,5 +13,7 @@ public interface DatabaseOutputPort {
 
     List<DatabaseEntity> findAllByUserId(Long userId);
 
-    DatabaseEntity findById(Long databaseId);
+    Optional<DatabaseEntity> findById(Long databaseId);
+
+    void delete(DatabaseEntity databaseEntity);
 }

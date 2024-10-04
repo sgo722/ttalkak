@@ -38,22 +38,22 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 )
 class DeploymentControllerTest extends RestDocsSupport {
     @MockBean
-    private CreateDeploymentUsecase createDeploymentUsecase;
+    private CreateDeploymentUseCase createDeploymentUsecase;
 
     @MockBean
-    private CreateDockerFileUsecaseRegacy createDockerFileUsecaseRegacy;
+    private CreateDockerFileUseCaseRegacy createDockerFileUsecaseRegacy;
 
     @MockBean
-    private UpdateDeploymentUsecase updateDeploymentUsecase;
+    private UpdateDeploymentUseCase updateDeploymentUsecase;
 
     @MockBean
-    private DeleteDeploymentUsecase deleteDeploymentUsecase;
+    private DeleteDeploymentUseCase deleteDeploymentUsecase;
 
     @MockBean
-    private CommandDeploymentStatusUsecase commandDeploymentStatusUsecase;
+    private CommandDeploymentStatusUseCase commandDeploymentStatusUsecase;
 
     @MockBean
-    private InquiryUsecase inquiryUsecase;
+    private inquiryUseCase inquiryUsecase;
 
     @Test
     @DisplayName("배포 생성")

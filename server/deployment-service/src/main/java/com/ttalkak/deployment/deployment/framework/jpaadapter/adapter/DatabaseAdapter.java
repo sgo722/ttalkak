@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 @RequiredArgsConstructor
@@ -28,7 +29,12 @@ public class DatabaseAdapter implements DatabaseOutputPort {
     }
 
     @Override
-    public DatabaseEntity findById(Long databaseId) {
-        return databaseRepository.findByDatabaseId(databaseId);
+    public Optional<DatabaseEntity> findById(Long databaseId) {
+        return databaseRepository.findById(databaseId);
+    }
+
+    @Override
+    public void delete(DatabaseEntity databaseEntity) {
+        databaseRepository.delete(databaseEntity);
     }
 }

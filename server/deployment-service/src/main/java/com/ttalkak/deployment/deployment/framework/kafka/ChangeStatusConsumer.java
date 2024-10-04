@@ -1,7 +1,7 @@
 package com.ttalkak.deployment.deployment.framework.kafka;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.ttalkak.deployment.deployment.application.usecase.UpdateDeploymentStatusUsecase;
+import com.ttalkak.deployment.deployment.application.usecase.UpdateDeploymentStatusUseCase;
 import com.ttalkak.deployment.deployment.framework.web.request.DeploymentUpdateStatusRequest;
 import lombok.RequiredArgsConstructor;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
@@ -16,7 +16,7 @@ import java.io.IOException;
 public class ChangeStatusConsumer {
     private final ObjectMapper objectMapper = new ObjectMapper();
 
-    private final UpdateDeploymentStatusUsecase updateDeploymentStatusUsecase;
+    private final UpdateDeploymentStatusUseCase updateDeploymentStatusUsecase;
 
     @KafkaListener(topics = "${consumers.topics.update-deployment-status.name}", groupId = "${consumers.group-id.update-deployment-status.name}")
     public void deleteConsumer(ConsumerRecord<String, String> record) throws IOException {

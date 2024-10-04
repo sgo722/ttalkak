@@ -2,7 +2,7 @@ package com.ttalkak.deployment.deployment.framework.web;
 
 import com.ttalkak.deployment.common.WebAdapter;
 import com.ttalkak.deployment.deployment.application.usecase.WebHookCommand;
-import com.ttalkak.deployment.deployment.application.usecase.WebHookDeploymentUsecase;
+import com.ttalkak.deployment.deployment.application.usecase.WebHookDeploymentUseCase;
 import com.ttalkak.deployment.deployment.domain.model.vo.ServiceType;
 import com.ttalkak.deployment.deployment.framework.web.request.DeploymentWebHookRequest;
 import com.ttalkak.deployment.deployment.framework.web.request.WebHookCommit;
@@ -17,7 +17,7 @@ import java.util.Optional;
 @RestController
 @RequestMapping("/webhook/deployment")
 public class DeploymentWebHookController {
-    private final WebHookDeploymentUsecase webHookDeploymentUsecase;
+    private final WebHookDeploymentUseCase webHookDeploymentUsecase;
 
     @PostMapping("/backend/{webhookToken}")
     public void deploymentWebHook(

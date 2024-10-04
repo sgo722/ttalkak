@@ -18,19 +18,21 @@ import java.util.List;
 @RequestMapping("datab")
 public class DeploymentController {
 
-    private final CreateDeploymentUsecase createDeploymentUsecase;
+    private final CreateDeploymentUseCase createDeploymentUsecase;
 
-    private final CreateDockerFileUsecaseRegacy createDockerFileUsecaseRegacy;
+    private final CreateDockerFileUseCaseRegacy createDockerFileUsecaseRegacy;
 
-    private final UpdateDeploymentUsecase updateDeploymentUsecase;
+    private final UpdateDeploymentUseCase updateDeploymentUsecase;
 
-    private final DeleteDeploymentUsecase deleteDeploymentUsecase;
+    private final DeleteDeploymentUseCase deleteDeploymentUsecase;
 
-    private final CommandDeploymentStatusUsecase commandDeploymentStatusUsecase;
+    private final CommandDeploymentStatusUseCase commandDeploymentStatusUsecase;
 
-    private final InquiryUsecase inquiryUsecase;
+    private final inquiryUseCase inquiryUsecase;
 
-    private final CreateDatabaseUsecase createDatabaseUsecase;
+    private final CreateDatabaseUseCase createDatabaseUsecase;
+
+    private final DeleteDatabaseUseCase deleteDatabaseUsecase;
 
     // 배포 등록
     @PostMapping
@@ -110,5 +112,12 @@ public class DeploymentController {
     public ApiResponse<DatabaseResponse> getDatabase(@PathVariable("databaseId") Long databaseId){
         DatabaseResponse database = inquiryUsecase.getDatabase(databaseId);
         return ApiResponse.success(database);
+    }
+
+    // 데이터베이스 삭제
+    @DeleteMapping("/database/{databaseId}")
+    public ApiResponse<Void> deleteDatabase(@RequestHeader("X-USER-ID") Long userId, @PathVariable("databaseId") Long databaseId){
+        deleteDatabaseUsecase.deleteDatabase(userId, databaseId);
+        return ApiResponse.empty();
     }
 }
