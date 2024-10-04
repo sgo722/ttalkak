@@ -3,6 +3,7 @@ package com.ttalkak.deployment.deployment.framework.web;
 import com.ttalkak.deployment.common.ApiResponse;
 import com.ttalkak.deployment.deployment.application.usecase.*;
 import com.ttalkak.deployment.deployment.framework.web.request.*;
+import com.ttalkak.deployment.deployment.framework.web.response.DatabaseResponse;
 import com.ttalkak.deployment.deployment.framework.web.response.DeploymentCreateResponse;
 import com.ttalkak.deployment.deployment.framework.web.response.DeploymentDetailResponse;
 import com.ttalkak.deployment.deployment.framework.web.response.DeploymentPreviewResponse;
@@ -14,7 +15,7 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/v1/deployment")
+@RequestMapping("datab")
 public class DeploymentController {
 
     private final CreateDeploymentUsecase createDeploymentUsecase;
@@ -28,6 +29,8 @@ public class DeploymentController {
     private final CommandDeploymentStatusUsecase commandDeploymentStatusUsecase;
 
     private final InquiryUsecase inquiryUsecase;
+
+    private final CreateDatabaseUsecase createDatabaseUsecase;
 
     // 배포 등록
     @PostMapping
@@ -86,5 +89,26 @@ public class DeploymentController {
     public ApiResponse<Void> deleteDeployment(@RequestHeader("X-USER-ID") Long userId, @PathVariable("deploymentId") Long deploymentId){
         deleteDeploymentUsecase.deleteDeployment(userId, deploymentId);
         return ApiResponse.empty();
+    }
+
+    // 데이터베이스 생성
+    @PostMapping("/database")
+    public ApiResponse<DatabaseResponse> createDatabase(@RequestHeader("X-USER-ID") Long userId, @RequestBody DatabaseCreateRequest databaseCreateRequest){
+        DatabaseResponse database = createDatabaseUsecase.createDatabase(userId, databaseCreateRequest);
+        return ApiResponse.success(database);
+    }
+
+    // 데이터베이스 전체조회
+    @GetMapping("/database")
+    public ApiResponse<List<DatabaseResponse>> getDatabases(@RequestHeader("X-USER-ID") Long userId){
+        List<DatabaseResponse> databases = inquiryUsecase.getDatabases(userId);
+        return ApiResponse.success(databases);
+    }
+
+    // 데이터베이스 단건조회
+    @GetMapping("/database/{databaseId}")
+    public ApiResponse<DatabaseResponse> getDatabase(@PathVariable("databaseId") Long databaseId){
+        DatabaseResponse database = inquiryUsecase.getDatabase(databaseId);
+        return ApiResponse.success(database);
     }
 }

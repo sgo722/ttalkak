@@ -16,9 +16,11 @@ import lombok.Setter;
 @Setter
 public class DatabaseResponse {
 
-    private Long databaseId;
+    private Long id;
 
-    private String databaseType;
+    private String name;
+
+    private String type;
 
     private String username;
 
@@ -28,9 +30,10 @@ public class DatabaseResponse {
 
 
     @Builder
-    private DatabaseResponse(Long databaseId, String databaseType, String username, String password, int port) {
-        this.databaseId = databaseId;
-        this.databaseType = databaseType;
+    private DatabaseResponse(Long id, String name, String type, String username, String password, int port) {
+        this.id = id;
+        this.name = name;
+        this.type = type;
         this.username = username;
         this.password = password;
         this.port = port;
@@ -38,8 +41,9 @@ public class DatabaseResponse {
 
     public static DatabaseResponse mapToDTO(DatabaseEntity databaseEntity){
         return DatabaseResponse.builder()
-                .databaseId(databaseEntity.getId())
-                .databaseType(databaseEntity.getDatabaseType().toString())
+                .id(databaseEntity.getId())
+                .name(databaseEntity.getName())
+                .type(databaseEntity.getDatabaseType().toString())
                 .username(databaseEntity.getUsername())
                 .password(databaseEntity.getPassword())
                 .build();

@@ -4,14 +4,16 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
 @Getter
-public class DomainKeyResponse {
+public class DatabaseDomainKeyResponse {
 
     private String identifier;
 
     private String subdomain;
 
     private String key;
+
+    private String port;
 }

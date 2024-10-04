@@ -5,17 +5,15 @@ import com.ttalkak.deployment.deployment.application.outputport.*;
 import com.ttalkak.deployment.deployment.application.usecase.CreateDeploymentUsecase;
 import com.ttalkak.deployment.deployment.application.usecase.CreateDockerfileUseCase;
 import com.ttalkak.deployment.deployment.domain.event.CreateInstanceEvent;
-import com.ttalkak.deployment.deployment.domain.event.DatabaseEvent;
 import com.ttalkak.deployment.deployment.domain.event.DeploymentEvent;
 import com.ttalkak.deployment.deployment.domain.event.HostingEvent;
 import com.ttalkak.deployment.deployment.domain.event.*;
 import com.ttalkak.deployment.deployment.domain.model.*;
 import com.ttalkak.deployment.deployment.domain.model.vo.GithubInfo;
 import com.ttalkak.deployment.deployment.domain.model.vo.ServiceType;
-import com.ttalkak.deployment.deployment.framework.domainadapter.dto.DomainKeyResponse;
-import com.ttalkak.deployment.deployment.framework.domainadapter.dto.DomainRequest;
+import com.ttalkak.deployment.deployment.framework.domainadapter.dto.WebDomainKeyResponse;
+import com.ttalkak.deployment.deployment.framework.domainadapter.dto.WebDomainRequest;
 import com.ttalkak.deployment.deployment.framework.projectadapter.dto.ProjectInfoResponse;
-import com.ttalkak.deployment.deployment.framework.web.request.DatabaseCreateRequest;
 import com.ttalkak.deployment.deployment.framework.web.request.DeploymentCreateRequest;
 import com.ttalkak.deployment.deployment.framework.web.request.DockerfileCreateRequest;
 import com.ttalkak.deployment.deployment.framework.web.request.EnvCreateRequest;
@@ -39,8 +37,6 @@ public class CreateDeploymentInputPort implements CreateDeploymentUsecase {
     private final HostingOutputPort hostingOutputPort;
 
     private final VersionOutputPort versionOutputPort;
-
-    private final DatabaseOutputPort databaseOutputPort;
 
     private final EnvOutputPort envOutputPort;
 
@@ -164,13 +160,13 @@ public class CreateDeploymentInputPort implements CreateDeploymentUsecase {
 //    }
 
     private String makeSubDomainKey(HostingEntity savedHostingEntity, ProjectInfoResponse projectInfo) {
-        DomainKeyResponse domainKeyResponse = domainOutputPort.makeDomainKey(
-                new DomainRequest(
+        WebDomainKeyResponse webDomainKeyResponse = domainOutputPort.makeDomainKey(
+                new WebDomainRequest(
                         savedHostingEntity.getId().toString(),
                         projectInfo.getDomainName() + " " + savedHostingEntity.getServiceType().toString(),
                         savedHostingEntity.getDetailSubDomainName()
                 ));
-        return domainKeyResponse.getKey();
+        return webDomainKeyResponse.getKey();
     }
 
     private static HostingEntity createHosting(DeploymentCreateRequest deploymentCreateRequest, DeploymentEntity savedDeployment, String domainName) {

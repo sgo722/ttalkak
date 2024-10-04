@@ -1,20 +1,24 @@
 package com.ttalkak.deployment.deployment.application.inputport;
 
 import com.ttalkak.deployment.common.global.exception.BusinessException;
+import com.ttalkak.deployment.deployment.application.outputport.DatabaseOutputPort;
 import com.ttalkak.deployment.deployment.application.outputport.DeploymentOutputPort;
 import com.ttalkak.deployment.deployment.application.outputport.HostingOutputPort;
 import com.ttalkak.deployment.deployment.application.outputport.VersionOutputPort;
 import com.ttalkak.deployment.deployment.application.usecase.InquiryUsecase;
+import com.ttalkak.deployment.deployment.domain.model.DatabaseEntity;
 import com.ttalkak.deployment.deployment.domain.model.DeploymentEntity;
 import com.ttalkak.deployment.deployment.domain.model.HostingEntity;
 import com.ttalkak.deployment.deployment.domain.model.VersionEntity;
 import com.ttalkak.deployment.deployment.domain.model.vo.DeploymentStatus;
+import com.ttalkak.deployment.deployment.framework.web.response.DatabaseResponse;
 import com.ttalkak.deployment.deployment.framework.web.response.DeploymentDetailResponse;
 import com.ttalkak.deployment.deployment.framework.web.response.DeploymentPreviewResponse;
 import com.ttalkak.deployment.common.global.error.ErrorCode;
 import com.ttalkak.deployment.common.global.exception.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.hibernate.dialect.Database;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,6 +34,7 @@ public class InquiryInputPort implements InquiryUsecase {
     private final DeploymentOutputPort deploymentOutputPort;
     private final HostingOutputPort hostingOutputPort;
     private final VersionOutputPort versionOutputPort;
+    private final DatabaseOutputPort databaseOutputPort;
 
     // 배포이력 상세조회
     @Override
@@ -66,5 +71,18 @@ public class InquiryInputPort implements InquiryUsecase {
                 .filter(deployment -> DeploymentStatus.isAlive(deployment.getStatus()))
                 .map(DeploymentPreviewResponse::mapToDTO)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<DatabaseResponse> getDatabases(Long userId) {
+        List<DatabaseEntity> databases = databaseOutputPort.findAllByUserId(userId);
+        return databases.stream()
+                .map(DatabaseResponse::mapToDTO)
+                .toList();
+    }
+
+    @Override
+    public DatabaseResponse getDatabase(Long databaseId) {
+        return DatabaseResponse.mapToDTO(databaseOutputPort.findById(databaseId));
     }
 }

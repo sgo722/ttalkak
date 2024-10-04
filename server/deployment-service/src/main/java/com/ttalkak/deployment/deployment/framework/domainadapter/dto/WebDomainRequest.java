@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class DomainRequest {
+public class WebDomainRequest {
 
     private String identifier;
 

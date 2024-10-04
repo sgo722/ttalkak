@@ -1,12 +1,16 @@
 package com.ttalkak.deployment.deployment.application.outputport;
 
-import com.ttalkak.deployment.deployment.framework.domainadapter.dto.DomainKeyResponse;
-import com.ttalkak.deployment.deployment.framework.domainadapter.dto.DomainRequest;
+import com.ttalkak.deployment.deployment.framework.domainadapter.dto.DatabaseDomainKeyRequest;
+import com.ttalkak.deployment.deployment.framework.domainadapter.dto.DatabaseDomainKeyResponse;
+import com.ttalkak.deployment.deployment.framework.domainadapter.dto.WebDomainKeyResponse;
+import com.ttalkak.deployment.deployment.framework.domainadapter.dto.WebDomainRequest;
 
 public interface DomainOutputPort {
-    DomainKeyResponse makeDomainKey(DomainRequest domainRequest);
+    WebDomainKeyResponse makeDomainKey(WebDomainRequest webDomainRequest);
 
     void deleteDomainKey(String subDomain);
 
-    DomainKeyResponse updateDomainKey(DomainRequest domainRequest);
+    WebDomainKeyResponse updateDomainKey(WebDomainRequest webDomainRequest);
+
+    DatabaseDomainKeyResponse makeDatabaseDomainKey(DatabaseDomainKeyRequest databaseDomainKeyRequest);
 }

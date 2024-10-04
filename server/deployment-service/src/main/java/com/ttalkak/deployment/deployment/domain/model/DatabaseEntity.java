@@ -3,10 +3,9 @@ package com.ttalkak.deployment.deployment.domain.model;
 import com.ttalkak.deployment.deployment.domain.model.vo.DatabaseEditor;
 import jakarta.persistence.*;
 import com.ttalkak.deployment.deployment.domain.model.vo.DatabaseType;
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
+
+import java.util.UUID;
 
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -17,9 +16,7 @@ public class DatabaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "deploymentEntity", nullable = false)
-    private DeploymentEntity deploymentEntity;
+    private Long userId;
 
     private String name;
 
@@ -31,33 +28,27 @@ public class DatabaseEntity {
 
     private String password;
 
+    @Setter
     private int port;
 
     @Builder
-    private DatabaseEntity(DeploymentEntity deploymentEntity, String name, DatabaseType databaseType, String username, String password, int port) {
-        this.deploymentEntity = deploymentEntity;
+    private DatabaseEntity(Long userId, String name, DatabaseType databaseType) {
+        this.userId = userId;
         this.name = name;
         this.databaseType = databaseType;
-        this.username = username;
-        this.password = password;
-        this.port = port;
+        this.username = UUID.randomUUID().toString().replace("-", "").substring(0, 8);
+        this.password = UUID.randomUUID().toString().replace("-", "").substring(0, 8);
+        this.port = -1;
     }
 
-    public static DatabaseEntity createDatabase(DeploymentEntity deploymentEntity,
-                                                int port,
+    public static DatabaseEntity createDatabase(Long userId,
                                                 String name,
-                                                DatabaseType databaseType,
-                                                String username,
-                                                String password) {
+                                                DatabaseType databaseType) {
         return DatabaseEntity.builder()
-                .deploymentEntity(deploymentEntity)
-                .port(port)
+                .userId(userId)
                 .name(name)
                 .databaseType(databaseType)
-                .username(username)
-                .password(password)
                 .build();
-
     }
 
     public DatabaseEditor.DatabaseEditorBuilder toEditor() {
