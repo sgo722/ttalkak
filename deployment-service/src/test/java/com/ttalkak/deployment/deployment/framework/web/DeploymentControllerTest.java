@@ -89,7 +89,6 @@ class DeploymentControllerTest extends RestDocsSupport {
                 .projectId(1L)
                 .serviceType("BACKEND")
                 .githubRepositoryRequest(githubRepositoryRequest)
-                .databaseCreateRequests(List.of(databaseCreateRequest))
                 .versionRequest(versionRequest)
                 .hostingPort(8080)
                 .framework("Spring Boot")
@@ -131,10 +130,6 @@ class DeploymentControllerTest extends RestDocsSupport {
                                         fieldWithPath("versionRequest.repositoryLastCommitMessage").type(JsonFieldType.STRING).description("깃허브 레포지토리 마지막 커밋 메시지"),
                                         fieldWithPath("versionRequest.repositoryLastCommitUserProfile").type(JsonFieldType.STRING).description("깃허브 레포지토리 커밋 유저 프로필 이미지"),
                                         fieldWithPath("versionRequest.repositoryLastCommitUserName").type(JsonFieldType.STRING).description("깃허브 레포지토리 마지막 커밋 유저 이름"),
-                                        fieldWithPath("databaseCreateRequests[].databaseName").type(JsonFieldType.STRING).description("데이터베이스 이름"),
-                                        fieldWithPath("databaseCreateRequests[].databasePort").type(JsonFieldType.NUMBER).description("데이터베이스 포트"),
-                                        fieldWithPath("databaseCreateRequests[].username").type(JsonFieldType.STRING).optional().description("데이터베이스 사용자 이름"),
-                                        fieldWithPath("databaseCreateRequests[].password").type(JsonFieldType.STRING).description("데이터베이스 비밀번호"),
                                         fieldWithPath("hostingPort").type(JsonFieldType.NUMBER).description("호스팅 포트"),
                                         fieldWithPath("envs[].key").type(JsonFieldType.STRING).description("환경변수 키 값"),
                                         fieldWithPath("envs[].value").type(JsonFieldType.STRING).description("환경변수 키에 해당하는 응답값")

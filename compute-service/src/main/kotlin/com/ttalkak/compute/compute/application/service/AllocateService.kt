@@ -42,7 +42,7 @@ class AllocateService (
             count = command.computeCount,
             useMemory = command.useMemory,
             useCPU = command.useCPU,
-            instances = command.containers
+            instance = command.container
         )
 
         deploymentFeignClient.updateStatus(DeploymentUpdateStatusRequest(
@@ -63,7 +63,7 @@ class AllocateService (
             count = command.computeCount,
             useMemory = command.useMemory,
             useCPU = command.useCPU,
-            instances = command.containers
+            instance = command.container
         )
 
         deploymentFeignClient.updateStatus(DeploymentUpdateStatusRequest(
@@ -105,7 +105,7 @@ class AllocateService (
                             count = it.count,
                             useMemory = it.useMemory,
                             useCPU = it.useCPU,
-                            instances = it.instances
+                            instance = it.instance
                         )
                     }
                     tries[compute.deploymentId] = true
@@ -127,18 +127,11 @@ class AllocateService (
 
 
             // * 포트 할당
-            compute.instances.forEach {
-                it.outboundPort = availablePorts.random()
+            val randomPort = availablePorts.random()
+            compute.instance.outboundPort = randomPort
+            savePortPort.savePort(availableCompute.userId, randomPort)
 
-                if (it.serviceType == ServiceType.BACKEND) {
-                    val databasePort = compute.instances.find { it.serviceType == ServiceType.DATABASE }?.outboundPort
-                    it.envs += Environment("PORT", databasePort.toString())
-                }
-            }
-
-            savePortPort.savePort(availableCompute.userId, compute.instances.map { it.outboundPort })
-
-            simpleMessagingTemplate.convertAndSend("/sub/compute-create/${availableCompute.userId}", Json.serialize(compute.instances))
+            simpleMessagingTemplate.convertAndSend("/sub/compute-create/${availableCompute.userId}", Json.serialize(compute.instance))
         }
 
         redisLockPort.unlock(ALLOCATE_LOCK_KEY)

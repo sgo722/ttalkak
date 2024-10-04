@@ -99,17 +99,13 @@ public class CreateDeploymentInputPort implements CreateDeploymentUsecase {
         // 도메인 키 저장
         savedHostingEntity.setDetailSubDomainKey(detailSubDomainKey);
 
-        // 백엔드 서버면? =>  데이터베이스가 존재한다.
-        List<DatabaseEvent> databaseEvents = createDatabaseEvents(deploymentCreateRequest, savedDeployment);
-
-
         // 환경변수 생성
         List<EnvEvent> envs = createEnvs(deploymentCreateRequest, deployment, savedDeployment);
         // Kafka Event 객체 생성
         HostingEvent hostingEvent = new HostingEvent(savedDeployment.getId(), savedHostingEntity.getId(), savedHostingEntity.getHostingPort(), null,hosting.getDetailSubDomainName(), hosting.getDetailSubDomainKey());
         DeploymentEvent deploymentEvent = new DeploymentEvent(savedDeployment.getId(), savedDeployment.getProjectId(), envs, savedDeployment.getServiceType().toString());
         GithubInfoEvent githubInfoEvent = new GithubInfoEvent(deployment.getGithubInfo().getRepositoryUrl(), deployment.getGithubInfo().getRootDirectory(), deployment.getGithubInfo().getBranch());
-        CreateInstanceEvent createInstanceEvent = new CreateInstanceEvent(deploymentEvent, hostingEvent, githubInfoEvent, envs, databaseEvents, versionEntity.getVersion(), expirationDate, dockerfileExist, deployment.getDockerfileScript());
+        CreateInstanceEvent createInstanceEvent = new CreateInstanceEvent(deploymentEvent, hostingEvent, githubInfoEvent, envs, versionEntity.getVersion(), expirationDate, dockerfileExist, deployment.getDockerfileScript());
         try {
             eventOutputPort.occurCreateInstance(createInstanceEvent);
         } catch (JsonProcessingException e) {
@@ -140,32 +136,32 @@ public class CreateDeploymentInputPort implements CreateDeploymentUsecase {
         return envs;
     }
 
-    private List<DatabaseEvent> createDatabaseEvents(DeploymentCreateRequest deploymentCreateRequest, DeploymentEntity savedDeployment) {
-        List<DatabaseEvent> databaseEvents = new ArrayList<>();
-        if(ServiceType.isBackendType(deploymentCreateRequest.getServiceType())) {
-            if (deploymentCreateRequest.getDatabaseCreateRequests() != null) {
-                for (DatabaseCreateRequest databaseCreateRequest : deploymentCreateRequest.getDatabaseCreateRequests()) {
-                    DatabaseEntity database = DatabaseEntity.createDatabase(
-                            savedDeployment,
-                            databaseCreateRequest.getDatabasePort(),
-                            databaseCreateRequest.getName(),
-                            databaseCreateRequest.getDatabaseName(),
-                            databaseCreateRequest.getUsername(),
-                            databaseCreateRequest.getPassword()
-                    );
-                    DatabaseEntity savedDatabaseEntity = databaseOutputPort.save(database);
-                    savedDeployment.addDatabaseEntity(savedDatabaseEntity);
-                    databaseEvents.add(new DatabaseEvent(savedDatabaseEntity.getId(),
-                            savedDatabaseEntity.getName(),
-                            savedDatabaseEntity.getDatabaseType().toString(),
-                            savedDatabaseEntity.getUsername(),
-                            savedDatabaseEntity.getPassword()
-                    ));
-                }
-            }
-        }
-        return databaseEvents;
-    }
+//    private List<DatabaseEvent> createDatabaseEvents(DeploymentCreateRequest deploymentCreateRequest, DeploymentEntity savedDeployment) {
+//        List<DatabaseEvent> databaseEvents = new ArrayList<>();
+//        if(ServiceType.isBackendType(deploymentCreateRequest.getServiceType())) {
+//            if (deploymentCreateRequest.getDatabaseCreateRequests() != null) {
+//                for (DatabaseCreateRequest databaseCreateRequest : deploymentCreateRequest.getDatabaseCreateRequests()) {
+//                    DatabaseEntity database = DatabaseEntity.createDatabase(
+//                            savedDeployment,
+//                            databaseCreateRequest.getDatabasePort(),
+//                            databaseCreateRequest.getName(),
+//                            databaseCreateRequest.getDatabaseName(),
+//                            databaseCreateRequest.getUsername(),
+//                            databaseCreateRequest.getPassword()
+//                    );
+//                    DatabaseEntity savedDatabaseEntity = databaseOutputPort.save(database);
+//                    savedDeployment.addDatabaseEntity(savedDatabaseEntity);
+//                    databaseEvents.add(new DatabaseEvent(savedDatabaseEntity.getId(),
+//                            savedDatabaseEntity.getName(),
+//                            savedDatabaseEntity.getDatabaseType().toString(),
+//                            savedDatabaseEntity.getUsername(),
+//                            savedDatabaseEntity.getPassword()
+//                    ));
+//                }
+//            }
+//        }
+//        return databaseEvents;
+//    }
 
     private String makeSubDomainKey(HostingEntity savedHostingEntity, ProjectInfoResponse projectInfo) {
         DomainKeyResponse domainKeyResponse = domainOutputPort.makeDomainKey(
