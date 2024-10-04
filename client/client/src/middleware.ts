@@ -7,8 +7,8 @@ export function middleware(request: NextRequest) {
     "/projects",
     "/deploy",
     "/dashboard",
-    "/usage",
-    "/activity",
+    "/database",
+    "/payments",
     "/mypage",
   ];
 
