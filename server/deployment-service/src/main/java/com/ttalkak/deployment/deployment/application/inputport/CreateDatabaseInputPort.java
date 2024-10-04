@@ -58,6 +58,7 @@ public class CreateDatabaseInputPort implements CreateDatabaseUseCase {
         );
 
         CreateDatabaseEvent createDatabaseEvent = new CreateDatabaseEvent(
+                savedDatabase.getUserId(),
                 savedDatabase.getId(),
                 databaseDomainKeyResponse.getKey(),
                 databaseEvent,

@@ -11,8 +11,9 @@ import java.io.Serializable;
 
 @Getter
 @NoArgsConstructor
-@AllArgsConstructor
 public class CreateDatabaseEvent implements Serializable {
+
+    private Long senderId;
 
     private Long databaseId;
 
@@ -21,4 +22,12 @@ public class CreateDatabaseEvent implements Serializable {
     private DatabaseEvent database;
 
     private int port;
+
+    public CreateDatabaseEvent(Long senderId, Long databaseId, String subdomainKey, DatabaseEvent database, int port) {
+        this.senderId = senderId;
+        this.databaseId = databaseId;
+        this.subdomainKey = subdomainKey;
+        this.database = database;
+        this.port = port;
+    }
 }
