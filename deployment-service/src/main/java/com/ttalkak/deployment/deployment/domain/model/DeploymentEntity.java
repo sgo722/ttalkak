@@ -36,9 +36,6 @@ public class DeploymentEntity extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private ServiceType serviceType;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "deploymentEntity", cascade = CascadeType.ALL, orphanRemoval = true)
-    private final List<DatabaseEntity> dataBaseEntities = new ArrayList<>();
-
     @Setter
     @Embedded
     private GithubInfo githubInfo;
@@ -82,10 +79,6 @@ public class DeploymentEntity extends BaseEntity {
                 .dockerfileScript("Docker File Exist")
                 .statusMessage(DeploymentStatus.PENDING.toString())
                 .build();
-    }
-
-    public void addDatabaseEntity(DatabaseEntity databaseEntity){
-        this.dataBaseEntities.add(databaseEntity);
     }
 
 

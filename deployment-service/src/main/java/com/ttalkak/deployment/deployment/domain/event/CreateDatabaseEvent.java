@@ -9,15 +9,17 @@ import java.io.Serializable;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class DatabaseEvent implements Serializable {
+public class CreateDatabaseEvent implements Serializable {
 
-    private Long databaseId;
+    private Long id;
 
     private String name;
 
-    private String databaseType;
+    private String type;
 
     private String username;
 
     private String password;
+
+    private int port;
 }

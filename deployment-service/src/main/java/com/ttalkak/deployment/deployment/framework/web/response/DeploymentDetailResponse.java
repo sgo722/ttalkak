@@ -47,8 +47,6 @@ public class DeploymentDetailResponse {
 
     private HostingResponse hostingResponse;
 
-    private List<DatabaseResponse> databaseResponses;
-
     private String statusMessage;
 
     @Builder
@@ -65,7 +63,6 @@ public class DeploymentDetailResponse {
                                      HostingResponse hostingResponse,
                                      List<VersionResponse> versions,
                                      List<EnvResponse> envs,
-                                     List<DatabaseResponse> databaseResponses,
                                      String statusMessage) {
         this.deploymentId = deploymentId;
         this.projectId = projectId;
@@ -80,7 +77,6 @@ public class DeploymentDetailResponse {
         this.payloadURL = payloadURL;
         this.framework = framework;
         this.versions = versions;
-        this.databaseResponses = databaseResponses;
         this.statusMessage = statusMessage;
     }
 
@@ -103,9 +99,6 @@ public class DeploymentDetailResponse {
                         .toList())
                 .branch(deploymentEntity.getGithubInfo().getBranch())
                 .framework(deploymentEntity.getFramework())
-                .databaseResponses(deploymentEntity.getDataBaseEntities().stream()
-                        .map(DatabaseResponse::mapToDTO)
-                        .toList())
                 .statusMessage(deploymentEntity.getStatusMessage())
                 .build();
     }
@@ -131,9 +124,6 @@ public class DeploymentDetailResponse {
                         .toList())
                 .branch(deploymentEntity.getGithubInfo().getBranch())
                 .framework(deploymentEntity.getFramework())
-                .databaseResponses(deploymentEntity.getDataBaseEntities().stream()
-                        .map(DatabaseResponse::mapToDTO)
-                        .toList())
                 .statusMessage(deploymentEntity.getStatusMessage())
                 .build();
     }

@@ -440,6 +440,15 @@ pipeline {
             }
         }
     }
+
+    post {
+        always {
+            script {
+                // 파이프라인 전체 완료 시 알림 (선택사항)
+                sendMattermostNotification('good', '파이프라인', '전체 빌드 완료')
+            }
+        }
+    }
 }
 
 
