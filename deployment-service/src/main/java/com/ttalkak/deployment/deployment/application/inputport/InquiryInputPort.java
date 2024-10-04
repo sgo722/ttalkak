@@ -115,6 +115,5 @@ public class InquiryInputPort implements inquiryUseCase {
                 .build();
 
         return databasePageResponse;
-
     }
 }
