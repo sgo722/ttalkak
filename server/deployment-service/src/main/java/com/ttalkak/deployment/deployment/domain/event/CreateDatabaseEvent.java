@@ -1,9 +1,12 @@
 package com.ttalkak.deployment.deployment.domain.event;
 
 
+import com.ttalkak.deployment.deployment.framework.web.request.DatabaseCreateRequest;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.dialect.Database;
+
 import java.io.Serializable;
 
 @Getter
@@ -13,13 +16,9 @@ public class CreateDatabaseEvent implements Serializable {
 
     private Long id;
 
-    private String name;
+    private String subdomainKey;
 
-    private String type;
-
-    private String username;
-
-    private String password;
+    private DatabaseEvent database;
 
     private int port;
 }
