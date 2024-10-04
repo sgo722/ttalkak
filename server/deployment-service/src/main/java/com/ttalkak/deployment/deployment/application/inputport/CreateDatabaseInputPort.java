@@ -13,9 +13,11 @@ import com.ttalkak.deployment.deployment.framework.domainadapter.dto.DatabaseDom
 import com.ttalkak.deployment.deployment.framework.web.request.DatabaseCreateRequest;
 import com.ttalkak.deployment.deployment.framework.web.response.DatabaseResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+@Slf4j
 @RequiredArgsConstructor
 @Transactional
 @Service
@@ -40,17 +42,20 @@ public class CreateDatabaseInputPort implements CreateDatabaseUseCase {
                 "database " + database.getId() + " " + database.getDatabaseType(),
                 "database " + database.getId() + " " + database.getDatabaseType()
         ));
+        String key = databaseDomainKeyResponse.getKey();
         int port = databaseDomainKeyResponse.getPort();
+        log.info("key :: {} - port ::{}", key, port);
 
         saveDatabase.setPort(port);
+        DatabaseEntity savedDatabase = databaseOutputPort.save(saveDatabase);
 
         CreateDatabaseEvent createDatabaseEvent = new CreateDatabaseEvent(
-                saveDatabase.getId(),
-                saveDatabase.getName(),
-                saveDatabase.getDatabaseType().toString(),
-                saveDatabase.getUsername(),
-                saveDatabase.getPassword(),
-                saveDatabase.getPort()
+                savedDatabase.getId(),
+                savedDatabase.getName(),
+                savedDatabase.getDatabaseType().toString(),
+                savedDatabase.getUsername(),
+                savedDatabase.getPassword(),
+                savedDatabase.getPort()
         );
 
         try {
@@ -59,6 +64,6 @@ public class CreateDatabaseInputPort implements CreateDatabaseUseCase {
             throw new RuntimeException("카프카 요청 오류가 발생했습니다.");
         }
 
-        return DatabaseResponse.mapToDTO(databaseOutputPort.save(saveDatabase));
+        return DatabaseResponse.mapToDTO(savedDatabase);
     }
 }
