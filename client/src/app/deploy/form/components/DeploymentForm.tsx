@@ -12,32 +12,40 @@ import useCreateDeploy from "@/apis/deploy/useCreateDeploy";
 import useCreateWebhook from "@/apis/webhook/useCreateWebhook";
 import { LuMinusCircle } from "react-icons/lu";
 import { MdAdd } from "react-icons/md";
+import { useEffect } from "react";
 
 interface FormData {
-  framework: Framework;
-  nodeVersion: string;
+  serviceType: ServiceType;
+  framework?: Framework;
+  languageVersion: string;
   port: number;
   envVars: { key: string; value: string }[];
 }
 
-export default function FrontendForm() {
+export default function DeploymentForm() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const projectId = searchParams.get("projectId");
-  const typeParam = searchParams.get("type");
+  const typeParam = searchParams.get("type") as ServiceType;
 
   const {
     control,
     handleSubmit,
+    watch,
+    setValue,
     formState: { errors },
   } = useForm<FormData>({
     defaultValues: {
-      framework: Framework.REACT,
-      nodeVersion: "",
-      port: 80,
+      serviceType: typeParam,
+      framework:
+        typeParam === ServiceType.FRONTEND ? Framework.REACT : undefined,
+      languageVersion: "",
+      port: typeParam === ServiceType.FRONTEND ? 80 : 8080,
       envVars: [],
     },
   });
+
+  const serviceType = watch("serviceType");
 
   const { fields, append, remove } = useFieldArray({
     control,
@@ -54,11 +62,15 @@ export default function FrontendForm() {
     reset: resetDelpoyStore,
   } = useDeployStore();
 
+  useEffect(() => {
+    setValue("port", serviceType === ServiceType.FRONTEND ? 80 : 8080);
+  }, [serviceType, setValue]);
+
   const onSubmit = (data: FormData) => {
     const updatedDockerfileCreateRequest: DockerfileCreateRequest = {
       exist: dockerfileCreateRequest?.exist ?? true,
       ...dockerfileCreateRequest,
-      languageVersion: data.nodeVersion,
+      languageVersion: data.languageVersion,
     };
 
     createDeploy(
@@ -68,10 +80,11 @@ export default function FrontendForm() {
         hostingPort: Number(data.port),
         githubRepositoryRequest,
         versionRequest,
-        databaseCreateRequests: null,
         dockerfileCreateRequest: updatedDockerfileCreateRequest,
         envs: data.envVars,
-        framework: data.framework,
+        framework: (data.serviceType === ServiceType.FRONTEND
+          ? data.framework
+          : Framework.SPRINGBOOT) as Framework,
       },
       {
         onSuccess: (responseData) => {
@@ -88,13 +101,6 @@ export default function FrontendForm() {
     );
   };
 
-  const serviceType: ServiceType | null =
-    typeParam === "FRONTEND"
-      ? ServiceType.FRONTEND
-      : typeParam === "BACKEND"
-        ? ServiceType.BACKEND
-        : null;
-
   return (
     <>
       <form
@@ -103,73 +109,93 @@ export default function FrontendForm() {
         className="w-full mx-auto p-6 bg-white rounded-lg border"
       >
         <div className="space-y-6">
-          <Controller
-            name="framework"
-            control={control}
-            render={({ field }) => (
-              <div>
-                <label
-                  htmlFor="framework"
-                  className="block text-md font-semibold text-gray-700 mb-1"
-                >
-                  프론트엔드 프레임워크
-                </label>
-                <select
-                  {...field}
-                  id="framework"
-                  className="w-full p-3 border border-gray-300 rounded-md focus:outline-none"
-                >
-                  <option value="REACT">React.js</option>
-                  <option value="NEXTJS">Next.js</option>
-                </select>
+          {serviceType === ServiceType.FRONTEND && (
+            <Controller
+              name="framework"
+              control={control}
+              render={({ field }) => (
+                <div>
+                  <label
+                    htmlFor="framework"
+                    className="block text-md font-semibold text-gray-700 mb-1"
+                  >
+                    프레임워크
+                  </label>
+                  <select
+                    {...field}
+                    id="framework"
+                    className="w-full p-3 border border-gray-300 rounded-md focus:outline-none"
+                  >
+                    <option value="REACT">React.js</option>
+                    <option value="NEXTJS">Next.js</option>
+                  </select>
+                </div>
+              )}
+            />
+          )}
+          {serviceType === ServiceType.BACKEND && (
+            <div>
+              <label className="block text-md font-semibold text-gray-700 mb-1">
+                백엔드 프레임워크
+              </label>
+              <div className="w-full p-3 border border-gray-300 rounded-md bg-gray-100">
+                SpringBoot
               </div>
-            )}
-          />
+            </div>
+          )}
 
           <Controller
-            name="nodeVersion"
+            name="languageVersion"
             control={control}
             rules={{
-              required: "Node.js 버전을 입력해주세요.",
-              pattern: {
-                value: /^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)$/,
-                message:
-                  "유효한 Node.js 버전을 입력해주세요 (예: 22.9.0, 21.7.3)",
-              },
+              required: `${serviceType === ServiceType.FRONTEND ? "Node.js" : "Java"} 버전을 입력해주세요.`,
               validate: (value) => {
-                const parts = value.split(".");
-                if (
-                  parts.length !== 3 ||
-                  parts.some((part) => isNaN(parseInt(part)))
-                ) {
-                  return "유효한 Node.js 버전은 3자리 숫자로 구성되어야 합니다 (메이저.마이너.패치).";
+                if (serviceType === ServiceType.FRONTEND) {
+                  // Node.js 버전 유효성 검사
+                  const nodeVersionPattern =
+                    /^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)$/;
+                  return (
+                    nodeVersionPattern.test(value) ||
+                    "유효한 Node.js 버전을 입력해주세요 (예: 14.17.0)"
+                  );
+                } else {
+                  // Java 버전 유효성 검사
+                  const javaVersionPattern = /^[0-9]+$/;
+                  return (
+                    javaVersionPattern.test(value) ||
+                    "유효한 Java 버전을 입력해주세요 (예: 17)"
+                  );
                 }
-                return true;
               },
             }}
             render={({ field }) => (
               <div>
                 <label
-                  htmlFor="nodeVersion"
+                  htmlFor="languageVersion"
                   className="block text-md font-semibold text-gray-700 mb-1"
                 >
-                  Node.js 버전
+                  {serviceType === ServiceType.FRONTEND ? "Node.js" : "Java"}{" "}
+                  버전
                 </label>
                 <input
                   {...field}
-                  id="nodeVersion"
+                  id="languageVersion"
                   type="text"
-                  placeholder="예: 18.21.1"
+                  placeholder={
+                    serviceType === ServiceType.FRONTEND
+                      ? "예: 14.17.0"
+                      : "예: 17"
+                  }
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
-                {errors.nodeVersion && (
+                {errors.languageVersion && (
                   <p className="text-red-500 text-sm mt-2">
-                    {errors.nodeVersion.message}
+                    {errors.languageVersion.message}
                   </p>
                 )}
               </div>
             )}
-          ></Controller>
+          />
 
           <Controller
             name="port"
@@ -180,6 +206,9 @@ export default function FrontendForm() {
                 value: /^[0-9]+$/,
                 message: "포트 번호는 숫자만 입력 가능합니다.",
               },
+              validate: (value) =>
+                (value >= 0 && value <= 65535) ||
+                "포트 번호는 0에서 65535 사이의 값이어야 합니다.",
             }}
             render={({ field }) => (
               <div>

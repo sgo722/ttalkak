@@ -1,7 +1,6 @@
 import { Suspense } from "react";
 import { notFound } from "next/navigation";
-import BackendForm from "@/app/deploy/form/components/BackendForm";
-import FrontendForm from "@/app/deploy/form/components/FrontendForm";
+import DeploymentForm from "@/app/deploy/form/components/DeploymentForm";
 import SkeletonUI from "@/app/deploy/form/components/SkeletonUI";
 
 export default function deployFormPage({
@@ -18,7 +17,7 @@ export default function deployFormPage({
   return (
     <div>
       <Suspense fallback={<SkeletonUI />}>
-        {type === "BACKEND" ? <BackendForm /> : <FrontendForm />}
+        <DeploymentForm />
       </Suspense>
     </div>
   );

@@ -69,21 +69,6 @@ export interface VersionRequest {
   repositoryLastCommitUserName: string;
 }
 
-export interface DatabaseResponse {
-  databaseId: number;
-  databaseType: string;
-  name?: string;
-  username: string;
-  password: string;
-}
-
-export interface DatabaseCreateRequest {
-  databaseName: DatabaseType;
-  name?: string;
-  username: string;
-  password: string;
-}
-
 export interface GithubRepositoryRequest {
   repositoryOwner: string;
   repositoryName: string;
@@ -108,7 +93,6 @@ export interface DeployData {
   hostingPort: number | null;
   githubRepositoryRequest: GithubRepositoryRequest;
   versionRequest: VersionRequest | null;
-  databaseCreateRequests?: DatabaseCreateRequest[] | null;
   dockerfileCreateRequest?: DockerfileCreateRequest;
   envs?: EnvVar[] | null;
   framework: Framework;
@@ -133,5 +117,4 @@ export interface GetDeployResponse {
   versions: null | any[];
   envs: any[];
   hostingResponse: Hosting;
-  databaseResponse: DatabaseResponse[];
 }

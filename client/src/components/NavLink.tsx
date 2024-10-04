@@ -16,19 +16,17 @@ export default function NavLink({
 }: NavLinkProps) {
   const pathname = usePathname();
   const isActive = pathname === href;
+  const insActiveStyle = "pt-5 pb-4 text-black border-b-2 border-black";
 
   return (
     <Link
       href={href}
       className={`
-      px-3 py-2 text-sm font-semibold
-      ${
-        isActive
-          ? "text-gray-900 font-semibold bg-gray-200 lg:bg-transparent lg:border-b-2 lg:border-black"
-          : "text-gray-400 hover:text-gray-900 hover:bg-gray-200 lg:rounded-full"
-      }
-      ${className}
-    `}
+        text-sm font-medium
+        ${isActive ? `${insActiveStyle}` : "py-5"}
+        hover:text-[#7a7a7a] hover:border-b-2 hover:border-[#e0e0e0] hover:pt-5 hover:pb-4
+        ${className}
+      `}
     >
       {children}
     </Link>

@@ -10,11 +10,11 @@ import { routes } from "@/constants/routeURL";
 import { FiMenu, FiX } from "react-icons/fi";
 
 const navItems = [
-  { name: "내 프로젝트", path: routes.projects },
-  { name: "사용량", path: routes.usage },
-  { name: "활동내역", path: routes.activity },
-  { name: "가이드", path: routes.guide },
+  { name: "프로젝트", path: routes.projects },
+  { name: "데이터베이스", path: routes.database },
   { name: "대시보드", path: routes.dashboard },
+  { name: "결제내역", path: routes.payments },
+  { name: "가이드", path: routes.guide },
 ];
 
 export default function NavBar() {
@@ -44,16 +44,16 @@ export default function NavBar() {
           {userInfo && (
             <Image
               src={userInfo.profileImage}
-              width={32}
-              height={32}
+              width={30}
+              height={30}
               alt="profile_img"
-              className="rounded-full mr-8 bg-gray-200"
+              className="rounded-full mr-4 bg-gray-200"
             />
           )}
         </Link>
         <button
           onClick={handleLogout}
-          className="bg-black px-3 py-2 rounded-md font-bold text-white"
+          className="px-2 py-1.5 rounded-md text-sm text-[#919191] hover:text-black"
         >
           로그아웃
         </button>
@@ -61,7 +61,7 @@ export default function NavBar() {
     ) : (
       <Link
         href={routes.login}
-        className="bg-black px-3 py-2 rounded-md font-bold text-white"
+        className="px-2 py-1.5 rounded-md text-sm hover:text-[#919191]"
       >
         로그인
       </Link>
@@ -69,13 +69,12 @@ export default function NavBar() {
 
   return (
     <nav className="bg-white border-b border-gray-200">
-      <div className="px-7 py-4">
+      <div className="px-7">
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-24">
+          <div className="flex items-center gap-12">
             <div className="flex items-center gap-2">
-              <Image src="/click.png" alt="로고" width={23} height={23} />
               <Link href={routes.home} className="text-xl font-bold">
-                딸깍
+                Ttalkak
               </Link>
             </div>
             <div className="hidden lg:flex space-x-10">
