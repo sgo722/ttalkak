@@ -1,35 +1,39 @@
 import useDeploymentStore from "../../stores/deploymentStore";
 import { sendInstanceUpdate } from "../websocket/sendUpdateUtils";
 import { dockerStateManager } from "../storeHandler/dockerStateHandler";
+import { useDatabaseStore } from "../../stores/databaseStore";
 
 export async function handleContainerCommand(
-  deploymentId: number,
+  serviceType: string,
+  Id: number,
   command: string
 ) {
-  console.log(`Received command: ${command} for deploymentId: ${deploymentId}`);
+  let containerId: string | null = null;
+  let store;
 
-  const containerId = useDeploymentStore
-    .getState()
-    .getContainerIdByDeploymentIdWithoutDockerImage(deploymentId);
+  // serviceType에 따라 적절한 store 선택 및 containerId 가져오기
+  switch (serviceType) {
+    case "FRONTEND":
+    case "BACKEND":
+      store = useDeploymentStore.getState();
+      containerId = store.getContainerIdById(Id);
 
-  if (containerId === null) {
-    console.error(`No container found for deploymentId: ${deploymentId}`);
+      break;
+    case "DATABASE":
+      store = useDatabaseStore.getState();
+      containerId = store.getContainerIdById(Id);
+      break;
+    default:
+      console.error(`Unknown service type: ${serviceType}`);
+      return;
+  }
+
+  if (!containerId) {
+    console.error(`No container found for ${serviceType} with Id: ${Id}`);
     return;
   }
 
   const deployment = useDeploymentStore.getState().containers[containerId];
-
-  if (!containerId) {
-    console.error(`No container found for deploymentId: ${deploymentId}`);
-    return;
-  }
-
-  if (!deployment) {
-    console.error(
-      `No deployment details found for deploymentId: ${deploymentId}`
-    );
-    return;
-  }
 
   switch (command) {
     case "START":
@@ -41,6 +45,13 @@ export async function handleContainerCommand(
         if (success) {
           await dockerStateManager.updateContainerState(containerId, "running");
           window.electronAPI.startContainerStats([containerId]);
+          sendInstanceUpdate(
+            deployment.serviceType,
+            Id,
+            "RUNNING",
+            deployment.outboundPort,
+            `start`
+          );
         } else {
           await dockerStateManager.updateContainerState(containerId, "error");
         }
@@ -54,7 +65,14 @@ export async function handleContainerCommand(
         await window.electronAPI.stopContainerStats([containerId]);
         const { success } = await window.electronAPI.stopContainer(containerId);
         if (success) {
-          await window.electronAPI.stopPgrok(deploymentId);
+          await window.electronAPI.stopPgrok(Id);
+          sendInstanceUpdate(
+            deployment.serviceType,
+            Id,
+            "STOPPED",
+            deployment.outboundPort,
+            `stopped`
+          );
         } else {
           await dockerStateManager.updateContainerState(containerId, "error");
         }
@@ -70,6 +88,13 @@ export async function handleContainerCommand(
         if (success) {
           await dockerStateManager.updateContainerState(containerId, "running");
           window.electronAPI.startContainerStats([containerId]);
+          sendInstanceUpdate(
+            deployment.serviceType,
+            Id,
+            "RUNNING",
+            deployment.outboundPort,
+            `restart`
+          );
         } else {
           await dockerStateManager.updateContainerState(containerId, "error");
         }
@@ -84,23 +109,18 @@ export async function handleContainerCommand(
         );
         if (success) {
           window.electronAPI.stopContainerStats([containerId]);
-          window.electronAPI.stopPgrok(deploymentId);
+          window.electronAPI.stopPgrok(Id);
+          store.removeContainer(Id);
           sendInstanceUpdate(
             deployment.serviceType,
-            deploymentId,
+            Id,
             "DELETED",
             deployment.outboundPort,
             `successfully deleted`
           );
           dockerStateManager.removeContainer(containerId);
-          useDeploymentStore.getState().removeContainer(containerId);
-        } else {
-          console.error(`${deploymentId} delete failed`);
         }
       }
-      break;
-
-    case "REBUILD":
       break;
 
     default:
