@@ -15,7 +15,7 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("datab")
+@RequestMapping("v1/deployment")
 public class DeploymentController {
 
     private final CreateDeploymentUseCase createDeploymentUsecase;

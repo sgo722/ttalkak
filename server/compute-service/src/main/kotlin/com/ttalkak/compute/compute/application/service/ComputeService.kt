@@ -68,20 +68,22 @@ class ComputeService (
         }
     }
 
-    override fun upsertRunning(userId: Long, runningCommand: RunningCommand) {
+    override fun upsertRunning(userId: Long, command: RunningCommand) {
+        // TODO: compute Type 추가
         saveRunningPort.saveRunning(
             userId = userId,
-            deploymentId = runningCommand.deploymentId,
-            port = runningCommand.port,
-            status = runningCommand.status,
-            message = runningCommand.message
+            deploymentId = command.id,
+            port = command.port,
+            status = command.status,
+            message = command.message
         )
 
         try {
             val request = DeploymentUpdateStatusRequest(
-                deploymentId = runningCommand.deploymentId,
-                status = runningCommand.status,
-                message = runningCommand.message ?: ""
+                id = command.id,
+                serviceType = command.serviceType,
+                status = command.status,
+                message = command.message ?: ""
             )
 
             log.info {

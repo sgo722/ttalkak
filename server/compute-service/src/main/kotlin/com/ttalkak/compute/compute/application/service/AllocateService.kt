@@ -45,7 +45,8 @@ class AllocateService (
 
         if (!command.isDatabase) {
             deploymentFeignClient.updateStatus(DeploymentUpdateStatusRequest(
-                deploymentId = command.id,
+                id = command.id,
+                serviceType = ServiceType.DATABASE,
                 status = RunningStatus.WAITING,
                 message = "컴퓨터 할당 대기중"
             ))
@@ -67,7 +68,8 @@ class AllocateService (
         )
 
         deploymentFeignClient.updateStatus(DeploymentUpdateStatusRequest(
-            deploymentId = command.id,
+            id = command.id,
+            serviceType = ServiceType.DATABASE,
             status = RunningStatus.WAITING,
             message = "컴퓨터 재할당 대기중"
         ))
