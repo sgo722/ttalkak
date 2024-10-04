@@ -35,7 +35,7 @@ public class DatabaseEntity extends BaseEntity {
 
 
     @Setter
-    @Column(nullable = false)
+    @Column(name = "status", nullable = false)
     @Enumerated(EnumType.STRING)
     private Status status;
 
