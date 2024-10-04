@@ -78,18 +78,19 @@ class ComputeSocketController(
      *
      * @param request Compute 상태 요청
      */
-    @MessageMapping("/compute/{deploymentId}/status")
+    @MessageMapping("/compute/{id}/status")
     fun status(
-        @DestinationVariable deploymentId: Long,
+        @DestinationVariable id: Long,
         @Header("X-USER-ID") userId: Long,
         @Payload request: ComputeRunningRequest
     ) {
         log.info {
-            "컴퓨터 생성 응답 요청 (/compute/$deploymentId/status): $request"
+            "컴퓨터 생성 응답 요청 (/compute/$id/status): $request"
         }
 
         val command = RunningCommand(
-            deploymentId = deploymentId,
+            id = id,
+            serviceType = request.serviceType,
             port = request.port,
             status = request.status,
             message = request.message

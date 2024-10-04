@@ -1,20 +1,20 @@
 package com.ttalkak.compute.compute.domain
 
 data class DockerContainer(
-    private val deploymentId: Long,
+    val deploymentId: Long,
     val serviceType: ServiceType,
-    private val hasDockerImage: Boolean,
-    private val hasDockerFile: Boolean,
+    val hasDockerImage: Boolean,
+    val hasDockerFile: Boolean,
 
-    private val sourceCodeLink: String? = "",
-    private val dockerFileScript: String? = "",
+    val sourceCodeLink: String? = "",
+    val dockerFileScript: String? = "",
 
-    private val containerName: String,
-    private val subdomainName: String? = "",
-    private val subdomainKey: String? = "",
-    private val dockerRootDirectory: String? = "",
-    private val dockerImageName: String? = "",
-    private val dockerImageTag: String? = "",
+    val containerName: String,
+    val subdomainName: String? = "",
+    val subdomainKey: String? = "",
+    val dockerRootDirectory: String? = "",
+    val dockerImageName: String? = "",
+    val dockerImageTag: String? = "",
 
     val inboundPort: Int,
     var envs: List<Environment> = emptyList(),
