@@ -14,7 +14,7 @@ import java.io.Serializable;
 @AllArgsConstructor
 public class CreateDatabaseEvent implements Serializable {
 
-    private Long id;
+    private Long databaseId;
 
     private String subdomainKey;
 

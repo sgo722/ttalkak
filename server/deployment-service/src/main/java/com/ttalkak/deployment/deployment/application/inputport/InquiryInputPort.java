@@ -10,7 +10,7 @@ import com.ttalkak.deployment.deployment.domain.model.DatabaseEntity;
 import com.ttalkak.deployment.deployment.domain.model.DeploymentEntity;
 import com.ttalkak.deployment.deployment.domain.model.HostingEntity;
 import com.ttalkak.deployment.deployment.domain.model.VersionEntity;
-import com.ttalkak.deployment.deployment.domain.model.vo.DeploymentStatus;
+import com.ttalkak.deployment.deployment.domain.model.vo.Status;
 import com.ttalkak.deployment.deployment.framework.web.response.DatabasePageResponse;
 import com.ttalkak.deployment.deployment.framework.web.response.DatabaseResponse;
 import com.ttalkak.deployment.deployment.framework.web.response.DeploymentDetailResponse;
@@ -58,7 +58,7 @@ public class InquiryInputPort implements inquiryUseCase {
     public List<DeploymentPreviewResponse> getDeploymentsByProjectId(Long projectId) {
         List<DeploymentPreviewResponse> collect = deploymentOutputPort.findAllByProjectId(projectId)
                 .stream()
-                .filter(deployment -> DeploymentStatus.isAlive(deployment.getStatus()))
+                .filter(deployment -> Status.isAlive(deployment.getStatus()))
                 .map(DeploymentPreviewResponse::mapToDTO)
                 .collect(Collectors.toList());
         log.info("getDeploymentsByProjectId: {} :: {}", projectId, collect);
@@ -70,7 +70,7 @@ public class InquiryInputPort implements inquiryUseCase {
     public List<DeploymentPreviewResponse> searchDeploymentByGithubRepositoryName(String githubRepoName, int page, int size) {
         return deploymentOutputPort.searchDeploymentByGithubRepoName(githubRepoName, page, size)
                 .stream()
-                .filter(deployment -> DeploymentStatus.isAlive(deployment.getStatus()))
+                .filter(deployment -> Status.isAlive(deployment.getStatus()))
                 .map(DeploymentPreviewResponse::mapToDTO)
                 .collect(Collectors.toList());
     }

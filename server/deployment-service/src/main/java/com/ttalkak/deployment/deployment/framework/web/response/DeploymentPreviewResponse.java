@@ -1,10 +1,6 @@
 package com.ttalkak.deployment.deployment.framework.web.response;
 
 import com.ttalkak.deployment.deployment.domain.model.DeploymentEntity;
-import com.ttalkak.deployment.deployment.domain.model.vo.DeploymentStatus;
-import com.ttalkak.deployment.deployment.domain.model.vo.ServiceType;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import lombok.*;
 
 @NoArgsConstructor

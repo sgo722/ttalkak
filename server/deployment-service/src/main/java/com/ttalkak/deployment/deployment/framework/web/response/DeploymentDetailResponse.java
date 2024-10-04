@@ -3,7 +3,7 @@ package com.ttalkak.deployment.deployment.framework.web.response;
 import com.ttalkak.deployment.deployment.domain.model.DeploymentEntity;
 import com.ttalkak.deployment.deployment.domain.model.HostingEntity;
 import com.ttalkak.deployment.deployment.domain.model.VersionEntity;
-import com.ttalkak.deployment.deployment.domain.model.vo.DeploymentStatus;
+import com.ttalkak.deployment.deployment.domain.model.vo.Status;
 import com.ttalkak.deployment.deployment.domain.model.vo.ServiceType;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -24,7 +24,7 @@ public class DeploymentDetailResponse {
     private Long projectId;
 
     @Enumerated(EnumType.STRING)
-    private DeploymentStatus status;
+    private Status status;
 
     @Enumerated(EnumType.STRING)
     private ServiceType serviceType;
@@ -52,7 +52,7 @@ public class DeploymentDetailResponse {
     @Builder
     private DeploymentDetailResponse(Long deploymentId,
                                      Long projectId,
-                                     DeploymentStatus status,
+                                     Status status,
                                      ServiceType serviceType,
                                      String repositoryName,
                                      String repositoryUrl,
