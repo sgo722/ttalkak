@@ -5,7 +5,6 @@ import com.ttalkak.deployment.deployment.framework.web.request.DockerfileCreateR
 import com.ttalkak.deployment.deployment.framework.web.response.DockerFileResponse;
 
 
-@UseCase
 public interface CreateDockerFileUseCaseRegacy {
 
     DockerFileResponse createDockerFile(Long userId, DockerfileCreateRequestRegacy dockerfileCreateRequestRegacy);

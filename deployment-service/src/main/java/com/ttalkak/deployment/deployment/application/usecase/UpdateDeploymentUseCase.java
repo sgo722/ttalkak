@@ -5,7 +5,6 @@ import com.ttalkak.deployment.deployment.framework.web.request.DeploymentUpdateR
 import com.ttalkak.deployment.deployment.framework.web.response.DeploymentDetailResponse;
 
 
-@UseCase
 public interface UpdateDeploymentUseCase {
     // 배포 정보 수정
     DeploymentDetailResponse updateDeployment(Long userId, DeploymentUpdateRequest deploymentUpdateRequest);
