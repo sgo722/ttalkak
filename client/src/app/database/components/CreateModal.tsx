@@ -4,17 +4,17 @@ import { CreateDatabaseRequest, DatabaseType } from "@/types/database";
 import { databaseOptions } from "@/utils/getDatabaseIcons";
 import { IoClose } from "react-icons/io5";
 
-interface DatabaseModalProps {
+interface CreateModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSubmit: (data: CreateDatabaseRequest) => void;
 }
 
-export default function DatabaseModal({
+export default function CreateModal({
   isOpen,
   onClose,
   onSubmit,
-}: DatabaseModalProps) {
+}: CreateModalProps) {
   const {
     register,
     handleSubmit,

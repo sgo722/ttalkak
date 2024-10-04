@@ -24,6 +24,13 @@ const config: Config = {
       },
     },
   },
+  safelist: [
+    "bg-red-500",
+    "bg-green-500",
+    "bg-yellow-400",
+    "animate-pulse",
+    "bg-gray-500",
+  ],
   plugins: [],
 };
 export default config;

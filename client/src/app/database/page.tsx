@@ -1,10 +1,11 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
-import DatabaseModal from "@/app/database/components/DatabaseModal";
+import CreateModal from "@/app/database/components/CreateModal";
+import DetailModal from "@/app/database/components/DetailModal";
 import useGetDatabases from "@/apis/database/useGetDatabases";
 import useCreateDatabase from "@/apis/database/useCreateDatabase";
+import useDeleteDatabase from "@/apis/database/useDeleteDatabase";
 import { getDatabaseIcon, getDatabaseName } from "@/utils/getDatabaseIcons";
 import {
   CreateDatabaseRequest,
@@ -18,10 +19,15 @@ export default function DatabasePage() {
   const [searchKeyword, setSearchKeyword] = useState("");
   const [direction, setDirection] = useState("desc");
   const [currentPage, setCurrentPage] = useState(0);
+  const [selectedDatabaseId, setSelectedDatabaseId] = useState<number | null>(
+    null
+  );
 
   const { mutate: createDatabase } = useCreateDatabase();
+  const { mutate: deleteDatabase } = useDeleteDatabase();
 
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [createModalOpen, setCreateModalOpen] = useState(false);
+  const [detailModalOpen, setDetailModalOpen] = useState(false);
 
   const params: GetDatabasesParams = {
     page: currentPage,
@@ -36,10 +42,20 @@ export default function DatabasePage() {
   const handleCreateDatabase = (data: CreateDatabaseRequest) => {
     createDatabase(data, {
       onSuccess: () => {
-        setIsModalOpen(false);
+        setCreateModalOpen(false);
       },
     });
   };
+
+  const handleDeleteDatabase = () => {
+    if (!selectedDatabaseId) return;
+    deleteDatabase(selectedDatabaseId, {
+      onSuccess: () => {
+        setDetailModalOpen(false);
+      },
+    });
+  };
+
   return (
     <div>
       <div className="flex justify-between items-center mb-6">
@@ -67,7 +83,7 @@ export default function DatabasePage() {
       <div className="flex justify-between mb-3">
         <h1 className="text-2xl font-bold">데이터베이스</h1>
         <button
-          onClick={() => setIsModalOpen(true)}
+          onClick={() => setCreateModalOpen(true)}
           className="border border rounded-lg px-4 py-2"
         >
           생성
@@ -78,10 +94,13 @@ export default function DatabasePage() {
         {data?.content.map((database: GetDatabasesContentResponse) => {
           const Icon = getDatabaseIcon(database.type);
           return (
-            <Link
-              href={`/database/${database.id}`}
+            <div
               key={database.id}
-              className="border rounded-lg p-6"
+              className="border rounded-lg p-6 cursor-pointer"
+              onClick={() => {
+                setSelectedDatabaseId(database.id);
+                setDetailModalOpen(true);
+              }}
             >
               <div className="flex items-center mb-2 cursor-pointer">
                 <Icon className="w-10 h-10 mr-3 text-gray-600" />
@@ -92,7 +111,7 @@ export default function DatabasePage() {
                   </p>
                 </div>
               </div>
-            </Link>
+            </div>
           );
         })}
       </div>
@@ -135,10 +154,16 @@ export default function DatabasePage() {
         </nav>
       </div>
 
-      <DatabaseModal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
+      <CreateModal
+        isOpen={createModalOpen}
+        onClose={() => setCreateModalOpen(false)}
         onSubmit={handleCreateDatabase}
+      />
+      <DetailModal
+        isOpen={detailModalOpen}
+        onClose={() => setDetailModalOpen(false)}
+        onDelete={handleDeleteDatabase}
+        databaseId={selectedDatabaseId}
       />
     </div>
   );
