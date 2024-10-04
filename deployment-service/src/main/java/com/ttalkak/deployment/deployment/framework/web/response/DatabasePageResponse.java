@@ -10,7 +10,7 @@ import java.util.List;
 @NoArgsConstructor
 public class DatabasePageResponse {
 
-    private List<DatabaseResponse> content;
+    private List<DatabasePreviewResponse> content;
     private int pageNumber;
     private int pageSize;
     private long totalElements;
@@ -18,7 +18,7 @@ public class DatabasePageResponse {
 
 
     @Builder
-    public DatabasePageResponse(List<DatabaseResponse> content, int pageNumber, int pageSize, long totalElements, int totalPages) {
+    public DatabasePageResponse(List<DatabasePreviewResponse> content, int pageNumber, int pageSize, long totalElements, int totalPages) {
         this.content = content;
         this.pageNumber = pageNumber;
         this.pageSize = pageSize;

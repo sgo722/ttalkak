@@ -11,10 +11,7 @@ import com.ttalkak.deployment.deployment.domain.model.DeploymentEntity;
 import com.ttalkak.deployment.deployment.domain.model.HostingEntity;
 import com.ttalkak.deployment.deployment.domain.model.VersionEntity;
 import com.ttalkak.deployment.deployment.domain.model.vo.Status;
-import com.ttalkak.deployment.deployment.framework.web.response.DatabasePageResponse;
-import com.ttalkak.deployment.deployment.framework.web.response.DatabaseResponse;
-import com.ttalkak.deployment.deployment.framework.web.response.DeploymentDetailResponse;
-import com.ttalkak.deployment.deployment.framework.web.response.DeploymentPreviewResponse;
+import com.ttalkak.deployment.deployment.framework.web.response.*;
 import com.ttalkak.deployment.common.global.error.ErrorCode;
 import com.ttalkak.deployment.common.global.exception.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -77,10 +74,10 @@ public class InquiryInputPort implements inquiryUseCase {
 
 
     @Override
-    public DatabaseResponse getDatabase(Long databaseId) {
+    public DatabaseDetailResponse getDatabase(Long databaseId) {
         DatabaseEntity databaseEntity = databaseOutputPort.findById(databaseId)
                 .orElseThrow(() -> new EntityNotFoundException(ErrorCode.NOT_EXISTS_DATABASE));
-        return DatabaseResponse.mapToDTO(databaseEntity);
+        return DatabaseDetailResponse.mapToDTO(databaseEntity);
     }
 
 
@@ -99,7 +96,7 @@ public class InquiryInputPort implements inquiryUseCase {
         }
 
         // 유저 프로젝트가 아닌 경우 예외 발생
-        Page<DatabaseResponse> page = databases.map(DatabaseResponse::mapToDTO);
+        Page<DatabasePreviewResponse> page = databases.map(DatabasePreviewResponse::mapToDTO);
         if (page.getContent().size() > 0) {
             if( userId != databases.getContent().get(0).getUserId()) {
                 throw new BusinessException(ErrorCode.UN_AUTHORIZATION);
