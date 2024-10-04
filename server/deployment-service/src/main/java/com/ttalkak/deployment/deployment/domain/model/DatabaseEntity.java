@@ -1,5 +1,6 @@
 package com.ttalkak.deployment.deployment.domain.model;
 
+import com.ttalkak.deployment.common.BaseEntity;
 import com.ttalkak.deployment.deployment.domain.model.vo.DatabaseEditor;
 import jakarta.persistence.*;
 import com.ttalkak.deployment.deployment.domain.model.vo.DatabaseType;
@@ -10,7 +11,7 @@ import java.util.UUID;
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
-public class DatabaseEntity {
+public class DatabaseEntity extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
