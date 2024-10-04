@@ -55,7 +55,7 @@ class ComputeAllocateCacheRepository {
     private fun String.toContainer(): Optional<ComputeAllocateCache> {
         val container = Json.deserialize(this, ComputeAllocateCache::class.java)
 
-        val instance = when(container.isDatabase) {
+        val instance: Any = when(container.isDatabase) {
             true -> Json.deserialize(container.instance.toString(), DockerDatabaseContainer::class.java)
             false -> Json.deserialize(container.instance.toString(), DockerContainer::class.java)
         }

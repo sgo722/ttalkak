@@ -19,16 +19,19 @@ class KafkaComputeListener(
     private val redisMessageListenerContainer: RedisMessageListenerContainer,
     private val computeCreateSocketListener: ComputeCreateSocketListener,
     private val computeUpdateSocketListener: ComputeUpdateSocketListener,
+    private val databaseCreateSocketListener: ComputeUpdateSocketListener,
     private val updateStatusUseCase: UpdateStatusUseCase
 ) {
     private val log = KotlinLogging.logger {}
     private val computeCreateChannel = ChannelTopic("compute-create")
     private val computeUpdateChannel = ChannelTopic("compute-update")
+    private val databaseCreateChannel = ChannelTopic("database-create")
 
     @PostConstruct
     fun init() {
         redisMessageListenerContainer.addMessageListener(computeCreateSocketListener, computeCreateChannel)
         redisMessageListenerContainer.addMessageListener(computeUpdateSocketListener, computeUpdateChannel)
+        redisMessageListenerContainer.addMessageListener(databaseCreateSocketListener, databaseCreateChannel)
     }
 
     @KafkaListener(topics = ["\${consumer.topics.create-compute.name}"], groupId = "\${spring.kafka.consumer.group-id}")
