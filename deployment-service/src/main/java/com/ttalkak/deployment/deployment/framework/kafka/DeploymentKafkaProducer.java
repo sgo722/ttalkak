@@ -64,7 +64,7 @@ public class DeploymentKafkaProducer implements EventOutputPort {
         // 콜백 메서드 생성 해야함.
         future.thenAccept(result -> {
             CreateDatabaseEvent value = result.getProducerRecord().value();
-            LOGGER.info("Sent message=[" + value.getName() + "] with offset=[" + result.getRecordMetadata().offset() + "]");
+            LOGGER.info("Sent message=[" + value.getPort() + "] with offset=[" + result.getRecordMetadata().offset() + "]");
         }).exceptionally(ex ->{
             throw new IllegalArgumentException(ex);
         });

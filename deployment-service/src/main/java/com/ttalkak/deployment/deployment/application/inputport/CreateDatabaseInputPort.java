@@ -6,6 +6,7 @@ import com.ttalkak.deployment.deployment.application.outputport.DomainOutputPort
 import com.ttalkak.deployment.deployment.application.outputport.EventOutputPort;
 import com.ttalkak.deployment.deployment.application.usecase.CreateDatabaseUseCase;
 import com.ttalkak.deployment.deployment.domain.event.CreateDatabaseEvent;
+import com.ttalkak.deployment.deployment.domain.event.DatabaseEvent;
 import com.ttalkak.deployment.deployment.domain.model.DatabaseEntity;
 import com.ttalkak.deployment.deployment.domain.model.vo.DatabaseType;
 import com.ttalkak.deployment.deployment.framework.domainadapter.dto.DatabaseDomainKeyRequest;
@@ -47,12 +48,18 @@ public class CreateDatabaseInputPort implements CreateDatabaseUseCase {
         saveDatabase.setPort(port);
         DatabaseEntity savedDatabase = databaseOutputPort.save(saveDatabase);
 
+
+        DatabaseEvent databaseEvent = new DatabaseEvent(
+                savedDatabase.getDatabaseType(),
+                savedDatabase.getName(),
+                savedDatabase.getUsername(),
+                savedDatabase.getPassword()
+        );
+
         CreateDatabaseEvent createDatabaseEvent = new CreateDatabaseEvent(
                 savedDatabase.getId(),
-                savedDatabase.getName(),
-                savedDatabase.getDatabaseType().toString(),
-                savedDatabase.getUsername(),
-                savedDatabase.getPassword(),
+                databaseDomainKeyResponse.getKey(),
+                databaseEvent,
                 savedDatabase.getPort()
         );
 
