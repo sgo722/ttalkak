@@ -24,7 +24,7 @@ const useCreateDatabase = () => {
     mutationFn: createDatabase,
     onSuccess: () => {
       toast.success("데이터베이스가 성공적으로 생성되었습니다.");
-      //   queryClient.invalidateQueries();
+      queryClient.invalidateQueries({ queryKey: ["databases"] });
     },
     onError: (error) => {
       toast.error(error.message);

@@ -6,7 +6,7 @@ import Link from "next/link";
 import Image from "next/image";
 import Button from "@/components/Button";
 import ConfirmModal from "@/components/ConfirmModal";
-import { DeployStatus, ServiceType } from "@/types/deploy";
+import { DeployStatus } from "@/types/deploy";
 import useGetDeploy from "@/apis/deploy/useGetDeploy";
 import useGetWebhooks from "@/apis/webhook/useGetWebhooks";
 import useCreateWebhook from "@/apis/webhook/useCreateWebhook";

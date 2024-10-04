@@ -1,18 +1,24 @@
-import { GetDatabasesResponse } from "@/types/database";
+import { GetDatabasesResponse, GetDatabasesParams } from "@/types/database";
 import { useQuery, UseQueryResult } from "@tanstack/react-query";
 import client from "@/apis/core/client";
 
-const getDatabases = async (): Promise<GetDatabasesResponse> => {
+const getDatabases = async (
+  params: GetDatabasesParams
+): Promise<GetDatabasesResponse> => {
   const response = await client.get<GetDatabasesResponse>({
-    url: "/deployment/database",
+    url: "/deployment/database/search",
+    params,
   });
   return response.data;
 };
 
-const useGetDatabases = (): UseQueryResult<GetDatabasesResponse, Error> => {
+const useGetDatabases = (
+  params: GetDatabasesParams
+): UseQueryResult<GetDatabasesResponse, Error> => {
   return useQuery({
-    queryKey: ["database"],
-    queryFn: getDatabases,
+    queryKey: ["databases", params] as const,
+    queryFn: () => getDatabases(params),
+    throwOnError: true,
   });
 };
 
