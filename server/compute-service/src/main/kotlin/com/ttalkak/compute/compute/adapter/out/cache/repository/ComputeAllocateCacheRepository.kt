@@ -62,11 +62,11 @@ class ComputeAllocateCacheRepository {
             "인스턴스 정보: ${container.instance}"
         }
 
-        val instance: Any = when(container.isDatabase) {
-            true -> Json.deserialize(container.instance.toString(), DockerDatabaseContainer::class.java)
-            false -> Json.deserialize(container.instance.toString(), DockerContainer::class.java)
-        }
+//        val instance: Any = when(container.isDatabase) {
+//            true -> Json.deserialize(container.instance.toString(), DockerDatabaseContainer::class.java)
+//            false -> Json.deserialize(container.instance.toString(), DockerContainer::class.java)
+//        }
 
-        return Optional.of(container.copy(instance = instance))
+        return Optional.of(container)
     }
 }
