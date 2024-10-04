@@ -19,7 +19,7 @@ class KafkaComputeListener(
     private val redisMessageListenerContainer: RedisMessageListenerContainer,
     private val computeCreateSocketListener: ComputeCreateSocketListener,
     private val computeUpdateSocketListener: ComputeUpdateSocketListener,
-    private val databaseCreateSocketListener: ComputeUpdateSocketListener,
+    private val databaseCreateSocketListener: DatabaseCreateSocketListener,
     private val updateStatusUseCase: UpdateStatusUseCase
 ) {
     private val log = KotlinLogging.logger {}
