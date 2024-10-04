@@ -16,6 +16,8 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class DeleteDatabaseInputPort implements DeleteDatabaseUseCase {
 
+    private final DomainOutputPort domainOutputPort;
+
     private final DatabaseOutputPort databaseOutputPort;
 
     @Override
@@ -26,6 +28,8 @@ public class DeleteDatabaseInputPort implements DeleteDatabaseUseCase {
         if(!databaseEntity.getUserId().equals(userId)){
             throw new BusinessException(ErrorCode.UN_AUTHORIZATION);
         }
+
+        domainOutputPort.deleteDomainKey("database_" + databaseEntity.getId());
 
         databaseOutputPort.delete(databaseEntity);
     }
