@@ -10,7 +10,8 @@ datasource db {
 
 model Transaction {
   id           Int      @id @default(autoincrement())
-  deploymentId Int
+  serviceId    Int
+  serviceType  String
   amount       Decimal  @db.Decimal(10, 8)
   transaction  String
   senderId     Int
@@ -20,13 +21,14 @@ model Transaction {
 
   transactionHistories TransactionHistory[]
 
-  @@unique([deploymentId, receipientId])
+  @@unique([serviceId, receipientId])
 }
 
 model UserTransactionKey {
   id Int @id @default(autoincrement())
-  userId Int
+  userId Int @unique
   privateKey String
+  address String
 }
 
 model TransactionHistory {
@@ -37,7 +39,7 @@ model TransactionHistory {
   receipientId  Int
   blockHash     String
   amount        Decimal     @db.Decimal(10, 8)
-  deploymentId  Int
+  serviceId     Int
   transactionId Int
   transaction   Transaction @relation(fields: [transactionId], references: [id])
 
