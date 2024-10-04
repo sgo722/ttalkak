@@ -101,17 +101,13 @@ public class UpdateDeploymentStatusInputPort implements UpdateDeploymentStatusUs
                 hosting.getDetailSubDomainKey()
         );
 
-        List<DatabaseEvent> databaseEvents = deploymentEntity.getDataBaseEntities().stream()
-                .map(databaseEntity -> new DatabaseEvent(databaseEntity.getId(), databaseEntity.getName(), databaseEntity.getDatabaseType().toString(), databaseEntity.getUsername(), databaseEntity.getPassword()))
-                .collect(Collectors.toList());
-
         DeploymentEvent deploymentEvent = new DeploymentEvent(deploymentEntity.getId(), deploymentEntity.getProjectId(), envEvents, deploymentEntity.getServiceType().toString());
         GithubInfoEvent githubInfoEvent = new GithubInfoEvent(deploymentEntity.getGithubInfo().getRepositoryUrl(), deploymentEntity.getGithubInfo().getRootDirectory(), deploymentEntity.getGithubInfo().getBranch());
         CreateInstanceEvent createInstanceEvent = null;
         if(deploymentEntity.getDockerfileScript().equals("Docker File Exist")){
-            createInstanceEvent = new CreateInstanceEvent(deploymentEvent, hostingEvent, githubInfoEvent, envEvents, databaseEvents, versionEntity.getVersion(), expirationDate, true, deploymentEntity.getDockerfileScript());
+            createInstanceEvent = new CreateInstanceEvent(deploymentEvent, hostingEvent, githubInfoEvent, envEvents, versionEntity.getVersion(), expirationDate, true, deploymentEntity.getDockerfileScript());
         }else{
-            createInstanceEvent = new CreateInstanceEvent(deploymentEvent, hostingEvent, githubInfoEvent, envEvents, databaseEvents, versionEntity.getVersion(), expirationDate, false, deploymentEntity.getDockerfileScript());
+            createInstanceEvent = new CreateInstanceEvent(deploymentEvent, hostingEvent, githubInfoEvent, envEvents, versionEntity.getVersion(), expirationDate, false, deploymentEntity.getDockerfileScript());
         }
 
         try {

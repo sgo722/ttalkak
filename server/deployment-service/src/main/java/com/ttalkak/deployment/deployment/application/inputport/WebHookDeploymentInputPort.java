@@ -76,17 +76,13 @@ public class WebHookDeploymentInputPort implements WebHookDeploymentUsecase {
                 hosting.getDetailSubDomainKey()
         );
 
-        List<DatabaseEvent> databaseEvents = deployment.getDataBaseEntities().stream()
-                .map(databaseEntity -> new DatabaseEvent(databaseEntity.getId(), databaseEntity.getName(), databaseEntity.getDatabaseType().toString(), databaseEntity.getUsername(), databaseEntity.getPassword()))
-                .collect(Collectors.toList());
-
         DeploymentEvent deploymentEvent = new DeploymentEvent(deployment.getId(), deployment.getProjectId(), envEvents, deployment.getServiceType().toString());
         GithubInfoEvent githubInfoEvent = new GithubInfoEvent(deployment.getGithubInfo().getRepositoryUrl(), deployment.getGithubInfo().getRootDirectory(), deployment.getGithubInfo().getBranch());
         CreateInstanceEvent createInstanceEvent = null;
-        if(deployment.getDockerfileScript().equals("Docker File Exist")){
-            createInstanceEvent = new CreateInstanceEvent(deploymentEvent, hostingEvent, githubInfoEvent, envEvents, databaseEvents, versionEntity.getVersion(), expirationDate, true, deployment.getDockerfileScript());
-        }else{
-            createInstanceEvent = new CreateInstanceEvent(deploymentEvent, hostingEvent, githubInfoEvent, envEvents, databaseEvents, versionEntity.getVersion(), expirationDate, false, deployment.getDockerfileScript());
+        if (deployment.getDockerfileScript().equals("Docker File Exist")) {
+            createInstanceEvent = new CreateInstanceEvent(deploymentEvent, hostingEvent, githubInfoEvent, envEvents, versionEntity.getVersion(), expirationDate, true, deployment.getDockerfileScript());
+        } else {
+            createInstanceEvent = new CreateInstanceEvent(deploymentEvent, hostingEvent, githubInfoEvent, envEvents, versionEntity.getVersion(), expirationDate, false, deployment.getDockerfileScript());
         }
 
         try {

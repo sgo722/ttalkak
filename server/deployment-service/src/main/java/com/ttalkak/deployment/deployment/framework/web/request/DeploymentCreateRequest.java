@@ -27,10 +27,6 @@ public class DeploymentCreateRequest {
 
     private VersionRequest versionRequest;
 
-    @Nullable
-    @Valid
-    private List<DatabaseCreateRequest> databaseCreateRequests;
-
     private List<EnvCreateRequest> envs = new ArrayList<>();
 
     private String framework;
@@ -39,11 +35,10 @@ public class DeploymentCreateRequest {
     private DockerfileCreateRequest dockerfileCreateRequest;
 
     @Builder
-    private DeploymentCreateRequest(Long projectId, String serviceType, GithubRepositoryRequest githubRepositoryRequest, List<DatabaseCreateRequest> databaseCreateRequests,VersionRequest versionRequest, int hostingPort, List<EnvCreateRequest> envs, String framework, DockerfileCreateRequest dockerfileCreateRequest) {
+    private DeploymentCreateRequest(Long projectId, String serviceType, GithubRepositoryRequest githubRepositoryRequest, VersionRequest versionRequest, int hostingPort, List<EnvCreateRequest> envs, String framework, DockerfileCreateRequest dockerfileCreateRequest) {
         this.projectId = projectId;
         this.serviceType = serviceType;
         this.githubRepositoryRequest = githubRepositoryRequest;
-        this.databaseCreateRequests = databaseCreateRequests;
         this.versionRequest = versionRequest;
         this.hostingPort = hostingPort;
         this.envs = envs;

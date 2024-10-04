@@ -27,7 +27,7 @@ class ComputeCreateSocketListener(
             "이벤트 수신에 문제가 발생하였습니다."
         }
 
-        val containers = mutableListOf(DockerContainer(
+        val container = DockerContainer(
             deploymentId = response.deploymentId,
             serviceType = response.serviceType,
             hasDockerImage = false,
@@ -42,29 +42,14 @@ class ComputeCreateSocketListener(
             hasDockerFile = response.dockerfileExist,
             dockerFileScript = response.dockerfileScript,
             envs = response.envs
-        )) +  response.databases.map {
-            val database = it.databaseType.parse(it.name, it.username, it.password)
-            DockerContainer(
-                deploymentId = response.deploymentId,
-                serviceType = ServiceType.DATABASE,
-                hasDockerImage = true,
-                containerName = "${response.serviceType}-${response.deploymentId}-db-${it.databaseId}",
-                hasDockerFile = false,
-                inboundPort = it.databaseType.port(),
-                dockerImageName = database.name,
-                dockerImageTag = database.tag,
-                envs = database.envs
-            )
-        }
-
-        val size = response.databases.size + 1
+        )
 
         val command = AddComputeCommand(
             deploymentId = response.deploymentId,
-            computeCount = size,
-            useMemory = 0.512 * size,
-            useCPU = (5.0 * size),
-            containers = containers
+            computeCount = 1,
+            useMemory = 0.512,
+            useCPU = 5.0,
+            container = container
         )
 
         allocateUseCase.addQueue(command)

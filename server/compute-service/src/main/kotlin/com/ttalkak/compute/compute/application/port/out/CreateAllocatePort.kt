@@ -8,7 +8,7 @@ interface CreateAllocatePort {
         count: Int,
         useMemory: Double,
         useCPU: Double,
-        instances: List<DockerContainer>
+        instance: DockerContainer
     )
 
     fun appendPriority(
@@ -17,6 +17,6 @@ interface CreateAllocatePort {
         count: Int,
         useMemory: Double,
         useCPU: Double,
-        instances: List<DockerContainer>
+        instance: DockerContainer
     )
 }

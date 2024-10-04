@@ -7,5 +7,5 @@ data class AddComputeCommand(
     val computeCount: Int,
     val useMemory: Double,
     val useCPU: Double,
-    val containers: List<DockerContainer>
+    val container: DockerContainer
 )

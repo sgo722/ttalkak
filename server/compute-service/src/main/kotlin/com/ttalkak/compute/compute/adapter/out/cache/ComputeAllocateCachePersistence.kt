@@ -21,7 +21,7 @@ class ComputeAllocateCachePersistence (
         count: Int,
         useMemory: Double,
         useCPU: Double,
-        instances: List<DockerContainer>
+        instance: DockerContainer
     ) {
         val priority = System.currentTimeMillis().toDouble()
         val compute = ComputeAllocateCache(
@@ -30,7 +30,7 @@ class ComputeAllocateCachePersistence (
             count = count,
             useMemory = useMemory,
             useCPU = useCPU,
-            instances = instances
+            instance = instance
         )
         computeAllocateCacheRepository.add(compute, priority)
     }
@@ -41,7 +41,7 @@ class ComputeAllocateCachePersistence (
         count: Int,
         useMemory: Double,
         useCPU: Double,
-        instances: List<DockerContainer>
+        instance: DockerContainer
     ) {
         val priority = System.currentTimeMillis().toDouble() - PRIORITY_WEIGHT
         val compute = ComputeAllocateCache(
@@ -50,7 +50,7 @@ class ComputeAllocateCachePersistence (
             count = count,
             useMemory = useMemory,
             useCPU = useCPU,
-            instances = instances
+            instance = instance
         )
         computeAllocateCacheRepository.add(compute, priority)
     }

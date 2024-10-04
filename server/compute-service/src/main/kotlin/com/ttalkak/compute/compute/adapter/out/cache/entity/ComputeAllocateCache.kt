@@ -8,5 +8,5 @@ data class ComputeAllocateCache (
     val rebuild: Boolean,
     val useMemory: Double,
     val useCPU: Double,
-    val instances: List<DockerContainer>
+    val instance: DockerContainer
 )

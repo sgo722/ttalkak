@@ -33,8 +33,6 @@ public class CreateInstanceEvent implements Serializable {
 
     private List<EnvEvent> envs;
 
-    private List<DatabaseEvent> databases;
-
     private Long version;
 
     private boolean dockerfileExist;
@@ -45,7 +43,6 @@ public class CreateInstanceEvent implements Serializable {
                                HostingEvent hosting,
                                GithubInfoEvent githubInfo,
                                List<EnvEvent> envs,
-                               List<DatabaseEvent> database,
                                Long version,
                                String expirationDate,
                                boolean dockerfileExist,
@@ -59,7 +56,6 @@ public class CreateInstanceEvent implements Serializable {
         this.repositoryUrl = githubInfo.getRepositoryUrl();
         this.rootDirectory = githubInfo.getRootDirectory();
         this.envs = envs;
-        this.databases = database;
         this.version = version;
         this.expirationDate = expirationDate;
         this.dockerfileExist = dockerfileExist;

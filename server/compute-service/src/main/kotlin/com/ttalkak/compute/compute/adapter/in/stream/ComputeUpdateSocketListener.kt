@@ -35,23 +35,21 @@ class ComputeUpdateSocketListener (
             computeCount = size,
             useMemory = 0.512 * size,
             useCPU = (5.0 * size),
-            containers = mutableListOf(
-                DockerContainer(
-                    deploymentId = response.deploymentId,
-                    serviceType = response.serviceType,
-                    hasDockerImage = false,
-                    containerName = "${response.serviceType}-${response.deploymentId}",
-                    inboundPort = response.port,
-                    subdomainName = response.subdomainName,
-                    subdomainKey = response.subdomainKey,
-                    sourceCodeLink = parseGithubLink(response.repositoryUrl, response.branch),
-                    dockerRootDirectory = response.rootDirectory,
-                    dockerImageName = null,
-                    dockerImageTag = null,
-                    hasDockerFile = response.dockerfileExist,
-                    dockerFileScript = response.dockerfileScript,
-                    envs = response.envs
-                )
+            container = DockerContainer(
+                deploymentId = response.deploymentId,
+                serviceType = response.serviceType,
+                hasDockerImage = false,
+                containerName = "${response.serviceType}-${response.deploymentId}",
+                inboundPort = response.port,
+                subdomainName = response.subdomainName,
+                subdomainKey = response.subdomainKey,
+                sourceCodeLink = parseGithubLink(response.repositoryUrl, response.branch),
+                dockerRootDirectory = response.rootDirectory,
+                dockerImageName = null,
+                dockerImageTag = null,
+                hasDockerFile = response.dockerfileExist,
+                dockerFileScript = response.dockerfileScript,
+                envs = response.envs
             )
         )
 
