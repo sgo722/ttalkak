@@ -6,6 +6,7 @@ import com.ttalkak.compute.common.util.Json
 import com.ttalkak.compute.compute.adapter.out.cache.entity.ComputeAllocateCache
 import com.ttalkak.compute.compute.domain.DockerContainer
 import com.ttalkak.compute.compute.domain.DockerDatabaseContainer
+import io.github.oshai.kotlinlogging.KotlinLogging
 import jakarta.annotation.Resource
 import org.springframework.data.redis.core.ValueOperations
 import org.springframework.data.redis.core.ZSetOperations
@@ -17,6 +18,8 @@ import java.util.concurrent.TimeUnit
 class ComputeAllocateCacheRepository {
     @Resource(name = "redisTemplate")
     private lateinit var zSetOperations: ZSetOperations<String, String>
+
+    private val log = KotlinLogging.logger {}
 
     companion object {
         const val COMPUTE_ALLOCATE_CACHE_KEY = "computeAllocateCache"
@@ -54,6 +57,10 @@ class ComputeAllocateCacheRepository {
 
     private fun String.toContainer(): Optional<ComputeAllocateCache> {
         val container = Json.deserialize(this, ComputeAllocateCache::class.java)
+
+        log.debug {
+            "인스턴스 정보: ${container.instance}"
+        }
 
         val instance: Any = when(container.isDatabase) {
             true -> Json.deserialize(container.instance.toString(), DockerDatabaseContainer::class.java)
