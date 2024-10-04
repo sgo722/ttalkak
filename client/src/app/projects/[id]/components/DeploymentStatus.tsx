@@ -3,6 +3,7 @@ import Image from "next/image";
 import { Deployment } from "@/types/project";
 import { DeployCommand, ServiceType, DeployStatus } from "@/types/deploy";
 import useModifyDeployStatus from "@/apis/deploy/useModifyDeployStatus";
+import useStatusColor from "@/hooks/useStatusColor";
 import { FaPlay } from "react-icons/fa6";
 import { VscDebugRestart } from "react-icons/vsc";
 import { FaStop } from "react-icons/fa";
@@ -19,6 +20,7 @@ export default function DeploymentStatus({
   projectId,
 }: DeploymentStatusProps) {
   const { mutate: modifyDeployStatus } = useModifyDeployStatus();
+  const statusColor = useStatusColor(deploy?.status as DeployStatus);
 
   const handleButtonClick =
     (command: DeployCommand) => (e: React.MouseEvent) => {
@@ -39,19 +41,7 @@ export default function DeploymentStatus({
         <h3 className="font-semibold text-lg">{type}</h3>
         <p className="text-md">{deploy.repositoryName}</p>
         <div className="flex items-center gap-2 mb-3">
-          <div
-            className={`inline-block w-3 h-3 rounded-full ${
-              deploy.status === DeployStatus.STOPPED ||
-              deploy.status === DeployStatus.ERROR
-                ? "bg-red-500"
-                : deploy.status === DeployStatus.RUNNING
-                  ? "bg-green-500"
-                  : deploy.status === DeployStatus.PENDING ||
-                      deploy.status === DeployStatus.WAITTING
-                    ? "bg-yellow-400 animate-pulse-slow"
-                    : "bg-gray-500"
-            }`}
-          />
+          <div className={`inline-block w-3 h-3 rounded-full ${statusColor}`} />
           <div className="text-md">{deploy.status}</div>
         </div>
         <div className="flex justify-between items-center">

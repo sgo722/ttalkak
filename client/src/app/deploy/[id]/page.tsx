@@ -12,6 +12,7 @@ import useGetWebhooks from "@/apis/webhook/useGetWebhooks";
 import useCreateWebhook from "@/apis/webhook/useCreateWebhook";
 import useDeleteWebhook from "@/apis/webhook/useDeleteWebhook";
 import useDeleteDeploy from "@/apis/deploy/useDeleteDeploy";
+import useStatusColor from "@/hooks/useStatusColor";
 import { FaExternalLinkAlt } from "react-icons/fa";
 import { FaCodeBranch, FaCodeCommit } from "react-icons/fa6";
 import { IoChevronBack } from "react-icons/io5";
@@ -106,17 +107,8 @@ export default function DeployDetailPage() {
     if (!serviceType || !detailDomainName) return "";
     return `${detailDomainName}.ttalkak.com`;
   };
-
   // status 아이콘 색 처리
-  const statusColor =
-    data?.status === DeployStatus.STOPPED || data?.status === DeployStatus.ERROR
-      ? "bg-red-500"
-      : data?.status === DeployStatus.RUNNING
-        ? "bg-green-500"
-        : data?.status === DeployStatus.PENDING ||
-            data?.status === DeployStatus.WAITTING
-          ? "bg-yellow-400 animate-pulse"
-          : "bg-gray-500";
+  const statusColor = useStatusColor(data?.status as DeployStatus);
 
   // 포멧된 도메인주소
   const formattedDomain = formatDomain(
