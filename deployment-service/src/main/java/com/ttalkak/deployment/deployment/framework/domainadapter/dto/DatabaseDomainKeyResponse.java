@@ -15,5 +15,5 @@ public class DatabaseDomainKeyResponse {
 
     private String key;
 
-    private String port;
+    private int port;
 }
