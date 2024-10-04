@@ -1,3 +1,5 @@
+import { DeployStatus } from "@/types/deploy";
+
 export enum DatabaseType {
   MYSQL = "MYSQL",
   MARIADB = "MARIADB",
@@ -20,9 +22,18 @@ export interface GetDatabasesParams {
 }
 
 export interface GetDatabasesResponse {
-  content: GetDatabaseResponse[];
+  content: GetDatabasesContentResponse[];
   totalPages: number;
   totalElements: number;
+}
+
+export interface GetDatabasesContentResponse {
+  id: number;
+  name: string;
+  type: DatabaseType;
+  port: number;
+  status: DeployStatus;
+  statusMessage: String;
 }
 
 export interface GetDatabaseResponse {
@@ -32,4 +43,6 @@ export interface GetDatabaseResponse {
   username: string;
   password: string;
   port: number;
+  status: DeployStatus;
+  statusMessage: String;
 }

@@ -8,8 +8,8 @@ import useCreateDatabase from "@/apis/database/useCreateDatabase";
 import { getDatabaseIcon, getDatabaseName } from "@/utils/getDatabaseIcons";
 import {
   CreateDatabaseRequest,
-  GetDatabaseResponse,
   GetDatabasesParams,
+  GetDatabasesContentResponse,
 } from "@/types/database";
 import { IoIosSearch } from "react-icons/io";
 import { FaSort } from "react-icons/fa";
@@ -75,7 +75,7 @@ export default function DatabasePage() {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {data?.content.map((database: GetDatabaseResponse) => {
+        {data?.content.map((database: GetDatabasesContentResponse) => {
           const Icon = getDatabaseIcon(database.type);
           return (
             <Link
