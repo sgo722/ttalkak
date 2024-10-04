@@ -31,9 +31,10 @@ public class WebHookDeploymentInputPort implements WebHookDeploymentUseCase {
 
     @Override
     public void createDeploymentWebHook(ServiceType serviceType, String webhookToken, WebHookCommand command) {
-        ProjectWebHookResponse response = projectOutputPort.getWebHookProject(webhookToken);
+        ProjectWebHookResponse projectWebHookResponse = projectOutputPort.getWebHookProject(webhookToken);
 
-        DeploymentEntity deployment = deploymentOutputPort.findByProjectIdAndServiceType(response.getProjectId(), serviceType).orElseThrow(
+        Long userId = projectWebHookResponse.getUserId();
+        DeploymentEntity deployment = deploymentOutputPort.findByProjectIdAndServiceType(projectWebHookResponse.getProjectId(), serviceType).orElseThrow(
                 () -> new BusinessException(ErrorCode.NOT_EXISTS_DEPLOYMENT)
         );
 
@@ -56,7 +57,7 @@ public class WebHookDeploymentInputPort implements WebHookDeploymentUseCase {
         deployment.addVersion(savedVersion);
 
 
-        HostingEntity hosting = hostingOutputPort.findByProjectIdAndServiceType(response.getProjectId(), serviceType);
+        HostingEntity hosting = hostingOutputPort.findByProjectIdAndServiceType(projectWebHookResponse.getProjectId(), serviceType);
 
         if(hosting == null){
             throw new BusinessException(ErrorCode.NOT_EXISTS_HOSTING);
@@ -76,9 +77,9 @@ public class WebHookDeploymentInputPort implements WebHookDeploymentUseCase {
         GithubInfoEvent githubInfoEvent = new GithubInfoEvent(deployment.getGithubInfo().getRepositoryUrl(), deployment.getGithubInfo().getRootDirectory(), deployment.getGithubInfo().getBranch());
         CreateInstanceEvent createInstanceEvent = null;
         if (deployment.getDockerfileScript().equals("Docker File Exist")) {
-            createInstanceEvent = new CreateInstanceEvent(deploymentEvent, hostingEvent, githubInfoEvent, envEvents, versionEntity.getVersion(), expirationDate, true, deployment.getDockerfileScript());
+            createInstanceEvent = new CreateInstanceEvent(userId, deploymentEvent, hostingEvent, githubInfoEvent, envEvents, versionEntity.getVersion(), expirationDate, true, deployment.getDockerfileScript());
         } else {
-            createInstanceEvent = new CreateInstanceEvent(deploymentEvent, hostingEvent, githubInfoEvent, envEvents, versionEntity.getVersion(), expirationDate, false, deployment.getDockerfileScript());
+            createInstanceEvent = new CreateInstanceEvent(userId, deploymentEvent, hostingEvent, githubInfoEvent, envEvents, versionEntity.getVersion(), expirationDate, false, deployment.getDockerfileScript());
         }
 
         try {

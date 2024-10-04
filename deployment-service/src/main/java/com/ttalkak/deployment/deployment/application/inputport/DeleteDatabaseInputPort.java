@@ -1,10 +1,13 @@
 package com.ttalkak.deployment.deployment.application.inputport;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.ttalkak.deployment.common.global.error.ErrorCode;
 import com.ttalkak.deployment.common.global.exception.BusinessException;
 import com.ttalkak.deployment.deployment.application.outputport.*;
 import com.ttalkak.deployment.deployment.application.usecase.DeleteDatabaseUseCase;
+import com.ttalkak.deployment.deployment.domain.event.DeleteDatabaseEvent;
 import com.ttalkak.deployment.deployment.domain.model.DatabaseEntity;
+import com.ttalkak.deployment.deployment.framework.kafka.DeleteEventProducer;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -20,6 +23,8 @@ public class DeleteDatabaseInputPort implements DeleteDatabaseUseCase {
 
     private final DatabaseOutputPort databaseOutputPort;
 
+    private final DeleteEventProducer deleteEventProducer;
+
     @Override
     public void deleteDatabase(Long userId, Long databaseId) {
         DatabaseEntity databaseEntity = databaseOutputPort.findById(databaseId)
@@ -30,6 +35,12 @@ public class DeleteDatabaseInputPort implements DeleteDatabaseUseCase {
         }
 
         domainOutputPort.deleteDomainKey("database_" + databaseEntity.getId());
+
+        try {
+            deleteEventProducer.occurCreateDatabase(new DeleteDatabaseEvent(databaseEntity.getId()));
+        } catch (JsonProcessingException e) {
+            throw new BusinessException(ErrorCode.KAFKA_PRODUCER_ERROR);
+        }
 
         databaseOutputPort.delete(databaseEntity);
     }

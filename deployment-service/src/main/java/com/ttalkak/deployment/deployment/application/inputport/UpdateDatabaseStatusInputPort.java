@@ -13,6 +13,7 @@ import com.ttalkak.deployment.deployment.domain.model.DatabaseEntity;
 import com.ttalkak.deployment.deployment.domain.model.vo.Status;
 import com.ttalkak.deployment.deployment.framework.domainadapter.dto.DatabaseDomainKeyRequest;
 import com.ttalkak.deployment.deployment.framework.domainadapter.dto.DatabaseDomainKeyResponse;
+import com.ttalkak.deployment.deployment.framework.kafka.DeleteEventProducer;
 import com.ttalkak.deployment.deployment.framework.web.request.DatabaseUpdateStatusRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,12 +31,21 @@ public class UpdateDatabaseStatusInputPort implements UpdateDatabaseStatusUseCas
 
     private final EventOutputPort eventOutputPort;
 
+    private final DeleteEventProducer deleteEventProducer;
+
     @Override
     public void updateDatabaseStatus(DatabaseUpdateStatusRequest databaseUpdateStatusRequest) {
         Long databaseId = Long.parseLong(databaseUpdateStatusRequest.getDatabaseId());
 
         DatabaseEntity databaseEntity = databaseOutputPort.findById(databaseId).orElseThrow(
-                () -> new BusinessException(ErrorCode.NOT_EXISTS_DATABASE)
+                () -> {
+                    try {
+                        deleteEventProducer.occurCreateDatabase(new DeleteDatabaseEvent(databaseId));
+                    } catch (JsonProcessingException e) {
+                        throw new BusinessException(ErrorCode.KAFKA_PRODUCER_ERROR);
+                    }
+                    throw new BusinessException(ErrorCode.NOT_EXISTS_DATABASE);
+                }
         );
 
         Status status = databaseEntity.getStatus();
@@ -87,6 +97,7 @@ public class UpdateDatabaseStatusInputPort implements UpdateDatabaseStatusUseCas
         );
 
         CreateDatabaseEvent createDatabaseEvent = new CreateDatabaseEvent(
+                databaseEntity.getUserId(),
                 savedDatabase.getId(),
                 databaseDomainKeyResponse.getKey(),
                 databaseEvent,

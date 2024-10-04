@@ -20,6 +20,8 @@ producers:
       name: rebuild-compute
     delete-project-exception:
       name: delete-project-exception
+    delete-database:
+      name: delete-database
     update-domain-name-exception:
       name: update-domain-name-exception
     command-deployment-status:
@@ -33,10 +35,10 @@ consumers:
       name: create-hosting
     update-deployment-status:
       name: update-deployment-status
-    update-database-status:
-      name : update-database-status
     delete-deployment:
       name: delete-deployment
+    update-database-status:
+      name : update-database-status
     update-domain-name:
       name: update-domain-name
 

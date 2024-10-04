@@ -53,6 +53,7 @@ public class CreateDeploymentInputPort implements CreateDeploymentUseCase {
 
         // 프로젝트 서비스로부터 도메인 이름 받아오기
         ProjectInfoResponse projectInfo = projectOutputPort.getProjectInfo(deploymentCreateRequest.getProjectId());
+        Long userId = projectInfo.getUserId();
         String domainName = projectInfo.getDomainName();
         String webhookToken = projectInfo.getWebhookToken();
         String payloadURL = "https://api.ttalkak.com/webhook/deployment/" + deploymentCreateRequest.getServiceType().toLowerCase() + "/" + webhookToken;
@@ -101,7 +102,7 @@ public class CreateDeploymentInputPort implements CreateDeploymentUseCase {
         HostingEvent hostingEvent = new HostingEvent(savedDeployment.getId(), savedHostingEntity.getId(), savedHostingEntity.getHostingPort(), null,hosting.getDetailSubDomainName(), hosting.getDetailSubDomainKey());
         DeploymentEvent deploymentEvent = new DeploymentEvent(savedDeployment.getId(), savedDeployment.getProjectId(), envs, savedDeployment.getServiceType().toString());
         GithubInfoEvent githubInfoEvent = new GithubInfoEvent(deployment.getGithubInfo().getRepositoryUrl(), deployment.getGithubInfo().getRootDirectory(), deployment.getGithubInfo().getBranch());
-        CreateInstanceEvent createInstanceEvent = new CreateInstanceEvent(deploymentEvent, hostingEvent, githubInfoEvent, envs, versionEntity.getVersion(), expirationDate, dockerfileExist, deployment.getDockerfileScript());
+        CreateInstanceEvent createInstanceEvent = new CreateInstanceEvent(userId, deploymentEvent, hostingEvent, githubInfoEvent, envs, versionEntity.getVersion(), expirationDate, dockerfileExist, deployment.getDockerfileScript());
         try {
             eventOutputPort.occurCreateInstance(createInstanceEvent);
         } catch (JsonProcessingException e) {

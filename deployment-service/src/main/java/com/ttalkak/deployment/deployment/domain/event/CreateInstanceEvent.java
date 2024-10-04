@@ -13,6 +13,9 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class CreateInstanceEvent implements Serializable {
+
+    private Long senderId;
+
     private String deploymentId;
 
     private String port;
@@ -39,7 +42,8 @@ public class CreateInstanceEvent implements Serializable {
 
     private String dockerfileScript;
 
-    public CreateInstanceEvent(DeploymentEvent deployment,
+    public CreateInstanceEvent(Long senderId,
+                               DeploymentEvent deployment,
                                HostingEvent hosting,
                                GithubInfoEvent githubInfo,
                                List<EnvEvent> envs,
@@ -47,6 +51,7 @@ public class CreateInstanceEvent implements Serializable {
                                String expirationDate,
                                boolean dockerfileExist,
                                String dockerfileScript) {
+        this.senderId = senderId;
         this.deploymentId = deployment.getDeploymentId().toString();
         this.port = String.valueOf(hosting.getHostingPort());
         this.subdomainName = hosting.getSubdomainName();
