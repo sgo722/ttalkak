@@ -82,7 +82,6 @@ public class UpdateDeploymentStatusInputPort implements UpdateDeploymentStatusUs
     private void reAllocateInstance(DeploymentEntity deploymentEntity) {
         VersionEntity versionEntity = versionOutputPort.findLastVersionByDeploymentId(deploymentEntity.getId());
 
-
         ProjectInfoResponse projectInfo = projectOutputPort.getProjectInfo(deploymentEntity.getProjectId());
         Long userId = projectInfo.getUserId();
         String expirationDate = projectInfo.getExpirationDate();

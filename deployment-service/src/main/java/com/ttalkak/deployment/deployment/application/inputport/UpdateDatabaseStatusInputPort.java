@@ -37,15 +37,8 @@ public class UpdateDatabaseStatusInputPort implements UpdateDatabaseStatusUseCas
     public void updateDatabaseStatus(DatabaseUpdateStatusRequest databaseUpdateStatusRequest) {
         Long databaseId = Long.parseLong(databaseUpdateStatusRequest.getDatabaseId());
 
-        DatabaseEntity databaseEntity = databaseOutputPort.findById(databaseId).orElseThrow(
-                () -> {
-                    try {
-                        deleteEventProducer.occurCreateDatabase(new DeleteDatabaseEvent(databaseId));
-                    } catch (JsonProcessingException e) {
-                        throw new BusinessException(ErrorCode.KAFKA_PRODUCER_ERROR);
-                    }
-                    throw new BusinessException(ErrorCode.NOT_EXISTS_DATABASE);
-                }
+        DatabaseEntity databaseEntity = databaseOutputPort.findById(databaseId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.NOT_EXISTS_DATABASE)
         );
 
         Status status = databaseEntity.getStatus();
