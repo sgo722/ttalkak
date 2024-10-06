@@ -37,7 +37,7 @@ class DatabaseCreateSocketListener (
         )
 
         val container = DockerDatabaseContainer(
-            containerName = "${response.database.name}-${response.databaseId}-db",
+            containerName = "${response.database.databaseType}-${response.databaseId}-db",
             subdomainKey = response.subdomainKey,
             envs = database.envs,
             inboundPort = response.database.databaseType.port(),
