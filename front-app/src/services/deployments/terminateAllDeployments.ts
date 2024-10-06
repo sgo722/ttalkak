@@ -3,6 +3,7 @@ import { useDockerStore } from "../../stores/dockerStore";
 import { sendInstanceUpdate } from "../websocket/sendUpdateUtils";
 import useDeploymentStore from "../../stores/deploymentStore";
 import { useAppStore } from "../../stores/appStatusStore";
+import { dockerStateManager } from "../storeHandler/dockerStateHandler";
 
 export async function terminateAndRemoveContainersAndImages() {
   const containers = useDockerStore.getState().dockerContainers;
@@ -33,14 +34,6 @@ export async function terminateAndRemoveContainersAndImages() {
         await window.electronAPI.removeContainer(container.Id);
         console.log(`${container.Id} forcerDelected`);
       } catch (error) {
-        deployment.serviceType,
-          sendInstanceUpdate(
-            deployment.serviceType,
-            deploymentId,
-            "ERROR",
-            port,
-            "allocate"
-          );
         console.error(`Error removing container ${container.Id}:`, error);
       }
     } else {
@@ -54,8 +47,11 @@ export async function terminateAndRemoveContainersAndImages() {
   // 2. 모든 이미지 삭제
   const imagePromises = images.map(async (image) => {
     try {
-      await window.electronAPI.removeImage(image.Id);
-      console.log(`Image ${image.Id} removed successfully.`);
+      const { success } = await window.electronAPI.removeImage(image.Id);
+      if (success) {
+        console.log(`Image ${image.Id} removed successfully.`);
+        dockerStateManager.removeImage(image.Id);
+      }
     } catch (error) {
       console.error(`Error removing image ${image.Id}:`, error);
     }

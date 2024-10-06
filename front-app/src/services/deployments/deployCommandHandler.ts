@@ -50,7 +50,7 @@ export async function handleContainerCommand(
             Id,
             "RUNNING",
             deployment.outboundPort,
-            `start`
+            "RUNNING"
           );
         } else {
           await dockerStateManager.updateContainerState(containerId, "error");
@@ -71,7 +71,7 @@ export async function handleContainerCommand(
             Id,
             "STOPPED",
             deployment.outboundPort,
-            `stopped`
+            `STOPPED`
           );
         } else {
           await dockerStateManager.updateContainerState(containerId, "error");
@@ -93,7 +93,7 @@ export async function handleContainerCommand(
             Id,
             "RUNNING",
             deployment.outboundPort,
-            `restart`
+            `RUNNING`
           );
         } else {
           await dockerStateManager.updateContainerState(containerId, "error");
@@ -110,15 +110,15 @@ export async function handleContainerCommand(
         if (success) {
           window.electronAPI.stopContainerStats([containerId]);
           window.electronAPI.stopPgrok(Id);
-          store.removeContainer(Id);
           sendInstanceUpdate(
             deployment.serviceType,
             Id,
             "DELETED",
             deployment.outboundPort,
-            `successfully deleted`
+            `DELETED`
           );
           dockerStateManager.removeContainer(containerId);
+          store.removeContainer(containerId);
         }
       }
       break;
