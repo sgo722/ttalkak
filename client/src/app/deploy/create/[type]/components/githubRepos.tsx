@@ -12,6 +12,7 @@ import SearchBar from "@/app/deploy/create/[type]/components/SearchBar";
 import RepoList from "@/app/deploy/create/[type]/components/RepoList";
 import DirectoryNavigator from "@/app/deploy/create/[type]/components/DirectoryNavigator";
 import FileList from "@/app/deploy/create/[type]/components/FileList";
+import useThrottle from "@/hooks/useThrottle";
 import useGetRepos from "@/apis/repo/useGetRepos";
 import { LiaGithubAlt } from "react-icons/lia";
 
@@ -410,7 +411,8 @@ export default function GitHubRepos() {
   };
 
   // 선택완료 버튼 클릭 핸들러
-  const handleSelectComplete = () => {
+  const handleSelectComplete = useThrottle(() => {
+    console.log("핸들러 클릭했음!!");
     const rootDirCheckResult = checkIfRootDirectory();
     if (rootDirCheckResult !== null) {
       toast.error(rootDirCheckResult, {
@@ -469,7 +471,7 @@ export default function GitHubRepos() {
 
       router.push(`/deploy/form?projectId=${projectId}&type=${deployType}`);
     }
-  };
+  }, 3000);
 
   const projectId = searchParams.get("projectId"); // 프로젝트 ID
   const deployTypeMatch = pathname.match(

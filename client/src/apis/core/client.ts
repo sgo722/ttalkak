@@ -78,7 +78,11 @@ axiosInstance.interceptors.response.use(
       } catch (refreshError) {
         // 리프레시 토큰도 만료된 경우 로그아웃 처리 & 로그인 페이지로 이동
         toast.error("인증이 만료되었습니다");
-        useAuthStore.getState().logout();
+        try {
+          await useAuthStore.getState().logout();
+        } catch (logoutError) {
+          console.log("로그아웃 실패", logoutError);
+        }
         window.location.href = "/login";
         return Promise.reject(refreshError);
       }
