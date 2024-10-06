@@ -57,7 +57,7 @@ public class InquiryInputPort implements inquiryUseCase {
                 .stream()
                 .filter(deployment -> Status.isAlive(deployment.getStatus()))
                 .map(DeploymentPreviewResponse::mapToDTO)
-                .collect(Collectors.toList());
+                .toList();
         log.info("getDeploymentsByProjectId: {} :: {}", projectId, collect);
         return collect;
     }

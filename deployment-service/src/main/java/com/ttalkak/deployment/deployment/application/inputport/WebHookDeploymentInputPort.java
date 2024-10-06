@@ -38,6 +38,8 @@ public class WebHookDeploymentInputPort implements WebHookDeploymentUseCase {
                 () -> new BusinessException(ErrorCode.NOT_EXISTS_DEPLOYMENT)
         );
 
+        if (deployment.getStatus() != Status.RUNNING) return;
+
         String expirationDate = null;
         try {
             ProjectInfoResponse projectInfo = projectOutputPort.getProjectInfo(deployment.getProjectId());

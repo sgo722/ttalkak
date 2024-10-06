@@ -51,6 +51,6 @@ public class DeploymentAdapter implements DeploymentOutputPort {
 
     @Override
     public Optional<DeploymentEntity> findByProjectIdAndServiceType(Long projectId, ServiceType serviceType) {
-        return deploymentRepository.findByProjectIdAndServiceType(projectId, serviceType).stream().findAny();
+        return deploymentRepository.findByProjectIdAndServiceType(projectId, serviceType).stream().findFirst();
     }
 }
