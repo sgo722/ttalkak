@@ -8,7 +8,7 @@ import lombok.Getter;
 @Getter
 public class DeploymentUpdateStatusRequest {
 
-    private Long deploymentId;
+    private String deploymentId;
 
     @Enumerated(EnumType.STRING)
     private Status status;
