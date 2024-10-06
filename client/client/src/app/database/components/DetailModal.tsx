@@ -14,7 +14,7 @@ interface DetailModalProps {
 }
 
 interface DbInfoField {
-  key: "type" | "name" | "password" | "port";
+  key: "type" | "username" | "password" | "port";
   label: string;
   tooltip: string;
 }
@@ -26,7 +26,7 @@ const dbInfoFields: DbInfoField[] = [
     tooltip: "데이터베이스의 종류 (예: MySQL, PostgreSQL)",
   },
   {
-    key: "name",
+    key: "username",
     label: "DB 아이디",
     tooltip: "데이터베이스 접속에 필요한 사용자 이름",
   },
