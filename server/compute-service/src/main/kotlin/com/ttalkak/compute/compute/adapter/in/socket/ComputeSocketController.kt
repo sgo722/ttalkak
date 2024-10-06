@@ -60,7 +60,8 @@ class ComputeSocketController(
 
         val deploymentCommands = request.deployments.map {
             DeploymentCommand(
-                deploymentId = it.deploymentId,
+                id = it.id,
+                serviceType = it.serviceType,
                 status = it.status,
                 useMemory = it.useMemory,
                 useCPU = it.useCPU,

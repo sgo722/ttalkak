@@ -26,7 +26,7 @@ class ComputeUpdateSocketListener (
 
         require(response != null) { "컴퓨터 상태 변경 통신에 문제가 발생하였습니다." }
 
-        val running = loadRunningUseCase.loadRunning(response.deploymentId)
+        val running = loadRunningUseCase.loadRunning(response.deploymentId, response.serviceType)
 
         // * 컴퓨터 상태 변경 이벤트 발생
         val command = AddComputeCommand(

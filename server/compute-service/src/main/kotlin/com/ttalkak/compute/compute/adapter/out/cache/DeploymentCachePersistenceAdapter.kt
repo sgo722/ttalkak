@@ -6,6 +6,7 @@ import com.ttalkak.compute.compute.adapter.out.cache.repository.DeploymentCacheR
 import com.ttalkak.compute.compute.application.port.out.RemoveDeploymentStatusPort
 import com.ttalkak.compute.compute.application.port.out.SaveDeploymentStatusPort
 import com.ttalkak.compute.compute.domain.RunningStatus
+import com.ttalkak.compute.compute.domain.ServiceType
 
 @PersistenceAdapter
 class DeploymentCachePersistenceAdapter(
@@ -13,7 +14,8 @@ class DeploymentCachePersistenceAdapter(
 ): SaveDeploymentStatusPort, RemoveDeploymentStatusPort {
     override fun saveDeploymentStatus(
         userId: Long,
-        deploymentId: Long,
+        id: Long,
+        serviceType: ServiceType,
         status: RunningStatus,
         useMemory: Int,
         useCPU: Double,
@@ -30,11 +32,11 @@ class DeploymentCachePersistenceAdapter(
             diskRead = diskRead,
             diskWrite = diskWrite
         )
-        deploymentCacheRepository.save(deploymentId, deployment)
+        deploymentCacheRepository.save(id, serviceType, deployment)
     }
 
-    override fun removeDeploymentStatus(deploymentId: Long) {
-        deploymentCacheRepository.delete(deploymentId)
+    override fun removeDeploymentStatus(id: Long, serviceType: ServiceType) {
+        deploymentCacheRepository.delete(id, serviceType)
     }
 
     override fun removeDeploymentStatusByUserId(userId: Long) {

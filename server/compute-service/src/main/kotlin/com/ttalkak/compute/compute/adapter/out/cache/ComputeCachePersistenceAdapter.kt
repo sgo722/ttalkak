@@ -8,10 +8,7 @@ import com.ttalkak.compute.compute.adapter.out.cache.repository.ComputeUserCache
 import com.ttalkak.compute.compute.adapter.out.cache.repository.RunningCacheRepository
 import com.ttalkak.compute.compute.adapter.out.persistence.repository.StatusRepository
 import com.ttalkak.compute.compute.application.port.out.*
-import com.ttalkak.compute.compute.domain.ComputeRunning
-import com.ttalkak.compute.compute.domain.ComputeUser
-import com.ttalkak.compute.compute.domain.ComputerType
-import com.ttalkak.compute.compute.domain.RunningStatus
+import com.ttalkak.compute.compute.domain.*
 import io.github.oshai.kotlinlogging.KotlinLogging
 import java.util.*
 import kotlin.math.max
@@ -86,12 +83,12 @@ class ComputeCachePersistenceAdapter(
         }
     }
 
-    override fun loadRunning(deploymentId: Long): ComputeRunning {
+    override fun loadRunning(id: Long, serviceType: ServiceType): ComputeRunning {
         log.debug {
-            "deploymentId: $deploymentId, runningCacheRepository.findById(deploymentId): ${runningCacheRepository.findById(deploymentId)}"
+            "id: $id, serviceType: $serviceType, runningCacheRepository.findById(deploymentId): ${runningCacheRepository.findById(id, serviceType)}"
         }
 
-        return runningCacheRepository.findById(deploymentId).map {
+        return runningCacheRepository.findById(id, serviceType).map {
             ComputeRunning(
                 userId = it.userId,
                 status = it.status,
@@ -102,18 +99,20 @@ class ComputeCachePersistenceAdapter(
         }
     }
 
-    override fun saveRunning(userId: Long, deploymentId: Long, port: Int, status: RunningStatus, message: String?) {
+    override fun saveRunning(userId: Long, id: Long, serviceType: ServiceType, port: Int, status: RunningStatus, message: String?) {
         if (status == RunningStatus.DELETED) {
-            runningCacheRepository.delete(deploymentId)
+            runningCacheRepository.delete(id, serviceType)
             computePortCacheRepository.delete(userId, port)
             return
         }
 
-        runningCacheRepository.save(deploymentId = deploymentId, RunningCache(
+        val cache = RunningCache(
             userId = userId,
             status = status,
             message = message ?: ""
-        )).also {
+        )
+
+        runningCacheRepository.save(id = id, serviceType, cache).also {
             computePortCacheRepository.save(
                 userId = userId,
                 port = port
@@ -133,8 +132,8 @@ class ComputeCachePersistenceAdapter(
         computePortCacheRepository.delete(userId)
     }
 
-    override fun removeRunningByDeploymentId(deploymentId: Long) {
-        runningCacheRepository.delete(deploymentId)
+    override fun removeRunningByDeploymentId(id: Long, serviceType: ServiceType) {
+        runningCacheRepository.delete(id, serviceType)
     }
 
     override fun removeRunningByUserId(userId: Long) {
