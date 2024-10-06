@@ -412,7 +412,6 @@ export default function GitHubRepos() {
 
   // 선택완료 버튼 클릭 핸들러
   const handleSelectComplete = useThrottle(() => {
-    console.log("핸들러 클릭했음!!");
     const rootDirCheckResult = checkIfRootDirectory();
     if (rootDirCheckResult !== null) {
       toast.error(rootDirCheckResult, {

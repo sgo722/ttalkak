@@ -82,7 +82,6 @@ export default function DeploymentForm() {
   }, [serviceType, setValue]);
 
   const onSubmit = useThrottle((data: FormData) => {
-    console.log("--dkdfjkdfjkdfjdfjk");
     const isNotEmpty = (val: string) => Boolean(val.trim());
     const filteredEnvVars = data.envVars.filter(
       ({ key, value }) => isNotEmpty(key) && isNotEmpty(value)
