@@ -22,9 +22,7 @@ export default function ProjectContent({ id }: ProjectContentProps) {
   const router = useRouter();
 
   const { data: project } = useGetProject(Number(id));
-  if (project) {
-    console.log(project.deployments);
-  }
+
   const { mutate: modifyProject } = useModifyProject();
   const { mutate: deleteProject } = useDeleteProject();
 

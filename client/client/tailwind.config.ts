@@ -18,9 +18,14 @@ const config: Config = {
           "0%, 100%": { opacity: "1" },
           "50%": { opacity: "0" },
         },
+        jump: {
+          "0%, 80%, 100%": { transform: "translateY(0)" },
+          "90%": { transform: "translateY(-30px)" },
+        },
       },
       animation: {
         "pulse-slow": "pulse-full 3s cubic-bezier(0.4,0,0.6,1) infinite",
+        jump: "jump 2s ease-in-out infinite",
       },
     },
   },
@@ -30,6 +35,7 @@ const config: Config = {
     "bg-yellow-400",
     "animate-pulse",
     "bg-gray-500",
+    "animate-jump",
   ],
   plugins: [],
 };

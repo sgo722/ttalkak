@@ -1,5 +1,5 @@
 "use client";
-
+import Image from "next/image";
 import { useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
@@ -37,5 +37,18 @@ export default function CallbackPage() {
   useEffect(() => {
     fetchUserInfoAndSetState();
   }, [fetchUserInfoAndSetState]);
-  return <div>로그인중</div>;
+  return (
+    <div className="flex flex-col items-center justify-center min-h-[calc(100vh-388px)]">
+      <div className="animate-jump">
+        <Image
+          src="/logo.png"
+          alt="Logo"
+          width={128}
+          height={128}
+          className="rounded-full"
+        />
+      </div>
+      <h2 className="text-2xl font-bold text-gray-800 mt-8 mb-2">로그인 중</h2>
+    </div>
+  );
 }
