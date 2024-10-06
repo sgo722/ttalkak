@@ -14,6 +14,7 @@ import com.ttalkak.deployment.deployment.domain.model.vo.Status;
 import com.ttalkak.deployment.deployment.framework.projectadapter.dto.ProjectInfoResponse;
 import com.ttalkak.deployment.deployment.framework.web.request.DeploymentUpdateStatusRequest;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,6 +22,7 @@ import java.util.List;
 
 import static com.ttalkak.deployment.deployment.domain.model.vo.Status.*;
 
+@Slf4j
 @RequiredArgsConstructor
 @Service
 @Transactional
@@ -40,8 +42,12 @@ public class UpdateDeploymentStatusInputPort implements UpdateDeploymentStatusUs
 
     @Override
     public void updateDeploymentStatus(DeploymentUpdateStatusRequest deploymentUpdateStatusRequest){
+
+        log.info("================= deploymentId :: " + deploymentUpdateStatusRequest.getDeploymentId() + "===============================");
         DeploymentEntity deploymentEntity = deploymentOutputPort.findDeployment(Long.valueOf(deploymentUpdateStatusRequest.getDeploymentId()))
                 .orElseThrow(() -> new EntityNotFoundException(ErrorCode.NOT_EXISTS_DEPLOYMENT));
+
+
 
         String message = deploymentUpdateStatusRequest.getMessage();
         Status status = deploymentUpdateStatusRequest.getStatus();
