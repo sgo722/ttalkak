@@ -21,13 +21,11 @@ export default function CallbackPage() {
         const response = await getUserInfo();
         const userInfo = response.data;
         setUserInfo(userInfo);
-        console.log(response);
-
         router.push("/");
         toast.success("로그인에 성공했습니다.");
       } catch (error) {
-        toast.success("로그인에 실패했습니다.");
-        useAuthStore.getState().logout();
+        toast.error("로그인에 실패했습니다.");
+        await useAuthStore.getState().logout().catch(console.error);
         router.push("/login");
       }
     } else {

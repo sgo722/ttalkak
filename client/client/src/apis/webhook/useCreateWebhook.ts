@@ -24,7 +24,14 @@ const createWebhook = async ({
       events: ["push"],
     });
     return response.data;
-  } catch (error) {
+  } catch (error: any) {
+    if (error.message && typeof error.message === "string") {
+      if (error.message.includes("cannot have more than 20 hooks")) {
+        throw new Error(
+          "웹훅 생성 실패 : 20개이상의 웹훅이 등록되어 있습니다."
+        );
+      }
+    }
     throw new Error("웹훅 생성에 실패했습니다.");
   }
 };

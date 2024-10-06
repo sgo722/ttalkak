@@ -9,14 +9,14 @@ interface AuthState {
   isLogin: boolean;
   setAccessToken: (token: string | null) => void;
   setUserInfo: (info: UserInfo | null) => void;
-  logout: () => void;
+  logout: () => Promise<boolean>;
 }
 
 // zustand 스토어 생성
 const useAuthStore = create<AuthState>()(
   // 상태를 지속적으로 저장하기 위해 persist 미들웨어 사용
   persist(
-    (set, get) => ({
+    (set) => ({
       // 초기상태와 상태를 변경하는 함수들을 정의
       accessToken: null,
       userInfo: null,
@@ -30,13 +30,18 @@ const useAuthStore = create<AuthState>()(
         }
       },
       setUserInfo: (info) => set({ userInfo: info }),
-      logout: () => {
-        set({
-          accessToken: null,
-          userInfo: null,
-          isLogin: false,
-        });
-        Cookies.remove("isLogin");
+      logout: async () => {
+        try {
+          set({
+            accessToken: null,
+            userInfo: null,
+            isLogin: false,
+          });
+          Cookies.remove("isLogin");
+          return true;
+        } catch (error) {
+          return false;
+        }
       },
     }),
     {

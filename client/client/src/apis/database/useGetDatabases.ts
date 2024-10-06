@@ -1,5 +1,8 @@
 import { GetDatabasesResponse, GetDatabasesParams } from "@/types/database";
-import { useQuery, UseQueryResult } from "@tanstack/react-query";
+import {
+  useSuspenseQuery,
+  UseSuspenseQueryResult,
+} from "@tanstack/react-query";
 import client from "@/apis/core/client";
 
 const getDatabases = async (
@@ -14,11 +17,10 @@ const getDatabases = async (
 
 const useGetDatabases = (
   params: GetDatabasesParams
-): UseQueryResult<GetDatabasesResponse, Error> => {
-  return useQuery({
+): UseSuspenseQueryResult<GetDatabasesResponse, Error> => {
+  return useSuspenseQuery({
     queryKey: ["databases", params] as const,
     queryFn: () => getDatabases(params),
-    throwOnError: true,
   });
 };
 

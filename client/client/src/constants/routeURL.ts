@@ -1,10 +1,10 @@
 export const routes = {
   home: "/",
-  projects: "/projects",
+  project: "/project",
   deploy: "/deploy",
   database: "/database",
   dashboard: "/dashboard",
-  payments: "/payments",
+  payment: "/payment",
   guide: "/guide",
   login: "/login",
   mypage: "/mypage",

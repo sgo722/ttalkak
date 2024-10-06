@@ -12,9 +12,9 @@ const getProject = async (projectId: number): Promise<Project> => {
   return response.data;
 };
 
-const checkDeploymentStatus = (project: Project | null | undefined) => {
+const checkDeploymentStatus = (project: Project) => {
   return (
-    project?.deployments?.some(
+    project.deployments?.some(
       (deployment) => deployment.status === "PENDING"
     ) ?? false
   );
@@ -28,7 +28,7 @@ const useGetProject = (
     queryFn: () => getProject(projectId),
     refetchInterval: (query) => {
       const project = query.state.data;
-      return checkDeploymentStatus(project) ? 5000 : false;
+      return project && checkDeploymentStatus(project) ? 5000 : false;
     },
   });
 };

@@ -1,12 +1,12 @@
+import dynamic from "next/dynamic";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
+const ClientWrapper = dynamic(() => import("@/components/ClientWrapper"), {
+  ssr: false,
+});
 import NavBar from "@/components/NavBar";
 import Footer from "@/components/Footer";
-import ReactQueryProvider from "@/providers/ReactQueryProvider";
-import { ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
-
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
@@ -25,7 +25,7 @@ export default function RootLayout({
   return (
     <html lang="kr" className="h-full">
       <body className={`${inter.className} flex flex-col min-h-full`}>
-        <ReactQueryProvider>
+        <ClientWrapper>
           <header>
             <NavBar />
           </header>
@@ -33,19 +33,7 @@ export default function RootLayout({
             {children}
           </main>
           <Footer />
-          <ToastContainer
-            position="bottom-right"
-            autoClose={3000}
-            hideProgressBar={false}
-            newestOnTop={false}
-            closeOnClick
-            rtl={false}
-            pauseOnFocusLoss
-            draggable
-            pauseOnHover
-            theme="light"
-          />
-        </ReactQueryProvider>
+        </ClientWrapper>
       </body>
     </html>
   );

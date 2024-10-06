@@ -6,8 +6,8 @@ import { ServiceType } from "@/types/deploy";
 import { Deployment } from "@/types/project";
 import { CreateProjectParams } from "@/types/project";
 import ConfirmModal from "@/components/ConfirmModal";
-import Modal from "@/app/projects/components/Modal";
-import DeploymentStatus from "@/app/projects/[id]/components/DeploymentStatus";
+import Modal from "@/app/project/components/Modal";
+import DeploymentStatus from "@/app/project/[id]/components/DeploymentStatus";
 import useGetProject from "@/apis/project/useGetProject";
 import useDeleteProject from "@/apis/project/useDeleteProject";
 import useModifyProject from "@/apis/project/useModifyProject";
@@ -44,7 +44,7 @@ export default function ProjectContent({ id }: ProjectContentProps) {
     deleteProject(id, {
       onSuccess: () => {
         setDeleteModal(false);
-        router.push("/projects");
+        router.push("/project");
       },
     });
   };

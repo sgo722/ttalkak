@@ -1,7 +1,9 @@
+import Tooltip from "@/components/Tooltip";
 import Button from "@/components/Button";
 import { DeployStatus } from "@/types/deploy";
 import useGetDatabase from "@/apis/database/useGetDatabase";
 import useStatusColor from "@/hooks/useStatusColor";
+import { getStatusTooptip } from "@/utils/getStatusTooltip";
 import { IoClose } from "react-icons/io5";
 
 interface DetailModalProps {
@@ -10,6 +12,35 @@ interface DetailModalProps {
   onDelete: () => void;
   databaseId: number | null;
 }
+
+interface DbInfoField {
+  key: "type" | "name" | "password" | "port";
+  label: string;
+  tooltip: string;
+}
+
+const dbInfoFields: DbInfoField[] = [
+  {
+    key: "type",
+    label: "DB 타입",
+    tooltip: "데이터베이스의 종류 (예: MySQL, PostgreSQL)",
+  },
+  {
+    key: "name",
+    label: "DB 아이디",
+    tooltip: "데이터베이스 접속에 필요한 사용자 이름",
+  },
+  {
+    key: "password",
+    label: "DB 비밀번호",
+    tooltip: "데이터베이스 접속에 필요한 비밀번호",
+  },
+  {
+    key: "port",
+    label: "DB 포트번호",
+    tooltip: "데이터베이스 서버에 접속하기 위한 네트워크 포트",
+  },
+];
 
 export default function DetailModal({
   isOpen,
@@ -50,23 +81,26 @@ export default function DetailModal({
           <>
             <h2 className="text-4xl mb-6 text-center">{data.name}</h2>
             {data.status && (
-              <div className="flex items-center gap-2 mb-4">
+              <div className="flex items-center mb-4">
                 <div className={`w-3 h-3 rounded-full ${statusColor}`} />
-                <div className="text-md">{data.status}</div>
+                <div className="text-md ml-2">{data.status}</div>
+                <Tooltip
+                  content={getStatusTooptip(data.status, "데이터베이스")}
+                />
               </div>
             )}
             <div className="mb-4">
               <table className="w-full">
                 <tbody>
-                  {[
-                    { label: "DB 타입", value: data.type },
-                    { label: "DB 아이디", value: data.name },
-                    { label: "DB 비밀번호", value: data.password },
-                    { label: "DB 포트번호", value: data.port },
-                  ].map((item, index) => (
+                  {dbInfoFields.map((item, index) => (
                     <tr key={index} className="border-b last:border-b-0">
-                      <td className="py-3 text-gray-500 w-1/3">{item.label}</td>
-                      <td className="py-3">{item.value}</td>
+                      <td className="py-3 text-gray-500 w-1/3">
+                        <div className="flex items-center">
+                          {item.label}
+                          <Tooltip content={item.tooltip} />
+                        </div>
+                      </td>
+                      <td className="py-3">{data[item.key]}</td>
                     </tr>
                   ))}
                 </tbody>

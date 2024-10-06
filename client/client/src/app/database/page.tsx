@@ -1,24 +1,27 @@
 "use client";
 
+import { Suspense } from "react";
+import { ErrorBoundary } from "react-error-boundary";
 import { useState } from "react";
+import { useQueryClient } from "@tanstack/react-query";
+import { CreateDatabaseRequest, GetDatabasesParams } from "@/types/database";
+import DatabaseList from "@/app/database/components/DatabaseList";
+import DatabaseListLoading from "@/app/database/components/DatabaseListLoading";
 import CreateModal from "@/app/database/components/CreateModal";
 import DetailModal from "@/app/database/components/DetailModal";
-import useGetDatabases from "@/apis/database/useGetDatabases";
+import DetailLoading from "@/app/database/components/DetailLoading";
+import DetailError from "@/app/database/components/DetailError";
 import useCreateDatabase from "@/apis/database/useCreateDatabase";
 import useDeleteDatabase from "@/apis/database/useDeleteDatabase";
-import { getDatabaseIcon, getDatabaseName } from "@/utils/getDatabaseIcons";
-import {
-  CreateDatabaseRequest,
-  GetDatabasesParams,
-  GetDatabasesContentResponse,
-} from "@/types/database";
+import useDebounce from "@/hooks/useDebounce";
 import { IoIosSearch } from "react-icons/io";
 import { FaSort } from "react-icons/fa";
 
 export default function DatabasePage() {
+  const queryClient = useQueryClient();
   const [searchKeyword, setSearchKeyword] = useState("");
+  const debouncedSearchKeyword = useDebounce(searchKeyword, 500);
   const [direction, setDirection] = useState("desc");
-  const [currentPage, setCurrentPage] = useState(0);
   const [selectedDatabaseId, setSelectedDatabaseId] = useState<number | null>(
     null
   );
@@ -29,15 +32,12 @@ export default function DatabasePage() {
   const [createModalOpen, setCreateModalOpen] = useState(false);
   const [detailModalOpen, setDetailModalOpen] = useState(false);
 
-  const params: GetDatabasesParams = {
-    page: currentPage,
+  const params: Omit<GetDatabasesParams, "page"> = {
     size: 9,
     sort: "createdAt",
     direction: direction.toUpperCase(),
-    searchKeyword,
+    searchKeyword: debouncedSearchKeyword,
   };
-
-  const { data } = useGetDatabases(params);
 
   const handleCreateDatabase = (data: CreateDatabaseRequest) => {
     createDatabase(data, {
@@ -90,81 +90,46 @@ export default function DatabasePage() {
         </button>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {data?.content.map((database: GetDatabasesContentResponse) => {
-          const Icon = getDatabaseIcon(database.type);
-          return (
-            <div
-              key={database.id}
-              className="border rounded-lg p-6 cursor-pointer"
-              onClick={() => {
-                setSelectedDatabaseId(database.id);
-                setDetailModalOpen(true);
-              }}
-            >
-              <div className="flex items-center mb-2 cursor-pointer">
-                <Icon className="w-10 h-10 mr-3 text-gray-600" />
-                <div>
-                  <h2 className="font-semibold">{database.name}</h2>
-                  <p className="text-sm text-gray-500">
-                    {getDatabaseName(database.type)}
-                  </p>
-                </div>
-              </div>
-            </div>
-          );
-        })}
-      </div>
-
-      <div className="flex justify-center mt-8">
-        <nav className="inline-flex rounded-md gap-2">
-          <button
-            onClick={() => setCurrentPage((prev) => Math.max(0, prev - 1))}
-            disabled={currentPage === 0}
-            className="px-3 py-2 rounded-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50"
-          >
-            이전
-          </button>
-          {Array.from({ length: data?.totalPages || 0 }, (_, i) => i + 1).map(
-            (page) => (
-              <button
-                key={page}
-                onClick={() => setCurrentPage(page - 1)}
-                className={`px-3 py-2 border border-gray-300 rounded-md bg-white text-sm font-medium ${
-                  page === currentPage + 1
-                    ? "text-gray-500 bg-gray-200"
-                    : "text-gray-500 hover:bg-gray-50"
-                }`}
-              >
-                {page}
-              </button>
-            )
-          )}
-          <button
-            onClick={() =>
-              setCurrentPage((prev) =>
-                Math.min((data?.totalPages ?? 1) - 1, prev + 1)
-              )
-            }
-            disabled={currentPage === (data?.totalPages ?? 1) - 1}
-            className="px-3 py-2 rounded-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50"
-          >
-            다음
-          </button>
-        </nav>
-      </div>
+      <Suspense fallback={<DatabaseListLoading />}>
+        <DatabaseList
+          initialParams={params}
+          onDatabaseClick={(id) => {
+            setSelectedDatabaseId(id);
+            setDetailModalOpen(true);
+          }}
+        />
+      </Suspense>
 
       <CreateModal
         isOpen={createModalOpen}
         onClose={() => setCreateModalOpen(false)}
         onSubmit={handleCreateDatabase}
       />
-      <DetailModal
-        isOpen={detailModalOpen}
-        onClose={() => setDetailModalOpen(false)}
-        onDelete={handleDeleteDatabase}
-        databaseId={selectedDatabaseId}
-      />
+      {detailModalOpen && (
+        <ErrorBoundary
+          FallbackComponent={({ error, resetErrorBoundary }) => (
+            <DetailError
+              error={error}
+              resetErrorBoundary={resetErrorBoundary}
+              onClose={() => setDetailModalOpen(false)}
+            />
+          )}
+          onReset={() => {
+            queryClient.invalidateQueries({
+              queryKey: ["database", selectedDatabaseId],
+            });
+          }}
+        >
+          <Suspense fallback={<DetailLoading />}>
+            <DetailModal
+              isOpen={detailModalOpen}
+              onClose={() => setDetailModalOpen(false)}
+              onDelete={handleDeleteDatabase}
+              databaseId={selectedDatabaseId}
+            />
+          </Suspense>
+        </ErrorBoundary>
+      )}
     </div>
   );
 }

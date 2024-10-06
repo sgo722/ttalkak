@@ -4,11 +4,11 @@ import type { NextRequest } from "next/server";
 export function middleware(request: NextRequest) {
   // 보호된 경로 정의
   const protectedPaths = [
-    "/projects",
+    "/project",
     "/deploy",
     "/dashboard",
     "/database",
-    "/payments",
+    "/payment",
     "/mypage",
   ];
 

@@ -16,7 +16,7 @@ export default function LoginPage() {
   return (
     <div className="flex flex-col items-center justify-center min-h-[calc(100vh-16rem)]">
       <div className="w-full max-w-md px-6">
-        <div className="text-4xl font-bold text-center mb-5">Ttalkak login</div>
+        <div className="text-4xl font-bold text-center mb-5">딸깍 로그인</div>
         <div className="text-center text-[#414141] mb-10 text-lg slide-down">
           깃허브 계정으로 쉽고 빠르게 로그인하세요
         </div>
