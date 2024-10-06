@@ -3,6 +3,7 @@ package com.ttalkak.compute.compute.adapter.out.cache.repository
 import com.ttalkak.compute.common.util.Json
 import com.ttalkak.compute.compute.adapter.out.cache.entity.DeploymentStatusCache
 import com.ttalkak.compute.compute.adapter.out.cache.entity.RunningCache
+import com.ttalkak.compute.compute.domain.ServiceType
 import io.github.oshai.kotlinlogging.KotlinLogging
 import jakarta.annotation.Resource
 import org.springframework.data.redis.core.HashOperations
@@ -20,13 +21,13 @@ class RunningCacheRepository {
     @Resource(name = "redisTemplate")
     private lateinit var hashOperations: HashOperations<String, String, String>
 
-    fun save(deploymentId: Long, runningCache: RunningCache) {
+    fun save(id: Long, serviceType: ServiceType, runningCache: RunningCache) {
         val value = Json.serialize(runningCache)
-        hashOperations.put(RUNNING_CACHE_KEY, deploymentId.toString(), value)
+        hashOperations.put(RUNNING_CACHE_KEY, key(id, serviceType), value)
     }
 
-    fun delete(deploymentId: Long) {
-        hashOperations.delete(RUNNING_CACHE_KEY, deploymentId.toString())
+    fun delete(id: Long, serviceType: ServiceType) {
+        hashOperations.delete(RUNNING_CACHE_KEY, key(id, serviceType))
     }
 
     fun deleteByUserId(userId: Long) {
@@ -44,10 +45,12 @@ class RunningCacheRepository {
         }
     }
 
-    fun findById(deploymentId: Long): Optional<RunningCache> {
-        val value = hashOperations.get(RUNNING_CACHE_KEY, deploymentId.toString()).toString()
+    fun findById(id: Long, serviceType: ServiceType): Optional<RunningCache> {
+        val value = hashOperations.get(RUNNING_CACHE_KEY, key(id, serviceType)).toString()
         return Optional.ofNullable(value).map {
             Json.deserialize(it, RunningCache::class.java)
         }
     }
+
+    private fun key(id: Long, serviceType: ServiceType) = "$id-$serviceType"
 }

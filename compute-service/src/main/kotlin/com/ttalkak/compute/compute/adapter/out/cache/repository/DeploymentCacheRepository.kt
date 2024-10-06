@@ -2,6 +2,7 @@ package com.ttalkak.compute.compute.adapter.out.cache.repository
 
 import com.ttalkak.compute.common.util.Json
 import com.ttalkak.compute.compute.adapter.out.cache.entity.DeploymentStatusCache
+import com.ttalkak.compute.compute.domain.ServiceType
 import io.github.oshai.kotlinlogging.KotlinLogging
 import jakarta.annotation.Resource
 import org.springframework.data.redis.core.HashOperations
@@ -18,13 +19,13 @@ class DeploymentCacheRepository {
 
     private val log = KotlinLogging.logger { }
 
-    fun save(deploymentId: Long, deploymentStatus: DeploymentStatusCache) {
+    fun save(id: Long, serviceType: ServiceType, deploymentStatus: DeploymentStatusCache) {
         val value = Json.serialize(deploymentStatus)
-        hashOperations.put(DEPLOYMENT_CACHE_KEY, deploymentId.toString(), value)
+        hashOperations.put(DEPLOYMENT_CACHE_KEY, key(id, serviceType), value)
     }
 
-    fun delete(deploymentId: Long) {
-        hashOperations.delete(DEPLOYMENT_CACHE_KEY, deploymentId.toString())
+    fun delete(id: Long, serviceType: ServiceType) {
+        hashOperations.delete(DEPLOYMENT_CACHE_KEY, key(id, serviceType))
     }
 
     fun deleteByUserId(userId: Long) {
@@ -41,4 +42,6 @@ class DeploymentCacheRepository {
             }
         }
     }
+
+    private fun key(id: Long, serviceType: ServiceType) = "$id-$serviceType"
 }

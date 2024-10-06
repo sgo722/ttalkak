@@ -7,6 +7,7 @@ import com.ttalkak.compute.compute.application.port.`in`.*
 import com.ttalkak.compute.compute.application.port.out.*
 import com.ttalkak.compute.compute.domain.AllocateCompute
 import com.ttalkak.compute.compute.domain.ComputeRunning
+import com.ttalkak.compute.compute.domain.ServiceType
 import io.github.oshai.kotlinlogging.KotlinLogging
 
 @UseCase
@@ -57,7 +58,8 @@ class ComputeService (
         deploymentCommands.forEach {
             saveDeploymentStatusPort.saveDeploymentStatus(
                 userId = command.userId,
-                deploymentId = it.deploymentId,
+                id = it.id,
+                serviceType = it.serviceType,
                 status = it.status,
                 useMemory = it.useMemory,
                 useCPU = it.useCPU,
@@ -72,7 +74,8 @@ class ComputeService (
         // TODO: compute Type 추가
         saveRunningPort.saveRunning(
             userId = userId,
-            deploymentId = command.id,
+            id = command.id,
+            serviceType = command.serviceType,
             port = command.port,
             status = command.status,
             message = command.message
@@ -96,7 +99,7 @@ class ComputeService (
         }
     }
 
-    override fun loadRunning(deploymentId: Long): ComputeRunning {
-        return loadRunningPort.loadRunning(deploymentId)
+    override fun loadRunning(id: Long, serviceType: ServiceType): ComputeRunning {
+        return loadRunningPort.loadRunning(id, serviceType)
     }
 }
