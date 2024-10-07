@@ -14,8 +14,6 @@ public class DatabaseEvent {
 
     private String name;
 
-    private String dbName;
-
     private String username;
 
     private String password;
