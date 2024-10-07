@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { ServiceType } from "@/types/deploy";
 import { Deployment } from "@/types/project";
@@ -11,6 +11,8 @@ import DeploymentStatus from "@/app/project/[id]/components/DeploymentStatus";
 import useGetProject from "@/apis/project/useGetProject";
 import useDeleteProject from "@/apis/project/useDeleteProject";
 import useModifyProject from "@/apis/project/useModifyProject";
+import useGetMultipleWebhooks from "@/apis/webhook/useGetMultipleWebhooks";
+import useDeleteWebhook from "@/apis/webhook/useDeleteWebhook";
 import { FaRegEdit } from "react-icons/fa";
 import { RiDeleteBin5Line } from "react-icons/ri";
 
@@ -25,9 +27,22 @@ export default function ProjectContent({ id }: ProjectContentProps) {
 
   const { mutate: modifyProject } = useModifyProject();
   const { mutate: deleteProject } = useDeleteProject();
+  const { mutate: deleteWebhook } = useDeleteWebhook();
 
   const [editModal, setEditModal] = useState(false);
   const [deleteModal, setDeleteModal] = useState(false);
+  const [isDeleteClicked, setIsDeleteClicked] = useState(false);
+
+  const repos = useMemo(
+    () =>
+      project.deployments?.map((deploy) => ({
+        owner: deploy.repositoryOwner,
+        repo: deploy.repositoryName,
+      })) ?? [],
+    [project.deployments]
+  );
+
+  const webhookQueries = useGetMultipleWebhooks(repos, isDeleteClicked);
 
   const handleEditSubmit = (data: CreateProjectParams) => {
     modifyProject({
@@ -38,13 +53,36 @@ export default function ProjectContent({ id }: ProjectContentProps) {
   };
 
   const handleDeleteClick = () => {
+    setIsDeleteClicked(true);
     setDeleteModal(true);
   };
 
-  const handleDeleteConfirm = () => {
+  const handleDeleteConfirm = async () => {
+    if (project.deployments.length >= 1) {
+      const deletePromises = webhookQueries.flatMap((query, index) => {
+        if (!query.data) return [];
+        const repo = repos[index];
+        return query.data
+          .filter((webhook) =>
+            webhook.config.url.includes(project.webhookToken)
+          )
+          .map((webhook) =>
+            deleteWebhook({
+              owner: repo.owner,
+              repo: repo.repo,
+              hook_id: webhook.id,
+            })
+          );
+      });
+
+      await Promise.all(deletePromises);
+    }
+
+    // 프로젝트 삭제
     deleteProject(id, {
       onSuccess: () => {
         setDeleteModal(false);
+        setIsDeleteClicked(false);
         router.push("/project");
       },
     });

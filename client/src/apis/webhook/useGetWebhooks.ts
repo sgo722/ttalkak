@@ -13,7 +13,7 @@ interface GetWebhooksParams {
   repo: string;
 }
 
-const getWebhooks = async ({
+export const getWebhooks = async ({
   owner,
   repo,
 }: GetWebhooksParams): Promise<Webhook[]> => {
