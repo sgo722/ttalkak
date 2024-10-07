@@ -51,11 +51,13 @@ class AuthControllerTest extends RestDocsSupport {
         request.setUsername("ttalkak-id");
         request.setPassword("ttalkak123!");
         request.setEmail("ttalkak@ttalkak.com");
+        request.setAddress("0x1234567890");
 
         RegisterCommand command = new RegisterCommand(
                 request.getUsername(),
                 request.getPassword(),
-                request.getEmail()
+                request.getEmail(),
+                request.getAddress()
         );
 
         // * WHEN: 이걸 실행하면
@@ -75,7 +77,8 @@ class AuthControllerTest extends RestDocsSupport {
                                 .requestFields(
                                         fieldWithPath("username").type(JsonFieldType.STRING).description("사용자 아이디"),
                                         fieldWithPath("password").type(JsonFieldType.STRING).description("사용자 비밀번호"),
-                                        fieldWithPath("email").type(JsonFieldType.STRING).description("사용자 이메일")
+                                        fieldWithPath("email").type(JsonFieldType.STRING).description("사용자 이메일"),
+                                        fieldWithPath("address").type(JsonFieldType.STRING).description("사용자 지갑 주소")
                                 ).responseFields(empty())
                                 .build()
                 )));
