@@ -115,7 +115,7 @@
     "database.data.extractors.current.id": "SQL Updates",
     "git-widget-placeholder": "master",
     "kotlin-language-version-configured": "true",
-    "last_opened_file_path": "C:/Users/SSAFY/Desktop/Jun/0927/ddalkak/deployment-service",
+    "last_opened_file_path": "C:/Users/SSAFY/Desktop/Jun/1005/EnjoyTrip_FINAL_PROJECT03/YeoHaengDam-main/backend/build.gradle",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
     "node.js.selected.package.eslint": "(autodetect)",
@@ -380,7 +380,7 @@
       <workItem from="1728051012263" duration="2354000" />
       <workItem from="1728109753313" duration="10614000" />
       <workItem from="1728260739377" duration="594000" />
-      <workItem from="1728279345423" duration="1058000" />
+      <workItem from="1728279345423" duration="1801000" />
     </task>
     <task id="LOCAL-00001" summary="도커 컴포즈 수정">
       <option name="closed" value="true" />

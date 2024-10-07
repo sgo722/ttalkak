@@ -58,7 +58,7 @@ public class HostingEntity {
 
     private static String changeDetailDomainName(String projectDomainName, String serviceType) {
         if(ServiceType.isBackendType(serviceType)){
-            return "api_" + projectDomainName;
+            return "api" + projectDomainName;
         }
 
         else if(ServiceType.isFrontendType(serviceType)){
