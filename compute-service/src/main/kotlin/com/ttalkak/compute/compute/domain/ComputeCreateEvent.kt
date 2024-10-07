@@ -1,6 +1,7 @@
 package com.ttalkak.compute.compute.domain
 
 data class ComputeCreateEvent(
+    val isRebuild: Boolean? = false,
     val deploymentId: Long,
     val senderId: Long,
     val subdomainName: String,

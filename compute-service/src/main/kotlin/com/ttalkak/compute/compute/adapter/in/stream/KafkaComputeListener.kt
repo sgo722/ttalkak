@@ -77,7 +77,7 @@ class KafkaComputeListener(
         val response = Json.deserialize(record, UpdateComputeStatusEvent::class.java)
 
         log.info {
-            "컴퓨터 상태 변경 이벤트 발생: ${response.deploymentId} - ${response.command}"
+            "컴퓨터 상태 변경 이벤트 발생: (${response.id}:${response.serviceType}) - ${response.command}"
         }
 
         redisTemplate.convertAndSend(computeUpdateChannel.topic, Json.serialize(response))
@@ -90,6 +90,6 @@ class KafkaComputeListener(
             "컴퓨터 재배포 이벤트 발생: ${response.deploymentId}"
         }
 
-        redisTemplate.convertAndSend(computeUpdateChannel.topic, Json.serialize(response))
+        redisTemplate.convertAndSend(computeCreateChannel.topic, Json.serialize(response.copy(isRebuild = true)))
     }
 }
