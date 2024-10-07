@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
+import Tooltip from "@/components/Tooltip";
 import Button from "@/components/Button";
 import ConfirmModal from "@/components/ConfirmModal";
 import { DeployStatus } from "@/types/deploy";
@@ -13,6 +14,7 @@ import useCreateWebhook from "@/apis/webhook/useCreateWebhook";
 import useDeleteWebhook from "@/apis/webhook/useDeleteWebhook";
 import useDeleteDeploy from "@/apis/deploy/useDeleteDeploy";
 import useStatusColor from "@/hooks/useStatusColor";
+import { getStatusTooptip } from "@/utils/getStatusTooltip";
 import { FaExternalLinkAlt } from "react-icons/fa";
 import { FaCodeBranch, FaCodeCommit } from "react-icons/fa6";
 import { IoChevronBack } from "react-icons/io5";
@@ -118,6 +120,10 @@ export default function DeployDetailPage() {
     data?.hostingResponse?.detailDomainName
   );
 
+  if (!data) {
+    return null;
+  }
+
   return (
     <div>
       <div className="flex justify-between mb-3">
@@ -145,7 +151,10 @@ export default function DeployDetailPage() {
             <p className="text-gray-600 mb-3">상태</p>
             <div className="flex items-center gap-1">
               <div className={`w-3 h-3 rounded-full ${statusColor}`} />
-              <span className="font-semibold">{data?.status}</span>
+              <span className="font-semibold">{data.status}</span>
+              <Tooltip
+                content={getStatusTooptip(data.statusMessage, "프로젝트")}
+              />
             </div>
           </div>
           <div className="flex flex-col gap-1">

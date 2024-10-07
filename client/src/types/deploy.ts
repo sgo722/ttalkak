@@ -11,6 +11,17 @@ export enum DeployStatus {
   ERROR = "ERROR",
 }
 
+export enum StatusMessage {
+  STOPPED = "STOPPED",
+  RUNNING = "RUNNING",
+  PENDING = "PENDING",
+  DOMAIN = "DOMAIN",
+  DOWNLOAD = "DOWNLOAD",
+  DOCKER = "DOCKER",
+  FAILED = "FAILED",
+  CLOUD = "cloud manipulate",
+}
+
 export enum DeployCommand {
   START = "START",
   RESTART = "RESTART",
@@ -39,6 +50,7 @@ export interface Deployment {
   deploymentId: number;
   projectId: number;
   status: DeployStatus;
+  statusMessage: StatusMessage;
   serviceType: ServiceType;
   repositoryName: string;
   repositoryUrl: string;
@@ -109,4 +121,5 @@ export interface GetDeployResponse {
   versions: null | any[];
   envs: any[];
   hostingResponse: Hosting;
+  statusMessage: StatusMessage;
 }
