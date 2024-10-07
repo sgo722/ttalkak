@@ -19,6 +19,4 @@ public class DeploymentCommandStatusRequest {
         this.deploymentId = deploymentId;
         this.command = command;
     }
-
-
 }
