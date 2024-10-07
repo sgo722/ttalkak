@@ -19,6 +19,8 @@ public class DatabaseDetailResponse {
 
     private String type;
 
+    private String dbName;
+
     private String username;
 
     private String password;
@@ -31,10 +33,11 @@ public class DatabaseDetailResponse {
 
 
     @Builder
-    private DatabaseDetailResponse(Long id, String name, String type, String username, String password, int port, Status status, String statusMessage) {
+    private DatabaseDetailResponse(Long id, String name, String type, String dbName, String username, String password, int port, Status status, String statusMessage) {
         this.id = id;
         this.name = name;
         this.type = type;
+        this.dbName = dbName;
         this.username = username;
         this.password = password;
         this.port = port;
@@ -47,6 +50,7 @@ public class DatabaseDetailResponse {
                 .id(databaseEntity.getId())
                 .name(databaseEntity.getName())
                 .type(databaseEntity.getDatabaseType().toString())
+                .dbName(databaseEntity.getDbName())
                 .username(databaseEntity.getUsername())
                 .password(databaseEntity.getPassword())
                 .port(databaseEntity.getPort())
