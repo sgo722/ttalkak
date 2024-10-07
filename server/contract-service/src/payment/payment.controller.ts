@@ -92,12 +92,11 @@ export class PaymentController {
     });
   }
 
-  @UseGuards(JwtAuthGuard)
   @Post('sign')
   async signTransaction(
-    @Request() request,
     @Body()
     body: {
+      senderId: number;
       serviceType: string;
       serviceId: number;
       receipientId: number;
@@ -107,7 +106,7 @@ export class PaymentController {
     return await this.paymentService.signTransaction({
       serviceId: body.serviceId,
       serviceType: body.serviceType,
-      senderId: +request.user.userId,
+      senderId: body.senderId,
       receipientId: body.receipientId,
       toAddress: body.address,
     });

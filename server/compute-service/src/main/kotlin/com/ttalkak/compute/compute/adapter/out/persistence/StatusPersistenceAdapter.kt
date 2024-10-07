@@ -23,6 +23,14 @@ class StatusPersistenceAdapter (
         statusRepository.save(status)
     }
 
+    override fun saveAddress(userId: Long, address: String?) {
+        val status = statusRepository.findByUserId(userId).orElseGet { StatusEntity(userId = userId) }.apply {
+            this.address = address ?: ""
+        }
+
+        statusRepository.save(status)
+    }
+
     override fun loadStatus(userId: Long): Optional<UserStatus> {
         return statusRepository.findByUserId(userId)
             .map { StatusMapper.toDomain(it) }

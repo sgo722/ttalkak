@@ -7,5 +7,6 @@ data class AddComputeCommand (
     val isDatabase: Boolean,
     val useMemory: Double,
     val useCPU: Double,
+    val senderId: Long,
     val container: Any
 )

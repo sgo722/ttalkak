@@ -26,4 +26,9 @@ class StatusService (
     override fun upsertStatus(userId: Long, command: StatusCommand) {
         saveStatusPort.saveStatus(userId, command.maxCompute, command.availablePortStart, command.availablePortEnd)
     }
+
+    @Transactional
+    override fun updateAddress(userId: Long, address: String?) {
+        saveStatusPort.saveAddress(userId, address)
+    }
 }

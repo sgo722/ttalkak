@@ -8,6 +8,7 @@ import com.ttalkak.compute.compute.domain.ServiceType
 data class ComputeRunningRequest(
     val status: RunningStatus,
     val serviceType: ServiceType,
+    val senderId: Long,
     val port: Int,
     val message: String = ""
 )

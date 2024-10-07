@@ -46,7 +46,8 @@ public class AuthController {
         RegisterCommand command = new RegisterCommand(
                 request.getUsername(),
                 request.getPassword(),
-                request.getEmail()
+                request.getEmail(),
+                request.getAddress()
         );
 
         authenticationUseCase.signUp(command);

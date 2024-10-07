@@ -5,5 +5,5 @@ data class StatusCommand(
     val maxMemory: Double,
     val maxCPU: Double,
     val availablePortStart: Int,
-    val availablePortEnd: Int
+    val availablePortEnd: Int,
 )

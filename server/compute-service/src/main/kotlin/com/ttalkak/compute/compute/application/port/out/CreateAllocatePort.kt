@@ -5,6 +5,7 @@ import com.ttalkak.compute.compute.domain.DockerContainer
 interface CreateAllocatePort {
     fun append(
         id: Long,
+        senderId: Long,
         isDatabase: Boolean,
         useMemory: Double,
         useCPU: Double,
@@ -13,6 +14,7 @@ interface CreateAllocatePort {
 
     fun appendPriority(
         id: Long,
+        senderId: Long,
         rebuild: Boolean,
         isDatabase: Boolean,
         useMemory: Double,

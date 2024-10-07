@@ -37,6 +37,7 @@ class AllocateService (
 
         createAllocatePort.append(
             id = command.id,
+            senderId = command.senderId,
             isDatabase = command.isDatabase,
             useMemory = command.useMemory,
             useCPU = command.useCPU,
@@ -60,6 +61,7 @@ class AllocateService (
 
         createAllocatePort.appendPriority(
             id = command.id,
+            senderId = command.senderId,
             isDatabase = command.isDatabase,
             rebuild = true,
             useMemory = command.useMemory,
@@ -104,6 +106,7 @@ class AllocateService (
                     loadAllocatePort.pop().ifPresent {
                         createAllocatePort.append(
                             id = it.id,
+                            senderId = it.senderId,
                             isDatabase = it.isDatabase,
                             useMemory = it.useMemory,
                             useCPU = it.useCPU,
@@ -127,15 +130,20 @@ class AllocateService (
                 status.availablePortStart..status.availablePortEnd
             }.subtract(loadPortPort.loadPorts(availableCompute.userId).toSet())
 
+            val create = ComputeCreate(
+                senderId = 1L,
+                instance = compute.instance
+            )
+
             if (compute.isDatabase) {
-                simpleMessagingTemplate.convertAndSend("/sub/database-create/${availableCompute.userId}", Json.serialize(compute.instance))
+                simpleMessagingTemplate.convertAndSend("/sub/database-create/${availableCompute.userId}", Json.serialize(create))
             } else {
                 // * 포트 할당
                 val randomPort = availablePorts.random()
                 savePortPort.savePort(availableCompute.userId, randomPort)
 
                 (compute.instance as DockerContainer).outboundPort = randomPort
-                simpleMessagingTemplate.convertAndSend("/sub/compute-create/${availableCompute.userId}", Json.serialize(compute.instance))
+                simpleMessagingTemplate.convertAndSend("/sub/compute-create/${availableCompute.userId}", Json.serialize(create))
             }
         }
 

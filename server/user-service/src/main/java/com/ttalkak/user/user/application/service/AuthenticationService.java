@@ -65,7 +65,8 @@ public class AuthenticationService implements AuthenticationUseCase, UserEmailVe
         userCreatePort.createUser(UserCreateEvent.of(
                 entity.getId(),
                 entity.getUsername(),
-                entity.getEmail()
+                entity.getEmail(),
+                command.getAddress()
         ));
     }
 
