@@ -34,5 +34,8 @@ data class StatusEntity(
 
     @Column(name = "available_port_end", nullable = false)
     @ColumnDefault("20000")
-    var availablePortEnd: Int = 20000
+    var availablePortEnd: Int = 20000,
+
+    @Column(name = "address")
+    var address: String = ""
 )

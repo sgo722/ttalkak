@@ -17,11 +17,12 @@ class StatusMapper {
         fun toDomain(statusEntity: StatusEntity): UserStatus {
             return UserStatus(
                 userId = statusEntity.userId,
+                address = statusEntity.address,
                 maxCompute = statusEntity.maxCompute,
                 availablePortStart = statusEntity.availablePortStart,
                 availablePortEnd = statusEntity.availablePortEnd,
                 maxMemory = statusEntity.maxMemory,
-                maxCPU = statusEntity.maxCPU
+                maxCPU = statusEntity.maxCPU,
             )
         }
     }

@@ -34,6 +34,7 @@ class ComputeUpdateSocketListener (
             isDatabase = false,
             useMemory = 0.512,
             useCPU = 5.0,
+            senderId = response.senderId,
             container = DockerContainer(
                 deploymentId = response.deploymentId,
                 serviceType = response.serviceType,

@@ -46,7 +46,7 @@ class ComputeController (
             availablePortStart = request.availablePortStart,
             availablePortEnd = request.availablePortEnd,
             maxMemory = request.maxMemory,
-            maxCPU = request.maxCPU
+            maxCPU = request.maxCPU,
         )
 
         updateStatusUseCase.upsertStatus(userId, command)

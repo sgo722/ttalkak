@@ -69,6 +69,7 @@ class KafkaComputeListener(
         )
 
         updateStatusUseCase.upsertStatus(response.userId, command)
+        updateStatusUseCase.updateAddress(response.userId, response.address)
     }
 
     @KafkaListener(topics = ["\${consumer.topics.command-deployment-status.name}"], groupId = "\${spring.kafka.consumer.group-id}")

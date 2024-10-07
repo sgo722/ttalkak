@@ -5,6 +5,7 @@ import com.ttalkak.compute.compute.adapter.`in`.socket.request.ComputeConnectReq
 import com.ttalkak.compute.compute.adapter.`in`.socket.request.ComputeRunningRequest
 import com.ttalkak.compute.compute.adapter.`in`.socket.request.ComputeStatusRequest
 import com.ttalkak.compute.compute.application.port.`in`.*
+import com.ttalkak.compute.compute.domain.RunningStatus
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.messaging.handler.annotation.DestinationVariable
 import org.springframework.messaging.handler.annotation.Header
@@ -18,6 +19,7 @@ class ComputeSocketController(
     private val computeUseCase: ComputeUseCase,
     private val computeStatusUseCase: ComputeStatusUseCase,
     private val upsertRunningUseCase: UpsertRunningUseCase,
+    private val contractSignUseCase: ContractSignUseCase,
 ) {
     private val log = KotlinLogging.logger {  }
     
@@ -98,5 +100,14 @@ class ComputeSocketController(
         )
 
         upsertRunningUseCase.upsertRunning(userId, command)
+
+        if (request.status == RunningStatus.RUNNING) {
+            contractSignUseCase.sign(
+                serviceId = id,
+                serviceType = request.serviceType,
+                senderId = request.senderId,
+                recipientId = userId
+            )
+        }
     }
 }

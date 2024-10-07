@@ -73,7 +73,8 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 			userCreatePort.createUser(UserCreateEvent.of(
 					user.getId(),
 					user.getUsername(),
-					user.getEmail()
+					user.getEmail(),
+					""
 			));
 		}
 
