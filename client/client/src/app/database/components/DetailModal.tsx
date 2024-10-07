@@ -85,7 +85,7 @@ export default function DetailModal({
                 <div className={`w-3 h-3 rounded-full ${statusColor}`} />
                 <div className="text-md ml-2">{data.status}</div>
                 <Tooltip
-                  content={getStatusTooptip(data.status, "데이터베이스")}
+                  content={getStatusTooptip(data.statusMessage, "데이터베이스")}
                 />
               </div>
             )}

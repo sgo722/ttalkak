@@ -2,8 +2,10 @@ import Link from "next/link";
 import Image from "next/image";
 import { Deployment } from "@/types/project";
 import { DeployCommand, ServiceType, DeployStatus } from "@/types/deploy";
+import Tooltip from "@/components/Tooltip";
 import useModifyDeployStatus from "@/apis/deploy/useModifyDeployStatus";
 import useStatusColor from "@/hooks/useStatusColor";
+import { getStatusTooptip } from "@/utils/getStatusTooltip";
 import { FaPlay } from "react-icons/fa6";
 import { VscDebugRestart } from "react-icons/vsc";
 import { FaStop } from "react-icons/fa";
@@ -40,9 +42,14 @@ export default function DeploymentStatus({
       >
         <h3 className="font-semibold text-lg">{type}</h3>
         <p className="text-md">{deploy.repositoryName}</p>
-        <div className="flex items-center gap-2 mb-3">
-          <div className={`inline-block w-3 h-3 rounded-full ${statusColor}`} />
+        <div className="flex items-center mb-3">
+          <div
+            className={`inline-block w-3 h-3 rounded-full mr-2 ${statusColor}`}
+          />
           <div className="text-md">{deploy.status}</div>
+          <Tooltip
+            content={getStatusTooptip(deploy.statusMessage, "프로젝트")}
+          />
         </div>
         <div className="flex justify-between items-center">
           <div className="flex items-center max-w-[60%]">

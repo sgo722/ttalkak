@@ -1,3 +1,5 @@
+import { StatusMessage } from "@/types/deploy";
+
 export interface Deployment {
   deploymentId: number;
   projectId: number;
@@ -9,6 +11,7 @@ export interface Deployment {
   repositoryUrl: string;
   serviceType: string;
   status: string;
+  statusMessage: StatusMessage;
 }
 
 export interface Project {

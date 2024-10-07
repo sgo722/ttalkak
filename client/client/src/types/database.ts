@@ -1,4 +1,5 @@
 import { DeployStatus } from "@/types/deploy";
+import { StatusMessage } from "@/types/deploy";
 
 export enum DatabaseType {
   MYSQL = "MYSQL",
@@ -33,7 +34,7 @@ export interface GetDatabasesContentResponse {
   type: DatabaseType;
   port: number;
   status: DeployStatus;
-  statusMessage: String;
+  statusMessage: StatusMessage;
 }
 
 export interface GetDatabaseResponse {
@@ -44,5 +45,5 @@ export interface GetDatabaseResponse {
   password: string;
   port: number;
   status: DeployStatus;
-  statusMessage: String;
+  statusMessage: StatusMessage;
 }
