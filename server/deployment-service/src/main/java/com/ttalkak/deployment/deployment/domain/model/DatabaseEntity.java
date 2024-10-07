@@ -50,7 +50,7 @@ public class DatabaseEntity extends BaseEntity {
         this.name = name;
         this.databaseType = databaseType;
         this.status = PENDING;
-        this.statusMessage = PENDING.toString().toLowerCase();
+        this.statusMessage = PENDING.toString();
         this.username = UUID.randomUUID().toString().replace("-", "").substring(0, 8);
         this.password = UUID.randomUUID().toString().replace("-", "").substring(0, 8);
         this.port = -1;

@@ -48,11 +48,11 @@ public class UpdateDatabaseStatusInputPort implements UpdateDatabaseStatusUseCas
             if (message.equals("cloud manipulate")) {
                 reAllocateDatabase(databaseEntity);
             }
-            databaseEntity.setStatus(WAITING);
+            databaseEntity.setStatus(status);
         }
 
         if(status == ERROR){
-            databaseEntity.setStatus(ERROR);
+            databaseEntity.setStatus(status);
         }
 
         if(status == STOPPED){
@@ -64,8 +64,6 @@ public class UpdateDatabaseStatusInputPort implements UpdateDatabaseStatusUseCas
         }
         databaseEntity.setStatusMessage(message);
         databaseOutputPort.save(databaseEntity);
-
-
     }
 
     private void reAllocateDatabase(DatabaseEntity databaseEntity) {

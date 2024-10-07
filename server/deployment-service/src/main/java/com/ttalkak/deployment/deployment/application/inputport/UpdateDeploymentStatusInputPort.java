@@ -59,11 +59,11 @@ public class UpdateDeploymentStatusInputPort implements UpdateDeploymentStatusUs
             if (message.equals("cloud manipulate")) {
                 reAllocateInstance(deploymentEntity);
             }
-            deploymentEntity.setStatus(WAITING);
+            deploymentEntity.setStatus(status);
         }
 
         if(status == ERROR){
-            deploymentEntity.setStatus(ERROR);
+            deploymentEntity.setStatus(status);
         }
 
         if(status == DELETED) {

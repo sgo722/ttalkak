@@ -89,6 +89,7 @@ public class DeploymentEntity extends BaseEntity {
 
     public void deleteDeployment(){
         this.status = Status.DELETED;
+        this.statusMessage = Status.DELETED.toString();
     }
 
     public void runDeployment(){
