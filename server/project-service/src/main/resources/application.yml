@@ -2,12 +2,16 @@ server:
   port: 0
 
 spring:
+  cache:
+    jcache:
+      config: classpath:ehcache.xml
   profiles:
     include: kafka
   application:
     name: project-service
   elasticsearch:
     uris: 34.64.227.45:9200
+
 
 producers:
   topics:
@@ -28,6 +32,7 @@ consumers:
       name: project_deletion_group
     update-hosting-status:
       name: update_hosting_status
+
 
 
 

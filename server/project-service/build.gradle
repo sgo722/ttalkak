@@ -128,6 +128,12 @@ dependencies {
     // jackson
     implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.17.2'
 
+    // cache
+    implementation 'org.ehcache:ehcache:3.8.1'
+    implementation 'javax.cache:cache-api:1.1.1'
+    implementation 'org.springframework.boot:spring-boot-starter-cache'
+    implementation 'javax.xml.bind:jaxb-api:2.3.1'
+    implementation 'org.glassfish.jaxb:jaxb-runtime:2.3.1'
 }
 
 dependencyManagement {

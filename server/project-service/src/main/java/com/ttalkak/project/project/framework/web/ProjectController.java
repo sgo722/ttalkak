@@ -16,11 +16,20 @@ import com.ttalkak.project.project.framework.web.response.ProjectPageResponse;
 import com.ttalkak.project.project.framework.web.response.ProjectDetailResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+
+import org.ehcache.core.Ehcache;
+import org.springframework.cache.Cache;
+import org.springframework.cache.CacheManager;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+
+import javax.cache.Caching;
+import javax.cache.spi.CachingProvider;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Slf4j
 @RestController
@@ -36,6 +45,8 @@ public class ProjectController {
     private final UpdateProjectUseCase updateProjectUseCase;
 
     private final DeleteProjectUseCase deleteProjectUseCase;
+
+    private final CacheManager cacheManager;
 
     /**
      * 프로젝트 생성
@@ -135,5 +146,25 @@ public class ProjectController {
 
     }
 
+    @GetMapping("/project/ehcache")
+    public List<Map<String, Object>> findAll() {
+        return cacheManager.getCacheNames().stream()
+                .map(cacheName -> {
+                    Map<String, Object> cacheData = new HashMap<>();
+                    cacheData.put("cacheName", cacheName);
 
+                    Cache springCache = cacheManager.getCache(cacheName);
+                    if (springCache != null) {
+                        springCache.getNativeCache().toString();
+                        cacheData.put("entries", "Cache content available, but cannot be directly accessed. Type: "
+                                + springCache.getNativeCache().getClass().getName());
+                        return cacheData;
+                    } else {
+                        cacheData.put("entries", "Cache not found");
+                    }
+
+                    return cacheData;
+                })
+                .collect(Collectors.toList());
+    }
 }
