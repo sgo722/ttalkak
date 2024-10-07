@@ -19,10 +19,11 @@ export interface Project {
   userId: number;
   projectName: string;
   domainName: string;
+  webhookToken: string;
   expirationDate: string;
   createdAt: string;
   updatedAt: string;
-  deployments: null | Deployment[];
+  deployments: Deployment[];
 }
 
 export enum PaymentType {
