@@ -28,7 +28,7 @@ class ComputeCreateSocketListener(
         }
 
         log.debug {
-            "신규 컴퓨터 생성 요청: $response"
+            "신규 컴퓨터 생성 요청: $response (rebuild: ${response.isRebuild})"
         }
 
         val container = DockerContainer(
@@ -55,10 +55,14 @@ class ComputeCreateSocketListener(
         )
 
         log.debug {
-            "신규 컴퓨터 할당 요청: $command"
+            "신규 컴퓨터 할당 요청: $command (rebuild: ${response.isRebuild})"
         }
 
-        allocateUseCase.addQueue(command)
+        if (response.isRebuild!!) {
+            allocateUseCase.addRebuildQueue(command)
+        } else {
+            allocateUseCase.addQueue(command)
+        }
     }
 
     private fun parseGithubLink(baseURL: String, branch: String): String = "$baseURL/archive/refs/heads/$branch.zip"
