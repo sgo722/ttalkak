@@ -14,7 +14,7 @@ import java.util.concurrent.CompletableFuture;
 
 @Service
 @RequiredArgsConstructor
-public class ChangeStatusProducer {
+public class ChangeDeploymentStatusProducer {
     @Value("${producers.topics.command-deployment-status.name}")
     private String TOPIC_CREATE_INSTANCE;
 
@@ -28,7 +28,7 @@ public class ChangeStatusProducer {
         // 콜백 메서드 생성 해야함.
         future.thenAccept(result -> {
             UpdateDeploymentStatusEvent value = result.getProducerRecord().value();
-            LOGGER.info("Sent message=[" + value.getDeploymentId() + "] with offset=[" + result.getRecordMetadata().offset() + "]");
+            LOGGER.info("Sent message=[" + value.getId() + "] with offset=[" + result.getRecordMetadata().offset() + "]");
         }).exceptionally(ex ->{
             throw new IllegalArgumentException(ex);
         });

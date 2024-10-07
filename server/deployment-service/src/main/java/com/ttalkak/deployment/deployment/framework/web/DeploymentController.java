@@ -32,6 +32,8 @@ public class DeploymentController {
 
     private final CreateDatabaseUseCase createDatabaseUsecase;
 
+    private final CommandDatabaseStatusUseCase commandDatabaseStatusUseCase;
+
     private final DeleteDatabaseUseCase deleteDatabaseUsecase;
 
     // 배포 등록
@@ -111,6 +113,13 @@ public class DeploymentController {
     @DeleteMapping("/database/{databaseId}")
     public ApiResponse<Void> deleteDatabase(@RequestHeader("X-USER-ID") Long userId, @PathVariable("databaseId") Long databaseId){
         deleteDatabaseUsecase.deleteDatabase(userId, databaseId);
+        return ApiResponse.empty();
+    }
+
+    //데이터베이스 상태 변경
+    @PostMapping("/database/command")
+    public ApiResponse<Void> commandDatabase(@RequestHeader("X-USER-ID") Long userId, @RequestBody DatabaseCommandStatusRequest databaseCommandStatusRequest){
+        commandDatabaseStatusUseCase.commandDatabaseStatus(userId, databaseCommandStatusRequest);
         return ApiResponse.empty();
     }
 

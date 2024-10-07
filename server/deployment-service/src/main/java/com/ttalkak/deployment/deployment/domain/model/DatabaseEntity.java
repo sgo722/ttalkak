@@ -44,6 +44,12 @@ public class DatabaseEntity extends BaseEntity {
     @Setter
     private String statusMessage;
 
+
+    public void updateStatus(Status status){
+        this.status = status;
+        this.statusMessage = status.toString();
+    }
+
     @Builder
     private DatabaseEntity(Long userId, String name, DatabaseType databaseType) {
         this.userId = userId;
