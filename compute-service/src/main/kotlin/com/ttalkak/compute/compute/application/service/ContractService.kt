@@ -17,6 +17,10 @@ class ContractService(
             IllegalArgumentException("Recipient not found")
         }
 
+        if (userStatus.address == null) {
+            throw IllegalArgumentException("Recipient address not found")
+        }
+
         val contractSignRequest = ContractSignRequest(
             serviceId = serviceId,
             serviceType = serviceType,
