@@ -12,7 +12,7 @@ import com.ttalkak.deployment.deployment.domain.model.HostingEntity;
 import com.ttalkak.deployment.deployment.domain.model.VersionEntity;
 import com.ttalkak.deployment.deployment.domain.model.vo.Status;
 import com.ttalkak.deployment.deployment.framework.projectadapter.dto.ProjectInfoResponse;
-import com.ttalkak.deployment.deployment.framework.web.request.DeploymentUpdateStatusRequest;
+import com.ttalkak.deployment.deployment.framework.web.request.UpdateStatusRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -41,16 +41,15 @@ public class UpdateDeploymentStatusInputPort implements UpdateDeploymentStatusUs
     private final ProjectOutputPort projectOutputPort;
 
     @Override
-    public void updateDeploymentStatus(DeploymentUpdateStatusRequest deploymentUpdateStatusRequest){
+    public void updateDeploymentStatus(UpdateStatusRequest updateStatusRequest){
 
-        log.info("================= deploymentId :: " + deploymentUpdateStatusRequest.getDeploymentId() + "===============================");
-        DeploymentEntity deploymentEntity = deploymentOutputPort.findDeployment(Long.valueOf(deploymentUpdateStatusRequest.getDeploymentId()))
+        log.info("================= deploymentId :: " + updateStatusRequest.getId() + "===============================");
+        DeploymentEntity deploymentEntity = deploymentOutputPort.findDeployment(updateStatusRequest.getId())
                 .orElseThrow(() -> new EntityNotFoundException(ErrorCode.NOT_EXISTS_DEPLOYMENT));
 
 
-
-        String message = deploymentUpdateStatusRequest.getMessage();
-        Status status = deploymentUpdateStatusRequest.getStatus();
+        String message = updateStatusRequest.getMessage();
+        Status status = updateStatusRequest.getStatus();
 
         // 삭제된 상태인 경우에는 아무것도 하지 않는다.
         if(deploymentEntity.getStatus() == DELETED) return;

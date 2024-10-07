@@ -12,7 +12,7 @@ import com.ttalkak.deployment.deployment.domain.event.UpdateDeploymentStatusEven
 import com.ttalkak.deployment.deployment.domain.model.DeploymentEntity;
 import com.ttalkak.deployment.deployment.domain.model.HostingEntity;
 import com.ttalkak.deployment.deployment.domain.model.vo.Status;
-import com.ttalkak.deployment.deployment.framework.kafka.ChangeStatusProducer;
+import com.ttalkak.deployment.deployment.framework.kafka.ChangeDeploymentStatusProducer;
 import com.ttalkak.deployment.deployment.framework.projectadapter.dto.ProjectInfoResponse;
 import com.ttalkak.deployment.common.global.error.ErrorCode;
 import com.ttalkak.deployment.common.global.exception.EntityNotFoundException;
@@ -34,7 +34,7 @@ public class DeleteDeploymentInputPort implements DeleteDeploymentUseCase {
     private final DomainOutputPort domainOutputPort;
     private final HostingOutputPort hostingOutputPort;
 
-    private final ChangeStatusProducer changeStatusProducer;
+    private final ChangeDeploymentStatusProducer changeDeploymentStatusProducer;
 
     @Override
     public void deleteDeployment(Long userId, Long deploymentId) {
@@ -49,9 +49,12 @@ public class DeleteDeploymentInputPort implements DeleteDeploymentUseCase {
         }
 
 
-        UpdateDeploymentStatusEvent deleted = new UpdateDeploymentStatusEvent(deploymentId.toString(), CommandEvent.DELETE.toString());
+        UpdateDeploymentStatusEvent deleted = new UpdateDeploymentStatusEvent(
+                deploymentId,
+                deploymentEntity.getServiceType(),
+                CommandEvent.DELETE);
         try{
-            changeStatusProducer.occurUpdateDeploymentStatus(deleted);
+            changeDeploymentStatusProducer.occurUpdateDeploymentStatus(deleted);
         }catch (JsonProcessingException e){
             throw new BusinessException(ErrorCode.KAFKA_PRODUCER_ERROR);
         }
