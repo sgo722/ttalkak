@@ -24,6 +24,8 @@ public class DatabaseEntity extends BaseEntity {
 
     private String name;
 
+    private String dbName;
+
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private DatabaseType databaseType;
@@ -34,7 +36,6 @@ public class DatabaseEntity extends BaseEntity {
 
     @Setter
     private int port;
-
 
     @Setter
     @Column(name = "database_status", nullable = false)
@@ -57,8 +58,9 @@ public class DatabaseEntity extends BaseEntity {
         this.databaseType = databaseType;
         this.status = PENDING;
         this.statusMessage = PENDING.toString();
-        this.username = UUID.randomUUID().toString().replace("-", "").substring(0, 8);
-        this.password = UUID.randomUUID().toString().replace("-", "").substring(0, 8);
+        this.dbName = UUID.randomUUID().toString().replace("-", "").substring(0, 16);
+        this.username = UUID.randomUUID().toString().replace("-", "").substring(0, 16);
+        this.password = UUID.randomUUID().toString().replace("-", "").substring(0, 16);
         this.port = -1;
     }
 
