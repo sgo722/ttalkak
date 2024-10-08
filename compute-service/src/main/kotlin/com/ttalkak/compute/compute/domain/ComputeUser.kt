@@ -20,9 +20,7 @@ data class ComputeUser(
 
     private val log = KotlinLogging.logger {  }
 
-    val weight = COMPUTE_WEIGHT * (remainCompute / maxCompute) +
-            MEMORY_WEIGHT * (remainMemory / maxMemory) +
-            CPU_WEIGHT * (remainCPU / maxCPU)
+    val weight = COMPUTE_WEIGHT * remainCompute + MEMORY_WEIGHT * remainMemory + CPU_WEIGHT * remainCPU
 
     fun isAvailable(
         memory: Double,
