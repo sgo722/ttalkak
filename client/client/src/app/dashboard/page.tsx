@@ -16,7 +16,6 @@ import useAuthStore from "@/store/useAuthStore";
 import { GetProjectsParams, Project, Deployment } from "@/types/project";
 import {
   HistogramParams,
-  Histogram,
   DeploymentLogParams,
   DeploymentLog,
 } from "@/types/dashboard";
@@ -26,7 +25,6 @@ import HistogramChart from "./components/HistogramChart";
 
 export default function CallbackPage() {
   const { userInfo } = useAuthStore();
-  const [project, setProject] = useState<Project | null>(null);
   const [selectedProjectId, setSelectedProjectId] = useState<number | null>(
     null
   );
@@ -38,10 +36,6 @@ export default function CallbackPage() {
   const [dateChange, setDateChange] = useState<boolean>(false);
   const [histogramParams, setHistogramParams] =
     useState<HistogramParams | null>(null);
-  const [histogramData, setHistogramData] = useState<Histogram[] | null>(null);
-  const [histogramInterval, setHistogramInterval] = useState<number | null>(
-    null
-  );
   const [logParams, setLogParams] = useState<DeploymentLogParams | null>(null);
   const [logData, setLogData] = useState<DeploymentLog | null>(null);
   const [currentPage, setCurrentPage] = useState<number>(0);
@@ -60,7 +54,7 @@ export default function CallbackPage() {
     "5",
   ]);
 
-  const params: GetProjectsParams = {
+  const projectsParams: GetProjectsParams = {
     page: 0,
     size: 999,
     sort: "createdAt",
@@ -69,12 +63,12 @@ export default function CallbackPage() {
     searchKeyword: "",
   };
 
-  const { data: projects } = useGetProjects(params);
-  const { data: selectedProjectData, isLoading } = useGetProjectToLog(
+  const { data: projects } = useGetProjects(projectsParams);
+  const { data: project, isLoading } = useGetProjectToLog(
     selectedProjectId || 0,
     !!selectedProjectId
   );
-  const { data: histogram } = useGetHistogram(
+  const { data: { histograms, intervalMinute } = {} } = useGetHistogram(
     histogramParams as HistogramParams,
     !!histogramParams && !!selectedDeployId
   );
@@ -83,22 +77,6 @@ export default function CallbackPage() {
     logParams as DeploymentLogParams,
     !!logParams && !!selectedDeployId
   );
-
-  // Deploy 선택
-  useEffect(() => {
-    if (selectedProjectData) {
-      setProject(selectedProjectData);
-    } else {
-      setProject(null);
-    }
-  }, [selectedProjectData]);
-
-  useEffect(() => {
-    if (histogram && histogramParams) {
-      setHistogramData(histogram.histograms);
-      setHistogramInterval(histogram.intervalMinute);
-    }
-  }, [histogram]);
 
   // LogData 저장 및 추가 로드 시 데이터 병합
   useEffect(() => {
@@ -380,8 +358,8 @@ export default function CallbackPage() {
       <div className="flex mb-5">
         <Monitoring selectedDeployId={selectedDeployId} />
         <HistogramChart
-          histogramData={histogramData}
-          histogramInterval={histogramInterval}
+          histograms={histograms}
+          intervalMinute={intervalMinute}
           fromDate={fromDate}
           toDate={toDate}
           onBarClick={handleBarClick}

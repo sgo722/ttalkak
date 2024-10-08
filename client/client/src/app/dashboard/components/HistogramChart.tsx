@@ -14,14 +14,14 @@ import { Histogram } from "@/types/dashboard";
 Chart.register(CategoryScale, LinearScale, BarElement, Title, Tooltip);
 
 const HistogramChart = ({
-  histogramData,
-  histogramInterval, // 시간 간격(분 단위)
+  histograms,
+  intervalMinute, // 시간 간격(분 단위)
   fromDate,
   toDate,
   onBarClick,
 }: {
-  histogramData: Histogram[] | null;
-  histogramInterval: number | null;
+  histograms: Histogram[] | undefined;
+  intervalMinute: number | undefined;
   fromDate: string;
   toDate: string;
   onBarClick: (start: string, end: string) => void;
@@ -45,12 +45,12 @@ const HistogramChart = ({
   };
 
   useEffect(() => {
-    if (histogramData && histogramInterval) {
+    if (histograms && intervalMinute) {
       let from = new Date(fromDate);
       const to = new Date(toDate);
 
-      from = roundMinutes(from, histogramInterval);
-      const intervalInMs = histogramInterval * 60 * 1000;
+      from = roundMinutes(from, intervalMinute);
+      const intervalInMs = intervalMinute * 60 * 1000;
 
       const timeLabels: string[] = [];
       const counts: number[] = [];
@@ -64,7 +64,7 @@ const HistogramChart = ({
         timeLabels.push(formatTimestamp(current.toISOString()));
 
         // 현재 시간대에 해당하는 데이터 조회
-        const matchingData = histogramData.find((item) => {
+        const matchingData = histograms.find((item) => {
           const itemTime = new Date(item.timestamp).getTime();
           const currentTime = current.getTime();
 
@@ -88,15 +88,15 @@ const HistogramChart = ({
         ],
       });
     }
-  }, [histogramData, histogramInterval]);
+  }, [histograms, intervalMinute]);
 
   const handleBarClick = (_: any, elements: any[]) => {
-    if (histogramInterval && histogramInterval > 10 && elements.length > 0) {
+    if (intervalMinute && intervalMinute > 10 && elements.length > 0) {
       const index = elements[0].index; // 선택한 막대의 인덱스
       const start = chartData.labels[index]; // 선택한 막대의 시작 시간
       const end = formatTimestamp(
         new Date(
-          new Date(start).getTime() + histogramInterval * 60 * 1000
+          new Date(start).getTime() + intervalMinute * 60 * 1000
         ).toISOString()
       );
 
@@ -135,7 +135,7 @@ const HistogramChart = ({
                       const label = chartData.labels[index];
                       const date = new Date(label);
 
-                      if (histogramInterval && histogramInterval <= 60) {
+                      if (intervalMinute && intervalMinute <= 60) {
                         return date.toLocaleTimeString("ko-KR", {
                           hour: "2-digit",
                           minute: "2-digit",
