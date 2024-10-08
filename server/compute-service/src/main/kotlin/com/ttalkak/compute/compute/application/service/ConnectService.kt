@@ -1,10 +1,13 @@
 package com.ttalkak.compute.compute.application.service
 
 import com.ttalkak.compute.common.UseCase
+import com.ttalkak.compute.compute.adapter.out.feign.DeploymentFeignClient
+import com.ttalkak.compute.compute.adapter.out.feign.request.DeploymentUpdateStatusRequest
 import com.ttalkak.compute.compute.application.port.`in`.ComputeUseCase
 import com.ttalkak.compute.compute.application.port.`in`.ConnectUseCase
 import com.ttalkak.compute.compute.application.port.`in`.DisconnectScheduleUseCase
 import com.ttalkak.compute.compute.application.port.out.*
+import com.ttalkak.compute.compute.domain.RunningStatus
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.scheduling.annotation.Scheduled
 
@@ -16,6 +19,8 @@ class ConnectService (
     private val checkConnectPort: CheckConnectPort,
     private val removePortPort: RemovePortPort,
     private val removeRunningPort: RemoveRunningPort,
+    private val loadRunningPort: LoadRunningPort,
+    private val deploymentFeignClient: DeploymentFeignClient,
     private val removeDeploymentStatusPort: RemoveDeploymentStatusPort,
     private val loadComputePort: LoadComputePort
 ): ConnectUseCase, DisconnectScheduleUseCase {
@@ -42,6 +47,21 @@ class ConnectService (
             removePortPort.removePort(it.userId)
             removeRunningPort.removeRunningByUserId(it.userId)
             removeDeploymentStatusPort.removeDeploymentStatusByUserId(it.userId)
+
+            loadRunningPort.loadRunningByUserId(it.userId).forEach { compute ->
+                val status = DeploymentUpdateStatusRequest(
+                    id = compute.id,
+                    serviceType = compute.serviceType,
+                    status = RunningStatus.ERROR,
+                    message = "노드 서버 연결이 끊어짐"
+                )
+
+                try {
+                    deploymentFeignClient.updateStatus(status)
+                } catch (e: Exception) {
+                    log.error(e) { "간접 연결: 디플로이먼트 상태 업데이트 실패" }
+                }
+            }
         }
     }
 }
