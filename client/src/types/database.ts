@@ -38,12 +38,14 @@ export interface GetDatabasesContentResponse {
 }
 
 export interface GetDatabaseResponse {
+  dbName: string;
   id: number;
   name: string;
-  type: DatabaseType;
-  username: string;
   password: string;
   port: number;
   status: DeployStatus;
   statusMessage: StatusMessage;
+  type: DatabaseType;
+  username: string;
+  host?: string;
 }
