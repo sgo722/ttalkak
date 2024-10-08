@@ -12,6 +12,8 @@ interface SaveStatusPort {
     fun saveStatus(
         userId: Long,
         maxCompute: Int,
+        maxCPU: Double,
+        maxMemory: Int,
         availablePortStart: Int,
         availablePortEnd: Int
     )

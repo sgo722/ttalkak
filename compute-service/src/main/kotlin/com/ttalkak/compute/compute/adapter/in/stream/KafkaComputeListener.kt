@@ -64,7 +64,7 @@ class KafkaComputeListener(
             maxCompute = 5,
             availablePortStart = 10000,
             availablePortEnd = 15000,
-            maxMemory = 12.0,
+            maxMemory = 12,
             maxCPU = 80.0
         )
 
