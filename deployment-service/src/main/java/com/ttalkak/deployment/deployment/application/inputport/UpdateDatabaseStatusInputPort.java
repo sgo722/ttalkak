@@ -42,7 +42,7 @@ public class UpdateDatabaseStatusInputPort implements UpdateDatabaseStatusUseCas
                 .orElseThrow(() -> new BusinessException(ErrorCode.NOT_EXISTS_DATABASE)
         );
 
-        Status status = databaseEntity.getStatus();
+        Status status = updateStatusRequest.getStatus();
         String message = updateStatusRequest.getMessage();
 
         if(status == WAITING) {
