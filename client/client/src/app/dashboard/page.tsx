@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import DoughnutChart from "./components/DoughnutChart";
 import useGetProjectToLog from "@/apis/project/useGetProjectToLog";
-import useGetProjects from "@/apis/project/useGetProjects";
+import useGetProjectsToLog from "@/apis/project/useGetProjectsToLog";
 import useGetHistogram from "@/apis/deploy/useGetHistogram";
 import useGetLog from "@/apis/project/useGetLog";
 import {
@@ -33,10 +33,6 @@ export default function CallbackPage() {
   const [selectedType, setSelectedType] = useState<string>("method");
   const [fromDate, setFromDate] = useState<string>(getStartDate());
   const [toDate, setToDate] = useState<string>(getNowDate());
-  const [dateChange, setDateChange] = useState<boolean>(false);
-  const [histogramParams, setHistogramParams] =
-    useState<HistogramParams | null>(null);
-  const [logParams, setLogParams] = useState<DeploymentLogParams | null>(null);
   const [logData, setLogData] = useState<DeploymentLog | null>(null);
   const [currentPage, setCurrentPage] = useState<number>(0);
   const [hasMoreLogs, setHasMoreLogs] = useState<boolean>(true);
@@ -63,7 +59,23 @@ export default function CallbackPage() {
     searchKeyword: "",
   };
 
-  const { data: projects } = useGetProjects(projectsParams);
+  const histogramParams: HistogramParams = {
+    from: toISOWithTimezone(fromDate),
+    to: toISOWithTimezone(toDate),
+    deploymentId: selectedDeployId || 0,
+  };
+
+  const logParams: DeploymentLogParams = {
+    from: toISOWithTimezone(fromDate),
+    to: toISOWithTimezone(toDate),
+    method: selectedMethod,
+    status: selectedStatus,
+    deploymentId: selectedDeployId || 0,
+    sort: "DESC",
+    page: currentPage,
+  };
+
+  const { data: projects } = useGetProjectsToLog(projectsParams);
   const { data: project, isLoading } = useGetProjectToLog(
     selectedProjectId || 0,
     !!selectedProjectId
@@ -72,7 +84,6 @@ export default function CallbackPage() {
     histogramParams as HistogramParams,
     !!histogramParams && !!selectedDeployId
   );
-
   const { data: deployLog } = useGetLog(
     logParams as DeploymentLogParams,
     !!logParams && !!selectedDeployId
@@ -80,10 +91,7 @@ export default function CallbackPage() {
 
   // LogData 저장 및 추가 로드 시 데이터 병합
   useEffect(() => {
-    if (deployLog && logParams) {
-      console.log("로그 데이터", deployLog);
-      console.log("로그 파람스", logParams);
-
+    if (selectedDeployId && deployLog && logParams) {
       setLogData((prevLogData) => {
         const updatedContent =
           logParams.page === 0
@@ -99,55 +107,15 @@ export default function CallbackPage() {
     }
   }, [deployLog]);
 
-  // 로그 파라미터 업데이트 함수
-  const updateLogParams = (page: number = 0) => {
-    if (selectedProjectId && selectedDeployId && project) {
-      setLogParams({
-        from: toISOWithTimezone(fromDate),
-        to: toISOWithTimezone(toDate),
-        method: selectedMethod,
-        status: selectedStatus,
-        deploymentId: selectedDeployId,
-        sort: "DESC",
-        page: page,
-      });
-    }
-  };
-
-  const updateHitogramParams = () => {
-    if (selectedDeployId) {
-      setHistogramParams({
-        from: toISOWithTimezone(fromDate),
-        to: toISOWithTimezone(toDate),
-        deploymentId: selectedDeployId,
-      });
-    }
-  };
-
   const resetData = () => {
     setCurrentPage(0);
     setHasMoreLogs(true);
   };
 
-  // 초기 데이터 요청
-  useEffect(() => {
-    updateLogParams();
-  }, [
-    selectedDeployId,
-    selectedDate,
-    project,
-    selectedStatus,
-    selectedMethod,
-    dateChange,
-  ]);
-
-  useEffect(() => {
-    updateHitogramParams();
-  }, [selectedDeployId, selectedDate, dateChange]);
-
   // Project 선택
   const handleProjectChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setSelectedProjectId(Number(e.target.value));
+    setSelectedDeployId(null);
     resetData();
   };
 
@@ -196,7 +164,6 @@ export default function CallbackPage() {
     if (hasMoreLogs) {
       const nextPage = currentPage + 1;
       setCurrentPage(nextPage);
-      updateLogParams(nextPage);
     }
   };
 
@@ -205,7 +172,6 @@ export default function CallbackPage() {
     setSelectedStatus(["2", "3", "4", "5"]);
     setSelectedMethod(["GET", "POST", "PUT", "PATCH", "DELETE"]);
     resetData();
-    updateLogParams(0);
   };
 
   // Status 토글
@@ -230,7 +196,6 @@ export default function CallbackPage() {
     setFromDate(start);
     setToDate(end);
     setSelectedDate("");
-    setDateChange((prev) => !prev); // 데이터 불러오는 useEffect를 실행
   };
 
   const chartData =
@@ -270,7 +235,7 @@ export default function CallbackPage() {
             <option value="" disabled>
               프로젝트 선택
             </option>
-            {projects.content.map((project: Project) => (
+            {projects?.content.map((project: Project) => (
               <option key={project.id} value={project.id}>
                 {project.projectName}
               </option>
@@ -328,10 +293,6 @@ export default function CallbackPage() {
                 setFromDate(formatTimestamp(e.target.value));
               }}
               onClick={() => setSelectedDate("")}
-              onBlur={() => {
-                updateLogParams(0);
-                updateHitogramParams();
-              }}
               className={`${dateClass} w-60`}
             />
             <input
@@ -339,10 +300,6 @@ export default function CallbackPage() {
               value={toDate}
               onChange={(e) => setToDate(formatTimestamp(e.target.value))}
               onClick={() => setSelectedDate("")}
-              onBlur={() => {
-                updateLogParams(0);
-                updateHitogramParams();
-              }}
               className={`${dateClass} w-64`}
             />
           </div>

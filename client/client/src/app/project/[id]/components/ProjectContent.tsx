@@ -88,6 +88,10 @@ export default function ProjectContent({ id }: ProjectContentProps) {
     });
   };
 
+  const handleBackClick = () => {
+    router.push("/project");
+  };
+
   const getLatestDeploy = (
     deployments: Deployment[] | null,
     type: ServiceType
@@ -103,55 +107,63 @@ export default function ProjectContent({ id }: ProjectContentProps) {
   };
 
   return (
-    <div className="container mx-auto my-10 p-6 border rounded-lg overflow-hidden">
-      <div className="flex items-center gap-3">
-        <h1 className="text-3xl font-bold mb-3">{project.projectName}</h1>
-        <FaRegEdit
-          onClick={() => setEditModal(true)}
-          className="w-6 h-6 cursor-pointer"
-        />
-        <RiDeleteBin5Line
-          onClick={handleDeleteClick}
-          className="w-7 h-7 cursor-pointer"
-        />
-      </div>
-      <div className="p-6">
-        <div className="flex items-start">
-          <div className="flex-grow">
-            <div className="grid grid-cols-2 gap-4">
-              <DeploymentStatus
-                type={ServiceType.FRONTEND}
-                deploy={getLatestDeploy(
-                  project.deployments,
-                  ServiceType.FRONTEND
-                )}
-                projectId={project.id}
-              />
-              <DeploymentStatus
-                type={ServiceType.BACKEND}
-                deploy={getLatestDeploy(
-                  project.deployments,
-                  ServiceType.BACKEND
-                )}
-                projectId={project.id}
-              />
+    <>
+      <button
+        className="border rounded-md px-3.5 py-2 mb-3"
+        onClick={handleBackClick}
+      >
+        목록
+      </button>
+      <div className="container mx-auto p-6 border rounded-lg overflow-hidden">
+        <div className="flex items-center gap-3">
+          <h1 className="text-3xl font-bold ml-6">{project.projectName}</h1>
+          <FaRegEdit
+            onClick={() => setEditModal(true)}
+            className="w-6 h-6 cursor-pointer"
+          />
+          <RiDeleteBin5Line
+            onClick={handleDeleteClick}
+            className="w-7 h-7 cursor-pointer"
+          />
+        </div>
+        <div className="p-6">
+          <div className="flex items-start">
+            <div className="flex-grow">
+              <div className="grid grid-cols-2 gap-4">
+                <DeploymentStatus
+                  type={ServiceType.FRONTEND}
+                  deploy={getLatestDeploy(
+                    project.deployments,
+                    ServiceType.FRONTEND
+                  )}
+                  projectId={project.id}
+                />
+                <DeploymentStatus
+                  type={ServiceType.BACKEND}
+                  deploy={getLatestDeploy(
+                    project.deployments,
+                    ServiceType.BACKEND
+                  )}
+                  projectId={project.id}
+                />
+              </div>
             </div>
           </div>
         </div>
+        <Modal
+          isOpen={editModal}
+          onClose={() => setEditModal(false)}
+          onSubmit={handleEditSubmit}
+          project={project}
+          mode="edit"
+        />
+        <ConfirmModal
+          isOpen={deleteModal}
+          onClose={() => setDeleteModal(false)}
+          onConfirm={handleDeleteConfirm}
+          message="프로젝트를 삭제하시겠습니까?"
+        />
       </div>
-      <Modal
-        isOpen={editModal}
-        onClose={() => setEditModal(false)}
-        onSubmit={handleEditSubmit}
-        project={project}
-        mode="edit"
-      />
-      <ConfirmModal
-        isOpen={deleteModal}
-        onClose={() => setDeleteModal(false)}
-        onConfirm={handleDeleteConfirm}
-        message="프로젝트를 삭제하시겠습니까?"
-      />
-    </div>
+    </>
   );
 }

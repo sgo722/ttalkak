@@ -52,7 +52,6 @@ export default function EmailRegistrationModal({
       throw new Error(response.message || "인증 메일 전송 실패");
     }
 
-    console.log("인증 메일 전송");
     setIsSent(true);
     setTimeLeft(300);
   };

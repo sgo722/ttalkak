@@ -8,9 +8,6 @@ const getLog = async (params: DeploymentLogParams): Promise<DeploymentLog> => {
     params,
   });
 
-  console.log("useGetLog");
-  // console.log(params);
-
   // 필요한 데이터만 추출해서 반환
   const { content, methodCounts, statusCounts } = response.data;
   return { content, methodCounts, statusCounts };
@@ -23,7 +20,7 @@ const useGetLog = (
   return useQuery({
     queryKey: ["log", params] as const,
     queryFn: () => getLog(params),
-    enabled,
+    enabled: enabled && params !== null && params.deploymentId !== 0,
   });
 };
 
