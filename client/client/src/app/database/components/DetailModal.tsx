@@ -4,7 +4,8 @@ import { DeployStatus } from "@/types/deploy";
 import useGetDatabase from "@/apis/database/useGetDatabase";
 import useStatusColor from "@/hooks/useStatusColor";
 import { getStatusTooptip } from "@/utils/getStatusTooltip";
-import { IoClose } from "react-icons/io5";
+import { IoClose, IoEye, IoEyeOff } from "react-icons/io5";
+import { useState } from "react";
 
 interface DetailModalProps {
   isOpen: boolean;
@@ -14,9 +15,11 @@ interface DetailModalProps {
 }
 
 interface DbInfoField {
-  key: "type" | "username" | "password" | "port";
+  key: "type" | "username" | "password" | "port" | "dbName" | "host";
   label: string;
   tooltip: string;
+  value?: string;
+  isPassword?: boolean;
 }
 
 const dbInfoFields: DbInfoField[] = [
@@ -26,19 +29,31 @@ const dbInfoFields: DbInfoField[] = [
     tooltip: "데이터베이스의 종류 (예: MySQL, PostgreSQL)",
   },
   {
+    key: "dbName",
+    label: "DB 이름",
+    tooltip: "데이터베이스 접속에 필요한 데이터베이스명",
+  },
+  {
     key: "username",
     label: "DB 아이디",
-    tooltip: "데이터베이스 접속에 필요한 사용자 이름",
+    tooltip: "데이터베이스 접속에 필요한 사용자 아이디",
   },
   {
     key: "password",
     label: "DB 비밀번호",
     tooltip: "데이터베이스 접속에 필요한 비밀번호",
+    isPassword: true,
   },
   {
     key: "port",
     label: "DB 포트번호",
     tooltip: "데이터베이스 서버에 접속하기 위한 네트워크 포트",
+  },
+  {
+    key: "host",
+    label: "DB 호스트",
+    tooltip: "데이터베이스 서버의 호스트 주소",
+    value: "database.ttalkak.com",
   },
 ];
 
@@ -49,7 +64,7 @@ export default function DetailModal({
   databaseId,
 }: DetailModalProps) {
   const { data } = useGetDatabase(Number(databaseId));
-
+  const [showPassword, setShowPassword] = useState(false);
   const statusColor = useStatusColor(data?.status as DeployStatus);
 
   const onDeleteDatabase = () => {
@@ -60,6 +75,10 @@ export default function DetailModal({
     if (e.target === e.currentTarget) {
       onClose();
     }
+  };
+
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword);
   };
 
   if (!isOpen) return null;
@@ -100,7 +119,27 @@ export default function DetailModal({
                           <Tooltip content={item.tooltip} />
                         </div>
                       </td>
-                      <td className="py-3">{data[item.key]}</td>
+                      <td className="py-3">
+                        {item.isPassword ? (
+                          <div className="flex items-center justify-between">
+                            <span>
+                              {showPassword ? data[item.key] : "••••••••"}
+                            </span>
+                            <button
+                              onClick={togglePasswordVisibility}
+                              className="focus:outline-none"
+                            >
+                              {showPassword ? (
+                                <IoEyeOff className="w-5 h-5" />
+                              ) : (
+                                <IoEye className="w-5 h-5" />
+                              )}
+                            </button>
+                          </div>
+                        ) : (
+                          item.value || data[item.key]
+                        )}
+                      </td>
                     </tr>
                   ))}
                 </tbody>
