@@ -1,5 +1,3 @@
-"use client";
-
 import { useEffect, useRef, useState } from "react";
 import useGetMonitoring from "@/apis/deploy/useGetMonitoring";
 import useTypingAnimation from "../_hooks/useTypingAnimation";

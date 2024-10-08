@@ -1,7 +1,4 @@
-import {
-  useSuspenseQuery,
-  UseSuspenseQueryResult,
-} from "@tanstack/react-query";
+import { useQuery, UseQueryResult } from "@tanstack/react-query";
 import { GetProjectsParams, GetProjectsResponse } from "@/types/project";
 import client from "@/apis/core/client";
 
@@ -13,17 +10,16 @@ const getProjects = async (
     params,
   });
 
-  const { content, totalPages, totalElements } = response.data;
   return response.data;
 };
 
-const useGetProjects = (
+const useGetProjectsToLog = (
   params: GetProjectsParams
-): UseSuspenseQueryResult<GetProjectsResponse, Error> => {
-  return useSuspenseQuery({
+): UseQueryResult<GetProjectsResponse, Error> => {
+  return useQuery({
     queryKey: ["projects", params] as const,
     queryFn: () => getProjects(params),
   });
 };
 
-export default useGetProjects;
+export default useGetProjectsToLog;

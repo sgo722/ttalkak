@@ -24,7 +24,7 @@ const TOOLTIPS = {
     BACKEND: "프로젝트에서 사용한 Java 버전을 입력해주세요.",
   },
   PORT: "애플리케이션에서 사용할 포트 번호를 입력해주세요.",
-  BRANCH: "배포할 레포지토리의 브랜치 입니다.",
+  BRANCH: "배포할 레포지토리의 브랜치명 입니다.",
   ROOT_DIR: "프로젝트의 루트 디렉토리 경로입니다.",
   ENV_VARS: "애플리케이션에 필요한 환경 변수를 입력해주세요.",
 };
@@ -174,19 +174,23 @@ export default function DeploymentForm() {
               validate: (value) => {
                 if (serviceType === ServiceType.FRONTEND) {
                   // Node.js 버전 유효성 검사
-                  const nodeVersionPattern =
-                    /^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)$/;
-                  return (
-                    nodeVersionPattern.test(value) ||
-                    "유효한 Node.js 버전을 입력해주세요 (예: 14.17.0)"
-                  );
+                  const nodeVersionPattern = /^(1[4-9]|2[0-2])$/;
+                  if (!nodeVersionPattern.test(value)) {
+                    return "지원되는 Node.js 버전은 14~22 입니다.";
+                  }
+                  return true;
                 } else {
                   // Java 버전 유효성 검사
-                  const javaVersionPattern = /^[0-9]+$/;
-                  return (
-                    javaVersionPattern.test(value) ||
-                    "유효한 Java 버전을 입력해주세요 (예: 17)"
-                  );
+                  const validJavaVersions = [8, 11, 17];
+                  const parsedValue = parseInt(value, 10);
+                  if (
+                    isNaN(parsedValue) ||
+                    !validJavaVersions.includes(parsedValue) ||
+                    parsedValue.toString() !== value
+                  ) {
+                    return "지원되는 Java 버전은 8, 11, 17 입니다.";
+                  }
+                  return true;
                 }
               },
             }}
@@ -211,9 +215,7 @@ export default function DeploymentForm() {
                   id="languageVersion"
                   type="text"
                   placeholder={
-                    serviceType === ServiceType.FRONTEND
-                      ? "예: 14.17.0"
-                      : "예: 17"
+                    serviceType === ServiceType.FRONTEND ? "예: 20" : "예: 17"
                   }
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />

@@ -57,10 +57,11 @@ export default function DatabaseList({
       {data.totalPages > 0 && (
         <div className="flex justify-center mt-8">
           <nav className="inline-flex rounded-md gap-2">
-            {currentPage > 0 && (
+            {data.totalPages > 1 && (
               <button
                 onClick={() => setCurrentPage((prev) => prev - 1)}
-                className="px-3 py-2 rounded-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50"
+                className="px-3 py-2 rounded-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50"
+                disabled={currentPage === 0}
               >
                 이전
               </button>
@@ -80,10 +81,11 @@ export default function DatabaseList({
                 </button>
               )
             )}
-            {currentPage < data.totalPages - 1 && (
+            {data.totalPages > 1 && (
               <button
                 onClick={() => setCurrentPage((prev) => prev + 1)}
-                className="px-3 py-2 rounded-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50"
+                className="px-3 py-2 rounded-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50"
+                disabled={currentPage === (data?.totalPages ?? 1) - 1}
               >
                 다음
               </button>

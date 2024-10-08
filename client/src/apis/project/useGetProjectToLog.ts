@@ -7,8 +7,6 @@ const getProject = async (projectId: number): Promise<Project> => {
     url: `/project/${projectId}`,
   });
 
-  console.log("useGetProjectToLog");
-
   return response.data;
 };
 
@@ -19,7 +17,7 @@ const useGetProjectToLog = (
   return useQuery({
     queryKey: ["project", projectId],
     queryFn: () => getProject(projectId),
-    enabled,
+    enabled: enabled && projectId !== 0,
   });
 };
 

@@ -10,9 +10,6 @@ const getHistogram = async (
     params,
   });
 
-  console.log("useGetHistogram");
-  // console.log("히스토그램 params", params);
-
   const { histograms, intervalMinute } = response.data;
   return { histograms, intervalMinute };
 };
@@ -24,7 +21,7 @@ const useGetHistogram = (
   return useQuery({
     queryKey: ["histogram", params] as const,
     queryFn: () => getHistogram(params),
-    enabled: enabled && params !== null,
+    enabled: enabled && params !== null && params.deploymentId !== 0,
   });
 };
 
