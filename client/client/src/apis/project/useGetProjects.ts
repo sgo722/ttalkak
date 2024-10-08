@@ -12,8 +12,11 @@ const getProjects = async (
     url: "/project/search",
     params,
   });
+
+  console.log("useGetProjects");
+
   const { content, totalPages, totalElements } = response.data;
-  return { content, totalPages, totalElements };
+  return response.data;
 };
 
 const useGetProjects = (

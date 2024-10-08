@@ -7,39 +7,43 @@ import { formatTimestamp } from "@/utils/getDate";
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
-// DoughnutChart 색상 정의
-const backgroundColors = [
-  "rgba(255, 99, 132, 0.5)",
-  "rgba(54, 162, 235, 0.5)",
-  "rgba(255, 206, 86, 0.5)",
-  "rgba(75, 192, 192, 0.5)",
-  "rgba(153, 102, 255, 0.5)",
+// status별 색상 정의
+const statusBackgroundColors = [
+  "#A4DFDF", // 2XX
+  "#9AD0F5", // 3XX
+  "#FFE6AA", // 4XX
+  "#FFB0C1", // 5XX
 ];
 
-const borderColors = [
-  "rgba(255, 99, 132, 1)",
-  "rgba(54, 162, 235, 1)",
-  "rgba(255, 206, 86, 1)",
-  "rgba(75, 192, 192, 1)",
-  "rgba(153, 102, 255, 1)",
+// method별 색상 정의
+const methodBackgroundColors = [
+  "#FFB0C1", // DELETE
+  "#FFE6AA", // POST
+  "#A4DFDF", // GET
+  "#9AD0F5", // PATCH
+  "#CCB2FF", // PUT
 ];
 
-const getPercentageData = (counts: Record<string, number>) => {
+const getPercentageData = (
+  counts: Record<string, number>,
+  selectedType: string
+) => {
   const total = Object.values(counts).reduce((sum, value) => sum + value, 0);
   if (total === 0) {
     return {
       data: [1], // 데이터가 없을 때 기본 원형
       labels: ["No Data"],
-      backgroundColor: ["rgba(211, 211, 211, 0.5)"],
-      borderColor: ["rgba(211, 211, 211, 1)"],
+      backgroundColor: ["#f5f5f5"],
     };
   }
+
+  const backgroundColors =
+    selectedType === "status" ? statusBackgroundColors : methodBackgroundColors;
 
   return {
     data: Object.values(counts),
     labels: Object.keys(counts),
     backgroundColor: backgroundColors,
-    borderColor: borderColors,
   };
 };
 
@@ -104,7 +108,7 @@ const DoughnutChart = ({
     }
   };
 
-  const chartData = getPercentageData(counts);
+  const chartData = getPercentageData(counts, selectedType);
 
   const data = {
     labels: chartData.labels,
@@ -112,8 +116,7 @@ const DoughnutChart = ({
       {
         data: chartData.data,
         backgroundColor: chartData.backgroundColor,
-        borderColor: chartData.borderColor,
-        borderWidth: 1,
+        borderColor: chartData.backgroundColor,
       },
     ],
   };
@@ -140,82 +143,94 @@ const DoughnutChart = ({
     },
   };
 
+  const btn = "rounded px-4 py-[5px] mr-2.5";
+
   return (
     <>
-      {selectedType === "status" ? (
-        <div>
-          {Object.keys(counts).map((status, index) => (
-            <button
-              key={status}
-              style={{
-                backgroundColor: selectedStatus.includes(status[0])
-                  ? backgroundColors[index]
-                  : "lightgray",
-                color: selectedStatus.includes(status[0]) ? "white" : "gray",
-                textDecoration: selectedStatus.includes(status[0])
-                  ? "none"
-                  : "line-through",
-                textAlign: "center",
-                padding: "5px",
-                margin: "5px",
-                borderRadius: "4px",
-                cursor: "pointer",
-              }}
-              onClick={() => handleStatusToggle(status[0])}
-            >
-              {status[0]}00
-            </button>
-          ))}
-        </div>
-      ) : (
-        <div>
-          {Object.keys(counts).map((method, index) => (
-            <button
-              key={method}
-              style={{
-                backgroundColor: selectedMethod.includes(method)
-                  ? backgroundColors[index]
-                  : "lightgray",
-                color: selectedMethod.includes(method) ? "white" : "gray",
-                textDecoration: selectedMethod.includes(method)
-                  ? "none"
-                  : "line-through",
-                textAlign: "center",
-                padding: "5px",
-                margin: "5px",
-                borderRadius: "4px",
-                cursor: "pointer",
-              }}
-              onClick={() => handleMethodToggle(method)}
-            >
-              {method}
-            </button>
-          ))}
-        </div>
-      )}
-      <div className="flex">
-        <div style={{ width: "300px", height: "300px" }}>
+      <div className="min-w-[500px] ml-8 h-[37.6px] flex items-center">
+        {selectedType === "status" ? (
+          <>
+            {Object.keys(counts).map((status, index) => (
+              <button
+                key={status}
+                className={btn}
+                style={{
+                  backgroundColor: selectedStatus.includes(status[0])
+                    ? statusBackgroundColors[index]
+                    : "#ececec",
+                  color: selectedStatus.includes(status[0])
+                    ? "white"
+                    : "#8b8b8b",
+                }}
+                onClick={() => handleStatusToggle(status[0])}
+              >
+                {status[0]}00
+              </button>
+            ))}
+          </>
+        ) : (
+          <>
+            {Object.keys(counts).map((method, index) => (
+              <button
+                key={method}
+                className={btn}
+                style={{
+                  backgroundColor: selectedMethod.includes(method)
+                    ? methodBackgroundColors[index]
+                    : "lightgray",
+                  color: selectedMethod.includes(method) ? "white" : "gray",
+                  textDecoration: selectedMethod.includes(method)
+                    ? "none"
+                    : "line-through",
+                }}
+                onClick={() => handleMethodToggle(method)}
+              >
+                {method}
+              </button>
+            ))}
+          </>
+        )}
+      </div>
+      <div className="flex min-w-full py-8">
+        <div className="ml-4" style={{ width: "240px", height: "240px" }}>
           <Doughnut data={data} options={options} />
         </div>
 
         <div
-          className="w-2/3 h-80 overflow-y-auto"
+          className="w-2/3 h-60 overflow-y-auto custom-scrollbar w-full ml-7 mr-0.5"
           ref={logsContainerRef}
           onScroll={handleScroll}
         >
           {sortedLogs.length > 0 ? (
             sortedLogs.map((log, index) => (
-              <div key={index} className="flex border-b py-3.5">
-                <div className="w-52">{formatTimestamp(log.timestamp)}</div>
-                <div>method: {log.method}</div>
-                <div>status: {log.status}</div>
-                <div>path: {log.path}</div>
-                <div>duration: {log.duration}s</div>
-                <hr />
+              <div key={index} className="flex border-b py-2.5 text-sm">
+                <div className="px-8 xl:mr-28">
+                  {formatTimestamp(log.timestamp)}
+                </div>
+                <div className="xl:flex">
+                  <div className="w-48">
+                    <span className="text-[#bdbdbd] mr-3.5">method</span>
+                    {log.method}
+                  </div>
+                  <div className="w-44">
+                    <span className="text-[#bdbdbd] mr-3.5">status</span>
+                    {log.status}
+                  </div>
+                  <div className="w-48">
+                    <span className="text-[#bdbdbd] mr-3.5">path</span>
+                    {log.path}
+                  </div>
+                  <div className="w-48">
+                    <span className="text-[#bdbdbd] mr-3.5">duration</span>
+                    {log.duration}s
+                  </div>
+                </div>
               </div>
             ))
           ) : (
-            <p>No logs available.</p>
+            <div className="w-full h-full text-[#b0b0b0] bg-gradient-to-br from-[#f5f5f5] rounded via-[#F4F4F5] to-[#f1f1ff] text-[#3b3b3b] flex items-center justify-center">
+              조회된 데이터가 없습니다
+            </div>
           )}
         </div>
       </div>

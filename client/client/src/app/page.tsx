@@ -105,7 +105,7 @@ const VideoSection: React.FC<{
         transition={{ duration: 1 }}
         className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-start px-24"
       >
-        <div className="text-white max-w-2xl px-4">
+        <div className="text-white max-w-4xl px-4">
           <motion.h2
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: isActive ? 1 : 0, y: isActive ? 0 : 20 }}
@@ -126,7 +126,7 @@ const VideoSection: React.FC<{
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: isActive ? 1 : 0, y: isActive ? 0 : 20 }}
             transition={{ duration: 1, delay: 1.5 }}
-            className="text-lg"
+            className="text-lg max-w-2xl"
           >
             {text.description}
           </motion.p>
@@ -139,7 +139,7 @@ const VideoSection: React.FC<{
         whileHover={{ scale: 1.1 }}
         whileTap={{ scale: 0.95 }}
         onClick={onScrollToTop}
-        className="fixed right-12 bottom-28 bg-white bg-opacity-20 p-4 rounded-full text-white hover:bg-opacity-30 transition-all duration-300 z-50"
+        className="fixed right-12 bottom-20 bg-white bg-opacity-20 p-4 rounded-full text-white hover:bg-opacity-30 transition-all duration-300 z-50"
       >
         <ImArrowUp2 size={24} />
       </motion.button>
@@ -159,7 +159,7 @@ const IntroSection: React.FC<{
             initial={{ y: -50, opacity: 0 }}
             animate={{ y: isActive ? 0 : -50, opacity: isActive ? 1 : 0 }}
             transition={{ duration: 1, delay: 0.5 }}
-            className="text-5xl md:text-7xl font-bold mb-6"
+            className="text-5xl md:text-7xl font-bold mb-14"
           >
             간편한 배포 서비스
           </motion.h1>
@@ -167,7 +167,7 @@ const IntroSection: React.FC<{
             initial={{ y: 50, opacity: 0 }}
             animate={{ y: isActive ? 0 : 50, opacity: isActive ? 1 : 0 }}
             transition={{ duration: 1, delay: 1 }}
-            className="text-xl md:text-2xl mb-8"
+            className="text-xl md:text-2xl mb-12"
           >
             가난한.. 개발자들 모여라.. 우리에겐 Ttalkak이 있는데 AWS? Lamda?
             그게 왜 필요하죠? 우리에겐 Ttalkak이 있는데 도커 파일을 내가 어떻게
@@ -184,7 +184,7 @@ const IntroSection: React.FC<{
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
             onClick={() => console.log("dddd")}
-            className="bg-white text-blue-600 font-bold py-3 px-8 rounded-full text-lg hover:bg-blue-100 transition duration-300 cursor-pointer"
+            className="bg-white text-blue-600 font-bold mb-20 py-3 px-8 rounded-full text-lg hover:bg-blue-100 transition duration-300 cursor-pointer"
           >
             여기는 내일 수정 ㄱ
           </motion.button>

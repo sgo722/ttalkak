@@ -52,12 +52,21 @@ const Monitoring = ({
   };
 
   return (
-    <div
-      ref={containerRef}
-      className="w-5/12 h-48 border overflow-y-auto"
-      onScroll={handleScroll}
-    >
-      {monitoring ? formattedText : "No monitoring data available"}
+    <div className="w-[680px] h-52 border mr-4 rounded p-4 shadow-lg">
+      <div className="text-lg mb-3 font-semibold flex">AI 분석 결과</div>
+      <div
+        ref={containerRef}
+        className="relative p-2 h-[134px] rounded overflow-y-auto custom-scrollbar text-sm bg-gradient-to-br from-[#f5f5f5] via-[#F4F4F5] to-[#f1f1ff] text-[#3b3b3b]"
+        onScroll={handleScroll}
+      >
+        {monitoring ? (
+          formattedText
+        ) : (
+          <div className="text-center text-[#b0b0b0] h-full flex items-center justify-center">
+            조회된 데이터가 없습니다
+          </div>
+        )}
+      </div>
     </div>
   );
 };

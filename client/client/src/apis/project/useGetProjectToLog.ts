@@ -6,6 +6,9 @@ const getProject = async (projectId: number): Promise<Project> => {
   const response = await client.get<Project>({
     url: `/project/${projectId}`,
   });
+
+  console.log("useGetProjectToLog");
+
   return response.data;
 };
 
