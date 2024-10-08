@@ -24,7 +24,14 @@ class StatusService (
 
     @Transactional
     override fun upsertStatus(userId: Long, command: StatusCommand) {
-        saveStatusPort.saveStatus(userId, command.maxCompute, command.availablePortStart, command.availablePortEnd)
+        saveStatusPort.saveStatus(
+            userId = userId,
+            maxCompute = command.maxCompute,
+            maxCPU = command.maxCPU,
+            maxMemory = command.maxMemory,
+            availablePortStart = command.availablePortStart,
+            availablePortEnd = command.availablePortEnd
+        )
     }
 
     @Transactional

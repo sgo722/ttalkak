@@ -13,9 +13,11 @@ import java.util.Optional
 class StatusPersistenceAdapter (
     private val statusRepository: StatusRepository
 ): LoadStatusPort, SaveStatusPort {
-    override fun saveStatus(userId: Long, maxCompute: Int, availablePortStart: Int, availablePortEnd: Int) {
+    override fun saveStatus(userId: Long, maxCompute: Int, maxCPU: Double, maxMemory: Int, availablePortStart: Int, availablePortEnd: Int) {
         val status = statusRepository.findByUserId(userId).orElseGet { StatusEntity(userId = userId) }.apply {
             this.maxCompute = maxCompute
+            this.maxCPU = maxCPU
+            this.maxMemory = maxMemory
             this.availablePortStart = availablePortStart
             this.availablePortEnd = availablePortEnd
         }
