@@ -92,6 +92,16 @@ export class PaymentController {
     });
   }
 
+  @UseGuards(JwtAuthGuard)
+  @Get('signature')
+  async getSignature(
+    @Request() request,
+  ) {
+    return this.paymentService.getPrivateKey({
+      userId: +request.user.userId
+    });
+  }
+
   @Post('sign')
   async signTransaction(
     @Body()

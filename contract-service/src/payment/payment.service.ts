@@ -102,6 +102,24 @@ export class PaymentService {
     };
   }
 
+  async getPrivateKey({
+    userId
+  }: {
+    userId: number;
+  }) {
+    const key = await this.prisma.userTransactionKey.findUnique({
+      where: {
+        userId: userId
+      }
+    });
+
+    return {
+      userId: userId,
+      address: key.address,
+      hasKey: Boolean(key.privateKey)
+    };
+  }
+
   async signTransaction({
     serviceId,
     serviceType,
