@@ -7,6 +7,7 @@ import com.ttalkak.compute.compute.application.port.`in`.*
 import com.ttalkak.compute.compute.application.port.out.*
 import com.ttalkak.compute.compute.domain.AllocateCompute
 import com.ttalkak.compute.compute.domain.ComputeRunning
+import com.ttalkak.compute.compute.domain.RunningStatus
 import com.ttalkak.compute.compute.domain.ServiceType
 import io.github.oshai.kotlinlogging.KotlinLogging
 
@@ -44,6 +45,20 @@ class ComputeService (
         removePortPort.removePort(userId)
         removeRunningPort.removeRunningByUserId(userId)
         removeDeploymentStatusPort.removeDeploymentStatusByUserId(userId)
+        loadRunningPort.loadRunningByUserId(userId).forEach {
+            val status = DeploymentUpdateStatusRequest(
+                id = it.id,
+                serviceType = it.serviceType,
+                status = RunningStatus.ERROR,
+                message = "노드 서버 연결이 끊어짐"
+            )
+
+            try {
+                deploymentFeignClient.updateStatus(status)
+            } catch (e: Exception) {
+                log.error(e) { "직접 연결: 디플로이먼트 상태 업데이트 실패" }
+            }
+        }
     }
 
     override fun update(command: StatusUpdateCommand, deploymentCommands: List<DeploymentCommand>) {

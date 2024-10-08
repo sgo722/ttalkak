@@ -99,6 +99,10 @@ class ComputeCachePersistenceAdapter(
         }
     }
 
+    override fun loadRunningByUserId(userId: Long): List<ComputeInstance> {
+        return runningCacheRepository.findByUserId(userId)
+    }
+
     override fun saveRunning(userId: Long, id: Long, serviceType: ServiceType, port: Int, status: RunningStatus, message: String?) {
         if (status == RunningStatus.DELETED) {
             runningCacheRepository.delete(id, serviceType)

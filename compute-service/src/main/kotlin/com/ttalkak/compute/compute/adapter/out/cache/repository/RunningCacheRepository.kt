@@ -3,6 +3,7 @@ package com.ttalkak.compute.compute.adapter.out.cache.repository
 import com.ttalkak.compute.common.util.Json
 import com.ttalkak.compute.compute.adapter.out.cache.entity.DeploymentStatusCache
 import com.ttalkak.compute.compute.adapter.out.cache.entity.RunningCache
+import com.ttalkak.compute.compute.domain.ComputeInstance
 import com.ttalkak.compute.compute.domain.ServiceType
 import io.github.oshai.kotlinlogging.KotlinLogging
 import jakarta.annotation.Resource
@@ -28,6 +29,20 @@ class RunningCacheRepository {
 
     fun delete(id: Long, serviceType: ServiceType) {
         hashOperations.delete(RUNNING_CACHE_KEY, key(id, serviceType))
+    }
+
+    fun findByUserId(userId: Long): List<ComputeInstance> {
+        return hashOperations.keys(RUNNING_CACHE_KEY).filter {
+            val value = hashOperations.get(RUNNING_CACHE_KEY, it).toString()
+            val runningCache = Json.deserialize(value, RunningCache::class.java)
+            runningCache.userId == userId
+        }.map {
+            val key = it.split("-")
+            ComputeInstance(
+                id = key[0].toLong(),
+                serviceType = ServiceType.valueOf(key[1])
+            )
+        }
     }
 
     fun deleteByUserId(userId: Long) {
