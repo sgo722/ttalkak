@@ -4,10 +4,13 @@ import { useContainerStore } from "../../../stores/containerStore";
 import { useImageStore } from "../../../stores/imageStore";
 import { DeployImageInfo } from "../../../stores/imageStore";
 import { DeployContainerInfo } from "../../../stores/containerStore";
+import { DeployStatus } from "../../../types/deploy";
 
 export async function handleDatabaseBuild(dbCreate: DatabaseCreateEvent) {
   const { senderId, instance } = dbCreate;
-  const { getContainerById, removeContainer } = useContainerStore.getState();
+  const { getContainerById, removeContainer, updateContainerInfo } =
+    useContainerStore.getState();
+  const { updateImageInfo, removeImage } = useImageStore.getState();
   const id = `${instance.serviceType}-${instance.databaseId}`;
   const dbImageName = `${instance.dockerImageName}:${
     instance.dockerImageTag || "latest"
@@ -22,7 +25,10 @@ export async function handleDatabaseBuild(dbCreate: DatabaseCreateEvent) {
       if (existingContainerId) {
         try {
           await stopAndRemoveExistingContainer(existingContainerId);
-          removeContainer(existingContainerId);
+          updateImageInfo(id, { status: DeployStatus.DELETED });
+          updateContainerInfo(id, { status: DeployStatus.DELETED });
+          removeImage(id);
+          removeContainer(id);
           console.log(`기존 컨테이너 삭제 완료, ID: ${existingContainerId}`);
         } catch (error) {
           console.error(`기존 배포 삭제 중 오류 발생: ${error}`);
@@ -50,6 +56,8 @@ export async function handleDatabaseBuild(dbCreate: DatabaseCreateEvent) {
     }
   } catch (error) {
     console.error("Error during database build process:", error);
+    updateImageInfo(id, { status: DeployStatus.ERROR });
+    updateContainerInfo(id, { status: DeployStatus.ERROR });
   }
 }
 
@@ -79,7 +87,7 @@ async function handleSuccessfulContainerStart(
     Created: image.Created,
     Size: image.Size,
     Containers: image.Containers,
-    created: image.Created,
+    status: DeployStatus.RUNNING,
   };
   //container 정보 업데이트
   const newContainer: Omit<DeployContainerInfo, "id"> = {
@@ -88,7 +96,7 @@ async function handleSuccessfulContainerStart(
     serviceType: instance.serviceType,
     containerName: `${instance.dockerImageName}:${instance.dockerImageTag}`,
     imageTag: image.RepoTags ? image.RepoTags[0] : undefined,
-    status: "RUNNING",
+    status: DeployStatus.RUNNING,
     containerId: container.Id,
     ports: [
       {
