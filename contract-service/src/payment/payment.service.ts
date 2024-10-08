@@ -113,11 +113,19 @@ export class PaymentService {
       }
     });
 
+    if (key) {
+      return {
+        userId: userId,
+        address: key.address,
+        hasKey: Boolean(key.privateKey)
+      };
+    }
+
     return {
       userId: userId,
-      address: key.address,
-      hasKey: Boolean(key.privateKey)
-    };
+      address: "",
+      hasKey: false
+    } 
   }
 
   async signTransaction({
