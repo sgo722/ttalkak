@@ -10,9 +10,11 @@ import com.ttalkak.deployment.deployment.application.outputport.EventOutputPort;
 import com.ttalkak.deployment.deployment.application.usecase.UpdateDatabaseStatusUseCase;
 import com.ttalkak.deployment.deployment.domain.event.*;
 import com.ttalkak.deployment.deployment.domain.model.DatabaseEntity;
+import com.ttalkak.deployment.deployment.domain.model.vo.ServiceType;
 import com.ttalkak.deployment.deployment.domain.model.vo.Status;
 import com.ttalkak.deployment.deployment.framework.domainadapter.dto.DatabaseDomainKeyRequest;
 import com.ttalkak.deployment.deployment.framework.domainadapter.dto.DatabaseDomainKeyResponse;
+import com.ttalkak.deployment.deployment.framework.kafka.ChangeDatabaseStatusProducer;
 import com.ttalkak.deployment.deployment.framework.kafka.DeleteEventProducer;
 import com.ttalkak.deployment.deployment.framework.web.request.DatabaseUpdateStatusRequest;
 import com.ttalkak.deployment.deployment.framework.web.request.UpdateStatusRequest;
@@ -34,13 +36,29 @@ public class UpdateDatabaseStatusInputPort implements UpdateDatabaseStatusUseCas
 
     private final DeleteEventProducer deleteEventProducer;
 
+    private final ChangeDatabaseStatusProducer changeDatabaseStatusProducer;
+
     @Override
     public void updateDatabaseStatus(UpdateStatusRequest updateStatusRequest) {
         Long databaseId = updateStatusRequest.getId();
 
         DatabaseEntity databaseEntity = databaseOutputPort.findById(databaseId)
-                .orElseThrow(() -> new BusinessException(ErrorCode.NOT_EXISTS_DATABASE)
-        );
+                .orElseThrow(() -> {
+                    UpdateDatabaseStatusEvent updateDatabaseStatusEvent = new UpdateDatabaseStatusEvent(
+                            databaseId,
+                            ServiceType.DATABASE,
+                            CommandEvent.DELETE
+                    );
+
+                    try {
+                        changeDatabaseStatusProducer.occurUpdateDatabaseStatus(updateDatabaseStatusEvent);
+                    } catch (JsonProcessingException e) {
+                        throw new RuntimeException(e);
+                    }
+                    return new BusinessException(ErrorCode.NOT_EXISTS_DATABASE); // return으로 예외 생성
+                });
+
+
 
         Status status = updateStatusRequest.getStatus();
         String message = updateStatusRequest.getMessage();

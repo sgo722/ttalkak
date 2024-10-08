@@ -55,9 +55,9 @@ public class CommandDatabaseStatusInputPort implements CommandDatabaseStatusUseC
 
     private UpdateDatabaseStatusEvent toKafkaEventMessage(DatabaseCommandStatusRequest databaseCommandStatusRequest) {
         UpdateDatabaseStatusEvent updateDatabaseStatusEvent = new UpdateDatabaseStatusEvent(
-                databaseCommandStatusRequest.getDatabaseId().toString(),
+                databaseCommandStatusRequest.getDatabaseId(),
                 ServiceType.DATABASE,
-                databaseCommandStatusRequest.getCommand().toString()
+                databaseCommandStatusRequest.getCommand()
         );
         return updateDatabaseStatusEvent;
     }

@@ -37,7 +37,7 @@ public class DeleteDatabaseInputPort implements DeleteDatabaseUseCase {
         domainOutputPort.deleteDomainKey("database_" + databaseEntity.getId());
 
         try {
-            deleteEventProducer.occurCreateDatabase(new DeleteDatabaseEvent(databaseEntity.getId()));
+            deleteEventProducer.occurDeleteDatabase(new DeleteDatabaseEvent(databaseEntity.getId()));
         } catch (JsonProcessingException e) {
             throw new BusinessException(ErrorCode.KAFKA_PRODUCER_ERROR);
         }

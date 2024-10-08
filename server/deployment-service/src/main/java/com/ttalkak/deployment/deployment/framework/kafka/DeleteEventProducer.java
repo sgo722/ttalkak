@@ -26,7 +26,7 @@ public class DeleteEventProducer{
 
     private final Logger LOGGER = LoggerFactory.getLogger(DeleteEventProducer.class);
 
-    public void occurCreateDatabase(DeleteDatabaseEvent deleteDatabaseEvent) throws JsonProcessingException {
+    public void occurDeleteDatabase(DeleteDatabaseEvent deleteDatabaseEvent) throws JsonProcessingException {
         CompletableFuture<SendResult<String, DeleteDatabaseEvent>> future = kafkaTemplate.send(TOPIC_DELETE_DATABASE, deleteDatabaseEvent);
         // 콜백 메서드 생성 해야함.
         future.thenAccept(result -> {
