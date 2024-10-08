@@ -13,9 +13,9 @@ import java.io.Serializable;
 @AllArgsConstructor
 public class UpdateDatabaseStatusEvent implements Serializable {
 
-    private String id;
+    private Long id;
 
     private ServiceType serviceType;
 
-    private String command;
+    private CommandEvent command;
 }

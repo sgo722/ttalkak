@@ -11,6 +11,8 @@ import com.ttalkak.deployment.deployment.domain.model.DeploymentEntity;
 import com.ttalkak.deployment.deployment.domain.model.HostingEntity;
 import com.ttalkak.deployment.deployment.domain.model.VersionEntity;
 import com.ttalkak.deployment.deployment.domain.model.vo.Status;
+import com.ttalkak.deployment.deployment.framework.kafka.ChangeDeploymentStatusProducer;
+import com.ttalkak.deployment.deployment.framework.kafka.DeleteEventProducer;
 import com.ttalkak.deployment.deployment.framework.projectadapter.dto.ProjectInfoResponse;
 import com.ttalkak.deployment.deployment.framework.web.request.UpdateStatusRequest;
 import lombok.RequiredArgsConstructor;
@@ -40,6 +42,12 @@ public class UpdateDeploymentStatusInputPort implements UpdateDeploymentStatusUs
 
     private final ProjectOutputPort projectOutputPort;
 
+
+    private final ChangeDeploymentStatusProducer changeDeploymentStatusProducer;
+
+    private final DeleteEventProducer deleteEventProducer;
+    private final DeleteDeploymentInputPort deleteDeploymentInputPort;
+
     @Override
     public void updateDeploymentStatus(UpdateStatusRequest updateStatusRequest){
 
@@ -52,7 +60,18 @@ public class UpdateDeploymentStatusInputPort implements UpdateDeploymentStatusUs
         Status status = updateStatusRequest.getStatus();
 
         // 삭제된 상태인 경우에는 아무것도 하지 않는다.
-        if(deploymentEntity.getStatus() == DELETED) return;
+        if(deploymentEntity.getStatus() == DELETED){
+            UpdateDeploymentStatusEvent deleted = new UpdateDeploymentStatusEvent(
+                    deploymentEntity.getId(),
+                    deploymentEntity.getServiceType(),
+                    CommandEvent.DELETE);
+            try{
+                changeDeploymentStatusProducer.occurUpdateDeploymentStatus(deleted);
+            }catch (JsonProcessingException e){
+                throw new BusinessException(ErrorCode.KAFKA_PRODUCER_ERROR);
+            }
+            return;
+        }
 
         if(status == WAITING) {
             if (message.equals("cloud manipulate")) {

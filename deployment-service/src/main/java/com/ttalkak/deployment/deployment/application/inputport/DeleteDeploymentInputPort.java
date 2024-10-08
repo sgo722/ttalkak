@@ -29,9 +29,13 @@ import java.util.Objects;
 @Transactional
 @RequiredArgsConstructor
 public class DeleteDeploymentInputPort implements DeleteDeploymentUseCase {
+
     private final DeploymentOutputPort deploymentOutputPort;
+
     private final ProjectOutputPort projectOutputPort;
+
     private final DomainOutputPort domainOutputPort;
+
     private final HostingOutputPort hostingOutputPort;
 
     private final ChangeDeploymentStatusProducer changeDeploymentStatusProducer;
