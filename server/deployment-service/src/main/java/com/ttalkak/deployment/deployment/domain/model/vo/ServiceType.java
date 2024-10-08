@@ -6,15 +6,15 @@ import lombok.Getter;
 public enum ServiceType {
     FRONTEND, BACKEND, DATABASE;
 
-    public static boolean isBackendType(String serviceType){
-        if(ServiceType.valueOf(serviceType).equals(BACKEND)){
+    public static boolean isBackendType(ServiceType serviceType){
+        if(serviceType.equals(BACKEND)){
             return true;
         }
         return false;
     }
 
-    public static boolean isFrontendType(String serviceType){
-        if(ServiceType.valueOf(serviceType).equals(FRONTEND)){
+    public static boolean isFrontendType(ServiceType serviceType){
+        if(serviceType.equals(FRONTEND)){
             return true;
         }
         return false;

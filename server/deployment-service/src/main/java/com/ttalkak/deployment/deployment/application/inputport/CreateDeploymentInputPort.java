@@ -10,7 +10,6 @@ import com.ttalkak.deployment.deployment.domain.event.HostingEvent;
 import com.ttalkak.deployment.deployment.domain.event.*;
 import com.ttalkak.deployment.deployment.domain.model.*;
 import com.ttalkak.deployment.deployment.domain.model.vo.GithubInfo;
-import com.ttalkak.deployment.deployment.domain.model.vo.ServiceType;
 import com.ttalkak.deployment.deployment.framework.domainadapter.dto.WebDomainKeyResponse;
 import com.ttalkak.deployment.deployment.framework.domainadapter.dto.WebDomainRequest;
 import com.ttalkak.deployment.deployment.framework.projectadapter.dto.ProjectInfoResponse;
@@ -30,7 +29,7 @@ import java.util.List;
 @Transactional
 public class CreateDeploymentInputPort implements CreateDeploymentUseCase {
 
-    private final CreateDockerfileUseCase createDockerfileUseCase;
+    private final CreateDockerfileUseCase createDockerfileUsecase;
 
     private final DeploymentOutputPort deploymentOutputPort;
 
@@ -56,7 +55,7 @@ public class CreateDeploymentInputPort implements CreateDeploymentUseCase {
         Long userId = projectInfo.getUserId();
         String domainName = projectInfo.getDomainName();
         String webhookToken = projectInfo.getWebhookToken();
-        String payloadURL = "https://api.ttalkak.com/webhook/deployment/" + deploymentCreateRequest.getServiceType().toLowerCase() + "/" + webhookToken;
+        String payloadURL = "https://api.ttalkak.com/webhook/deployment/" + deploymentCreateRequest.getServiceType().toString().toLowerCase() + "/" + webhookToken;
         String expirationDate = projectInfo.getExpirationDate();
 
         // 배포 객체 생성
@@ -68,12 +67,8 @@ public class CreateDeploymentInputPort implements CreateDeploymentUseCase {
 
         boolean dockerfileExist = dockerfileCreateRequest.getExist();
         if(!dockerfileExist){
-            String dockerFileScript = createDockerfileUseCase.generateDockerfileScript(deployment.getServiceType(),
-                    dockerfileCreateRequest.getBuildTool(),
-                    dockerfileCreateRequest.getPackageManager(),
-                    dockerfileCreateRequest.getLanguageVersion()
-            );
-            deployment.setDockerfileScript(dockerFileScript);
+            String dockerfileScript = createDockerfileUsecase.generateDockerfile(deployment.getServiceType(), dockerfileCreateRequest.getBuildTool(), dockerfileCreateRequest.getPackageManager(), dockerfileCreateRequest.getLanguageVersion());
+            deployment.setDockerfileScript(dockerfileScript);
         }
 
         // 배포 버전 객체 생성
@@ -182,7 +177,7 @@ public class CreateDeploymentInputPort implements CreateDeploymentUseCase {
     private static DeploymentEntity createDeployment(DeploymentCreateRequest deploymentCreateRequest, GithubInfo githubInfo, String payloadURL) {
         return DeploymentEntity.createDeployment(
                 deploymentCreateRequest.getProjectId(),
-                ServiceType.valueOf(deploymentCreateRequest.getServiceType()),
+                deploymentCreateRequest.getServiceType(),
                 githubInfo,
                 deploymentCreateRequest.getFramework(),
                 payloadURL);

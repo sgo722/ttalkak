@@ -71,7 +71,7 @@ public class UpdateDeploymentInputPort implements UpdateDeploymentUseCase {
             throw new BusinessException(ErrorCode.NOT_EXISTS_HOSTING);
         }
         hosting.setHostingPort(deploymentUpdateRequest.getHostingPort());
-        hosting.updateDomainName(domainName, String.valueOf(deploymentEntity.getServiceType()));
+        hosting.updateDomainName(domainName, deploymentEntity.getServiceType());
 
         // Env 데이터 수정
         List<EnvEvent> envs = new ArrayList<>();

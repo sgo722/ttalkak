@@ -1,78 +1,68 @@
 package com.ttalkak.deployment.deployment.application.inputport;
 
-
+import com.ttalkak.deployment.common.UseCase;
 import com.ttalkak.deployment.deployment.application.usecase.CreateDockerfileUseCase;
+import com.ttalkak.deployment.deployment.domain.model.docker.*;
+import com.ttalkak.deployment.deployment.domain.model.docker.backend.BackendDockerfile;
+import com.ttalkak.deployment.deployment.domain.model.docker.backend.GradleBuildToolStrategy;
+import com.ttalkak.deployment.deployment.domain.model.docker.backend.MavenBuildToolStrategy;
+import com.ttalkak.deployment.deployment.domain.model.docker.frontend.*;
 import com.ttalkak.deployment.deployment.domain.model.vo.ServiceType;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
-@Service
-@RequiredArgsConstructor
-@Transactional
-public class CreateDockerFileInputPort implements CreateDockerfileUseCase {
+@UseCase
+public class CreateDockerfileInputPort implements CreateDockerfileUseCase {
 
-    @Override
-    public String generateDockerfileScript(ServiceType serviceType, String buildTool, String packageManager, String languageVersion) {
-        StringBuilder dockerfileBuilder = new StringBuilder();
-
-        if(serviceType == ServiceType.BACKEND) {
-            if("gradle".equalsIgnoreCase(buildTool)) {
-                dockerfileBuilder.append("FROM gradle:8.8-jdk").append(languageVersion).append(" AS build\n");
-            } else if("maven".equalsIgnoreCase(buildTool)) {
-                dockerfileBuilder.append("FROM maven:3.9.4-eclipse-temurin-").append(languageVersion).append(" AS build\n");
-            }
-
-            dockerfileBuilder.append("WORKDIR /app\n")
-                    .append("COPY . .\n");
-
-            if("gradle".equalsIgnoreCase(buildTool)) {
-                dockerfileBuilder.append("RUN gradle clean build -x test --no-daemon\n");
-            } else if("maven".equalsIgnoreCase(buildTool)) {
-                dockerfileBuilder.append("RUN mvn clean package -DskipTests\n");
-            }
-
-            dockerfileBuilder.append("FROM eclipse-temurin:").append(languageVersion).append("-jdk\n")
-                    .append("WORKDIR /app\n");
-
-
-            if("gradle".equalsIgnoreCase(buildTool)) {
-                dockerfileBuilder.append("COPY --from=build /app/build/libs/*.jar /app/app.jar\n");
-            } else if("maven".equalsIgnoreCase(buildTool)) {
-                dockerfileBuilder.append("COPY --from=build /app/target/*.jar /app/app.jar\n");
-            }
-
-            dockerfileBuilder.append("ENTRYPOINT [\"java\", \"-jar\", \"/app/app.jar\"]\n");
+    public String generateDockerfile(ServiceType serviceType, String buildTool, String packageManager, String languageVersion) {
+        String dockerfileScript = "Dockerfile Not Exist";
+        if (ServiceType.isBackendType(serviceType)) {
+            DockerfileTemplate backendDockerfile = createBackendDockerfile(buildTool);
+            dockerfileScript = backendDockerfile.generateDockerfileScript(
+                    serviceType,
+                    buildTool,
+                    packageManager,
+                    languageVersion
+            );
+        } else if (ServiceType.isFrontendType(serviceType)) {
+            DockerfileTemplate frontendDockerfile = createFrontendDockerfile(buildTool, packageManager);
+            dockerfileScript = frontendDockerfile.generateDockerfileScript(
+                    serviceType,
+                    buildTool,
+                    packageManager,
+                    languageVersion
+            );
         }
-
-        if(serviceType == ServiceType.FRONTEND) {
-            dockerfileBuilder.append("FROM node:").append(languageVersion).append(" AS build\n")
-                    .append("WORKDIR /app\n");
-
-            if("npm".equalsIgnoreCase(packageManager)) {
-                dockerfileBuilder.append("COPY package*.json ./\n")
-                        .append("RUN npm ci\n")
-                        .append("COPY . .\n")
-                        .append("RUN ").append(packageManager).append(" run build\n");
-            } else if("yarn".equalsIgnoreCase(packageManager)) {
-                dockerfileBuilder.append("COPY package.json yarn.lock ./\n")
-                        .append("RUN yarn install --frozen-lockfile\n")
-                        .append("COPY . .\n")
-                        .append("RUN ").append("yarn build\n");
-            }
-
-            dockerfileBuilder.append("FROM nginx:stable-alpine\n");
-
-            if("cra".equalsIgnoreCase(buildTool)) {
-                dockerfileBuilder.append("COPY --from=build /app/build /usr/share/nginx/html\n");
-            } else if("vite".equalsIgnoreCase(buildTool)) {
-                dockerfileBuilder.append("COPY --from=build /app/dist /usr/share/nginx/html\n");
-            }
-
-            dockerfileBuilder.append("CMD [\"nginx\", \"-g\", \"daemon off;\"]");
-        }
-
-        return dockerfileBuilder.toString();
+        return dockerfileScript;
     }
 
+    private DockerfileTemplate createBackendDockerfile(String buildTool) {
+        if (buildTool.equalsIgnoreCase("maven")) {
+            return new BackendDockerfile(new MavenBuildToolStrategy());
+        } else if (buildTool.equalsIgnoreCase("gradle")) {
+            return new BackendDockerfile(new GradleBuildToolStrategy());
+        }
+        throw new IllegalArgumentException("Unsupported backend build tool: " + buildTool);
+    }
+
+    private DockerfileTemplate createFrontendDockerfile(String buildTool, String packageManager) {
+        PackageManagerStrategy packageManagerStrategy;
+        BuildToolStrategy buildToolStrategy;
+
+        if (packageManager.equalsIgnoreCase("yarn")) {
+            packageManagerStrategy = new YarnStrategy();
+        } else if (packageManager.equalsIgnoreCase("npm")) {
+            packageManagerStrategy = new NpmStrategy();
+        } else {
+            throw new IllegalArgumentException("Unsupported frontend package manager: " + packageManager);
+        }
+
+        if (buildTool.equalsIgnoreCase("cra")) {
+            buildToolStrategy = new CraStrategy();
+        } else if (buildTool.equalsIgnoreCase("vite")) {
+            buildToolStrategy = new ViteStrategy();
+        } else {
+            throw new IllegalArgumentException("Unsupported frontend build tool: " + buildTool);
+        }
+
+        return new FrontendDockerfile(packageManagerStrategy, buildToolStrategy);
+    }
 }

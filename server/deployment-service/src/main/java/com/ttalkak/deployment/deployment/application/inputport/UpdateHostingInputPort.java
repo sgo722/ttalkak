@@ -46,7 +46,7 @@ public class UpdateHostingInputPort implements UpdateHostingUseCase {
                 if (findHosting == null) {
                     throw new BusinessException(ErrorCode.NOT_EXISTS_HOSTING);
                 }
-                findHosting.updateDomainName(newDomainName,deploymentEntity.getServiceType().toString());
+                findHosting.updateDomainName(newDomainName,deploymentEntity.getServiceType());
                 domainOutputPort.updateDomainKey(new WebDomainRequest(
                         findHosting.getId().toString(),
                         newDomainName + " " + findHosting.getServiceType().toString(),

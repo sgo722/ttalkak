@@ -20,6 +20,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Objects;
 
+import static com.ttalkak.deployment.deployment.domain.model.vo.Status.PENDING;
+
 @RequiredArgsConstructor
 @Service
 @Transactional
@@ -37,11 +39,14 @@ public class CommandDatabaseStatusInputPort implements CommandDatabaseStatusUseC
         DatabaseEntity databaseEntity = databaseOutputPort.findById(Long.valueOf(databaseCommandStatusRequest.getDatabaseId()))
                 .orElseThrow(() -> new EntityNotFoundException(ErrorCode.NOT_EXISTS_DEPLOYMENT));
 
+        if(databaseEntity.getStatus().equals(PENDING)){
+            return;
+        }
         if(!Objects.equals(userId, databaseEntity.getUserId())){
             throw new BusinessException(ErrorCode.UN_AUTHORIZATION);
         }
 
-        databaseEntity.updateStatus(Status.PENDING);
+        databaseEntity.updateStatus(PENDING);
 
         UpdateDatabaseStatusEvent updateDeploymentStatusEvent = toKafkaEventMessage(databaseCommandStatusRequest);
         try{
