@@ -83,7 +83,7 @@ const HistogramChart = ({
         datasets: [
           {
             data: counts, // y축 (요청 수)
-            backgroundColor: "rgba(75, 192, 192, 0.6)",
+            backgroundColor: "#c1c1ff",
           },
         ],
       });
@@ -106,54 +106,69 @@ const HistogramChart = ({
   };
 
   return (
-    <div className="w-full h-48 border overflow-x-auto">
-      {chartData ? (
-        <Bar
-          data={chartData}
-          options={{
-            plugins: {
-              legend: {
-                display: false,
-              },
-            },
-            onClick: handleBarClick,
-            scales: {
-              x: {
-                // x축 설정
-                title: {
-                  display: true,
+    <div className="w-full h-52 border rounded overflow-x-auto overflow-y-hidden custom-scrollbar px-4 pt-4 shadow-lg">
+      <div className="text-lg mb-3 font-semibold">시간별 요청 횟수</div>
+      <div className="h-[160px]">
+        {chartData ? (
+          <Bar
+            data={chartData}
+            options={{
+              plugins: {
+                legend: {
+                  display: false,
                 },
-                ticks: {
-                  maxRotation: 0,
-                  minRotation: 0,
-                  callback: function (value, index, values) {
-                    const label = chartData.labels[index];
-                    const date = new Date(label);
+              },
+              onClick: handleBarClick,
+              scales: {
+                x: {
+                  // x축 설정
+                  title: {
+                    display: true,
+                  },
+                  grid: {
+                    display: false,
+                  },
+                  ticks: {
+                    maxRotation: 0,
+                    minRotation: 0,
+                    callback: function (value, index, values) {
+                      const label = chartData.labels[index];
+                      const date = new Date(label);
 
-                    if (histogramInterval && histogramInterval <= 60) {
-                      return date.toLocaleTimeString("ko-KR", {
-                        hour: "2-digit",
-                        minute: "2-digit",
-                        hour12: false, // 24시간 형식으로 표시
-                      });
-                    } else {
-                      return date.toLocaleDateString("ko-KR", {
-                        year: "numeric",
-                        month: "2-digit",
-                        day: "2-digit",
-                      });
-                    }
+                      if (histogramInterval && histogramInterval <= 60) {
+                        return date.toLocaleTimeString("ko-KR", {
+                          hour: "2-digit",
+                          minute: "2-digit",
+                          hour12: false, // 24시간 형식으로 표시
+                        });
+                      } else {
+                        return date.toLocaleDateString("ko-KR", {
+                          year: "numeric",
+                          month: "2-digit",
+                          day: "2-digit",
+                        });
+                      }
+                    },
+                  },
+                },
+                y: {
+                  // y축 설정
+                  grid: {
+                    display: true,
+                    color: "#f0f0f0",
                   },
                 },
               },
-            },
-            responsive: true,
-            maintainAspectRatio: false,
-          }}
-        />
-      ) : (
-        "Loading chart..."
-      )}
+              responsive: true,
+              maintainAspectRatio: false,
+            }}
+          />
+        ) : (
+          <div className="h-[134px] text-[#b0b0b0] bg-gradient-to-br from-[#f5f5f5] rounded via-[#F4F4F5] to-[#f1f1ff] text-[#3b3b3b] flex items-center justify-center">
+            조회된 데이터가 없습니다
+          </div>
+        )}
+      </div>
     </div>
   );
 };

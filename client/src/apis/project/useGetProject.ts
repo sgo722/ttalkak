@@ -13,11 +13,7 @@ const getProject = async (projectId: number): Promise<Project> => {
 };
 
 const checkDeploymentStatus = (project: Project) => {
-  return (
-    project.deployments?.some(
-      (deployment) => deployment.status === "PENDING"
-    ) ?? false
-  );
+  return project.deployments.length > 0;
 };
 
 const useGetProject = (

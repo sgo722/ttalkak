@@ -14,20 +14,13 @@ const getDatabase = async (
   return response.data;
 };
 
-const checkDatabaseStatus = (database: GetDatabaseResponse) => {
-  return database.status === "PENDING";
-};
-
 const useGetDatabase = (
   databaseId: number
 ): UseSuspenseQueryResult<GetDatabaseResponse, Error> => {
   return useSuspenseQuery({
     queryKey: ["database", databaseId] as const,
     queryFn: () => getDatabase(databaseId),
-    refetchInterval: (query) => {
-      const database = query.state.data;
-      return database && checkDatabaseStatus(database) ? 5000 : false;
-    },
+    refetchInterval: 5000,
   });
 };
 

@@ -26,7 +26,6 @@ import HistogramChart from "./components/HistogramChart";
 
 export default function CallbackPage() {
   const { userInfo } = useAuthStore();
-  const [projects, setProjects] = useState<Project[]>([]);
   const [project, setProject] = useState<Project | null>(null);
   const [selectedProjectId, setSelectedProjectId] = useState<number | null>(
     null
@@ -70,7 +69,7 @@ export default function CallbackPage() {
     searchKeyword: "",
   };
 
-  const { data: projectData } = useGetProjects(params);
+  const { data: projects } = useGetProjects(params);
   const { data: selectedProjectData, isLoading } = useGetProjectToLog(
     selectedProjectId || 0,
     !!selectedProjectId
@@ -85,11 +84,6 @@ export default function CallbackPage() {
     !!logParams && !!selectedDeployId
   );
 
-  // Project 선택
-  useEffect(() => {
-    if (projectData) setProjects(projectData.content);
-  }, [projectData]);
-
   // Deploy 선택
   useEffect(() => {
     if (selectedProjectData) {
@@ -101,7 +95,6 @@ export default function CallbackPage() {
 
   useEffect(() => {
     if (histogram && histogramParams) {
-      console.log(histogram);
       setHistogramData(histogram.histograms);
       setHistogramInterval(histogram.intervalMinute);
     }
@@ -162,7 +155,6 @@ export default function CallbackPage() {
   useEffect(() => {
     updateLogParams();
   }, [
-    selectedProjectId,
     selectedDeployId,
     selectedDate,
     project,
@@ -275,17 +267,32 @@ export default function CallbackPage() {
         );
 
   const flexClass = "flex items-center justify-between";
+  const selectClass =
+    "cursor-pointer outline-none border border-[#cecece] pl-3 pr-4 py-1.5 rounded appearance-none disabled:text-[#727272] bg-no-repeat mr-3";
+  const dateClass =
+    "cursor-pointer border border-[#cecece] px-2.5 h-[37.6px] rounded disabled:border-[#dbdbdb] disabled:text-[#858585] mr-2";
+  const refreshClass =
+    "cursor-pointer bg-[#eeeeee] w-[37.6px] h-[37.6px] rounded ml-1";
 
   return (
     <>
-      <div className={flexClass}>
+      <div className={`${flexClass} mb-5`}>
         <div className={flexClass}>
           <select
             onChange={handleProjectChange}
             value={selectedProjectId ?? ""}
+            className={`${selectClass} w-56`}
+            style={{
+              backgroundImage: `url('/selectIcon.png')`,
+              backgroundPosition: "right 12px center",
+              backgroundSize: "9px 13px",
+              paddingRight: "36px",
+            }}
           >
-            <option value="">프로젝트</option>
-            {projects.map((project: Project) => (
+            <option value="" disabled>
+              프로젝트 선택
+            </option>
+            {projects.content.map((project: Project) => (
               <option key={project.id} value={project.id}>
                 {project.projectName}
               </option>
@@ -295,7 +302,14 @@ export default function CallbackPage() {
           <select
             onChange={handleDeployChange}
             value={selectedDeployId ?? ""}
+            className={`${selectClass} w-56`}
             disabled={!selectedProjectId || isLoading}
+            style={{
+              backgroundImage: `url('/selectIcon.png')`,
+              backgroundPosition: "right 12px center",
+              backgroundSize: "9px 13px",
+              paddingRight: "36px",
+            }}
           >
             <option value="">배포 유형</option>
             {project &&
@@ -311,7 +325,17 @@ export default function CallbackPage() {
           </select>
         </div>
         <div className={flexClass}>
-          <select onChange={handleDateChange} value={selectedDate}>
+          <select
+            onChange={handleDateChange}
+            value={selectedDate}
+            className={`${selectClass} w-32`}
+            style={{
+              backgroundImage: `url('/selectIcon.png')`,
+              backgroundPosition: "right 12px center",
+              backgroundSize: "9px 13px",
+              paddingRight: "36px",
+            }}
+          >
             <option value="">직접 선택</option>
             <option value="today">오늘</option>
             <option value="week">이번 주</option>
@@ -325,30 +349,35 @@ export default function CallbackPage() {
               onChange={(e) => {
                 setFromDate(formatTimestamp(e.target.value));
               }}
+              onClick={() => setSelectedDate("")}
               onBlur={() => {
                 updateLogParams(0);
                 updateHitogramParams();
               }}
-              disabled={!!selectedDate}
+              className={`${dateClass} w-60`}
             />
-            <span> ~ </span>
             <input
               type="datetime-local"
               value={toDate}
               onChange={(e) => setToDate(formatTimestamp(e.target.value))}
+              onClick={() => setSelectedDate("")}
               onBlur={() => {
                 updateLogParams(0);
                 updateHitogramParams();
               }}
-              disabled={!!selectedDate}
+              className={`${dateClass} w-64`}
             />
           </div>
 
-          <IoRefresh onClick={handleRefresh} className="cursor-pointer" />
+          <IoRefresh
+            color="#575757"
+            onClick={handleRefresh}
+            className={`${refreshClass} ${flexClass} p-2`}
+          />
         </div>
       </div>
 
-      <div className="border flex">
+      <div className="flex mb-5">
         <Monitoring selectedDeployId={selectedDeployId} />
         <HistogramChart
           histogramData={histogramData}
@@ -359,24 +388,37 @@ export default function CallbackPage() {
         />
       </div>
 
-      <div className="border">
-        <select onChange={handleTypeChange} value={selectedType}>
-          <option value="method">Method</option>
-          <option value="status">Status</option>
-        </select>
+      <div className="w-full border rounded p-4 shadow-lg">
+        <div className="text-lg mb-3 font-semibold">타입별 로그 데이터</div>
+        <div className="flex flex-wrap">
+          <select
+            onChange={handleTypeChange}
+            value={selectedType}
+            className={`${selectClass} h-[37.6px] w-40 mr-24`}
+            style={{
+              backgroundImage: `url('/selectIcon.png')`,
+              backgroundPosition: "right 12px center",
+              backgroundSize: "9px 13px",
+              paddingRight: "36px",
+            }}
+          >
+            <option value="method">Method</option>
+            <option value="status">Status</option>
+          </select>
 
-        <DoughnutChart
-          selectedType={selectedType}
-          counts={chartData || {}}
-          logs={logData?.content || []}
-          fetchMoreLogs={fetchMoreLogs}
-          hasMoreLogs={hasMoreLogs}
-          isRefresh={currentPage === 0}
-          selectedStatus={selectedStatus}
-          selectedMethod={selectedMethod}
-          handleStatusToggle={handleStatusToggle}
-          handleMethodToggle={handleMethodToggle}
-        />
+          <DoughnutChart
+            selectedType={selectedType}
+            counts={chartData || {}}
+            logs={logData?.content || []}
+            fetchMoreLogs={fetchMoreLogs}
+            hasMoreLogs={hasMoreLogs}
+            isRefresh={currentPage === 0}
+            selectedStatus={selectedStatus}
+            selectedMethod={selectedMethod}
+            handleStatusToggle={handleStatusToggle}
+            handleMethodToggle={handleMethodToggle}
+          />
+        </div>
       </div>
     </>
   );

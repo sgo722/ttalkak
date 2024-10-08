@@ -29,10 +29,10 @@ export default function RootLayout({
           <header className="z-10">
             <NavBar />
           </header>
-          <main className="flex-grow container mx-auto px-10 py-10">
+          <main className="flex-grow container mx-auto px-10 py-24">
             {children}
           </main>
-          <footer className="z-10">
+          <footer>
             <Footer />
           </footer>
         </ClientWrapper>

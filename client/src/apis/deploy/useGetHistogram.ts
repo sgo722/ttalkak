@@ -10,7 +10,8 @@ const getHistogram = async (
     params,
   });
 
-  console.log("히스토그램 params", params);
+  console.log("useGetHistogram");
+  // console.log("히스토그램 params", params);
 
   return response.data;
 };

@@ -1,11 +1,15 @@
+import { useState } from "react";
+import { DeployStatus, DeployCommand } from "@/types/deploy";
 import Tooltip from "@/components/Tooltip";
 import Button from "@/components/Button";
-import { DeployStatus } from "@/types/deploy";
 import useGetDatabase from "@/apis/database/useGetDatabase";
+import useModifyDatabaseStatus from "@/apis/database/useModifyDatabaseStatus";
+import useThrottle from "@/hooks/useThrottle";
 import useStatusColor from "@/hooks/useStatusColor";
 import { getStatusTooptip } from "@/utils/getStatusTooltip";
 import { IoClose, IoEye, IoEyeOff } from "react-icons/io5";
-import { useState } from "react";
+import { FaPlay } from "react-icons/fa6";
+import { FaStop } from "react-icons/fa";
 
 interface DetailModalProps {
   isOpen: boolean;
@@ -64,6 +68,7 @@ export default function DetailModal({
   databaseId,
 }: DetailModalProps) {
   const { data } = useGetDatabase(Number(databaseId));
+  const { mutate: modifyDatabaseStatus } = useModifyDatabaseStatus();
   const [showPassword, setShowPassword] = useState(false);
   const statusColor = useStatusColor(data?.status as DeployStatus);
 
@@ -76,6 +81,13 @@ export default function DetailModal({
       onClose();
     }
   };
+
+  const handleButtonClick = useThrottle((command: DeployCommand) => {
+    modifyDatabaseStatus({
+      databaseId: data.id,
+      command,
+    });
+  }, 5000);
 
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
@@ -106,6 +118,24 @@ export default function DetailModal({
                 <Tooltip
                   content={getStatusTooptip(data.statusMessage, "데이터베이스")}
                 />
+                {data.status === DeployStatus.STOPPED && (
+                  <button
+                    onClick={() => handleButtonClick(DeployCommand.START)}
+                    className="border ml-3 flex items-center gap-1 px-2 py-1 shadow-md rounded-full cursor-pointer hover:scale-110 duration-300 ease-in-out transform"
+                  >
+                    <FaPlay color="#3eb127" className="w-3 h-3" />
+                    <span className="text-xs">start</span>
+                  </button>
+                )}
+                {data.status === DeployStatus.RUNNING && (
+                  <button
+                    onClick={() => handleButtonClick(DeployCommand.STOP)}
+                    className="border ml-3 flex items-center gap-1 px-2 py-1 shadow-md rounded-full cursor-pointer hover:scale-110 duration-300 ease-in-out transform"
+                  >
+                    <FaStop color="#d03939" className="w-3 h-3" />
+                    <span className="text-xs">stop</span>
+                  </button>
+                )}
               </div>
             )}
             <div className="mb-4">
