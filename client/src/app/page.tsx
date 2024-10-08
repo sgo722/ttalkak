@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useRef } from "react";
 import { throttle } from "lodash";
+import { motion, AnimatePresence } from "framer-motion";
 
 const videoSources = [
   "/videos/earth.mp4",
@@ -30,7 +31,7 @@ const texts = [
       "사용자는 자신이 소비한 만큼만 요금을 지불하면서도, 자동 결제 설정을 통해 결제 과정에서 발생할 수 있는 번거로움을 없앨 수 있습니다. 이러한 스마트 결제 시스템은 서비스 운영에 있어 편리함과 경제성을 동시에 제공합니다.",
   },
   {
-    title: "블록체인 기반 수익 창출의 시작",
+    title: "블록체인 기반 수익 창출",
     subtitle: "자원 공유로 얻는 디지털 보상",
     description:
       "유휴 자원을 공유해 소득을 창출하세요. 당신의 컴퓨터가 서버가 되어 블록체인 기반으로 디지털 코인을 얻을 수 있는 혁신적인 기회를 제공합니다",
@@ -46,6 +47,7 @@ const VideoSection: React.FC<{
 
   useEffect(() => {
     if (isActive && videoRef.current) {
+      videoRef.current.currentTime = 0;
       videoRef.current.play();
     } else if (videoRef.current) {
       videoRef.current.pause();
@@ -62,25 +64,61 @@ const VideoSection: React.FC<{
         playsInline
         className="absolute top-0 left-0 w-full h-full object-cover"
       />
-      <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-start p-24">
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: isActive ? 1 : 0 }}
+        transition={{ duration: 1 }}
+        className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-start px-24"
+      >
         <div className="text-white max-w-2xl px-4">
-          <h2 className="text-4xl md:text-6xl font-bold mb-12">{text.title}</h2>
-          <p className="text-xl md:text-2xl mb-8">{text.subtitle}</p>
-          <p className="text-lg">{text.description}</p>
+          <motion.h2
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: isActive ? 1 : 0, y: isActive ? 0 : 20 }}
+            transition={{ duration: 1, delay: 0.5 }}
+            className="text-4xl md:text-6xl font-bold mb-12"
+          >
+            {text.title}
+          </motion.h2>
+          <motion.p
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: isActive ? 1 : 0, y: isActive ? 0 : 20 }}
+            transition={{ duration: 1, delay: 1 }}
+            className="text-xl md:text-2xl mb-8"
+          >
+            {text.subtitle}
+          </motion.p>
+          <motion.p
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: isActive ? 1 : 0, y: isActive ? 0 : 20 }}
+            transition={{ duration: 1, delay: 1.5 }}
+            className="text-lg"
+          >
+            {text.description}
+          </motion.p>
         </div>
-      </div>
+      </motion.div>
     </div>
   );
 };
 
-const IntroSection: React.FC = () => {
+const IntroSection: React.FC<{ isActive: boolean }> = ({ isActive }) => {
   return (
     <div className="w-full h-full flex items-center justify-center bg-gradient-to-r from-blue-500 to-purple-600">
       <div className="text-white text-center max-w-4xl px-4">
-        <h1 className="text-5xl md:text-7xl font-bold mb-6">
+        <motion.h1
+          initial={{ y: -50, opacity: 0 }}
+          animate={{ y: isActive ? 0 : -50, opacity: isActive ? 1 : 0 }}
+          transition={{ duration: 1, delay: 0.5 }}
+          className="text-5xl md:text-7xl font-bold mb-6"
+        >
           간편한 배포 서비스
-        </h1>
-        <p className="text-xl md:text-2xl mb-8">
+        </motion.h1>
+        <motion.p
+          initial={{ y: 50, opacity: 0 }}
+          animate={{ y: isActive ? 0 : 50, opacity: isActive ? 1 : 0 }}
+          transition={{ duration: 1, delay: 1 }}
+          className="text-xl md:text-2xl mb-8"
+        >
           가난한.. 개발자들 모여라.. 우리에겐 Ttalkak이 있는데 AWS? Lamda? 그게
           왜 필요하죠? 우리에겐 Ttalkak이 있는데 도커 파일을 내가 어떻게 써..?
           소스코드 기반 도커 파일 생성과 배포 깃허브 기반으로 Project를 배포
@@ -88,10 +126,17 @@ const IntroSection: React.FC = () => {
           개발자들을 위한 서비스 도메인 구매하기 비싸지 않나요? 도메인 자동생성
           프로젝트 배포 원스톱 서비스 Ttalkak 버려진 프로젝트 클릭 몇번으로
           살려보세요 언제까지 프로젝트하고 버릴래?
-        </p>
-        <button className="bg-white text-blue-600 font-bold py-3 px-8 rounded-full text-lg hover:bg-blue-100 transition duration-300">
+        </motion.p>
+        <motion.button
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: isActive ? 1 : 0, scale: isActive ? 1 : 0.9 }}
+          transition={{ duration: 1, delay: 1.5 }}
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+          className="bg-white text-blue-600 font-bold py-3 px-8 rounded-full text-lg hover:bg-blue-100 transition duration-300"
+        >
           여기는 내일 수정 ㄱ
-        </button>
+        </motion.button>
       </div>
     </div>
   );
@@ -126,23 +171,39 @@ export default function Home() {
   return (
     <div className="fixed top-0 left-0 w-screen h-screen overflow-hidden -z-10">
       <div ref={containerRef} className="h-full">
-        <div
-          className="transition-transform duration-1000 ease-in-out h-full"
-          style={{ transform: `translateY(-${currentSlide * 100}%)` }}
-        >
-          <div className="h-full w-full">
-            <IntroSection />
-          </div>
-          {videoSources.map((src, index) => (
-            <div key={index} className="h-full w-full">
-              <VideoSection
-                videoSrc={src}
-                text={texts[index]}
-                isActive={index + 1 === currentSlide}
-              />
-            </div>
-          ))}
-        </div>
+        <AnimatePresence>
+          {currentSlide === 0 && (
+            <motion.div
+              key="intro"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 1 }}
+              className="absolute top-0 left-0 w-full h-full"
+            >
+              <IntroSection isActive={true} />
+            </motion.div>
+          )}
+          {videoSources.map(
+            (src, index) =>
+              currentSlide === index + 1 && (
+                <motion.div
+                  key={`video-${index}`}
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 1 }}
+                  className="absolute top-0 left-0 w-full h-full"
+                >
+                  <VideoSection
+                    videoSrc={src}
+                    text={texts[index]}
+                    isActive={true}
+                  />
+                </motion.div>
+              )
+          )}
+        </AnimatePresence>
       </div>
     </div>
   );
