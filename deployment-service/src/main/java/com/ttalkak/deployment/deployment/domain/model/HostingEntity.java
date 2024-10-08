@@ -45,18 +45,18 @@ public class HostingEntity {
     public static HostingEntity createHosting(
             int hostingPort,
             Long projectId,
-            String serviceType,
+            ServiceType serviceType,
             String projectDomainName
     ){
         return HostingEntity.builder()
                 .hostingPort(hostingPort)
                 .projectId(projectId)
-                .serviceType(ServiceType.valueOf(serviceType))
+                .serviceType(serviceType)
                 .detailSubDomainName(changeDetailDomainName(projectDomainName, serviceType))
                 .build();
     }
 
-    private static String changeDetailDomainName(String projectDomainName, String serviceType) {
+    private static String changeDetailDomainName(String projectDomainName, ServiceType serviceType) {
         if(ServiceType.isBackendType(serviceType)){
             return "api" + projectDomainName;
         }
@@ -68,7 +68,7 @@ public class HostingEntity {
         throw new IllegalArgumentException("ServiceType이 잘못 입력되었습니다.");
     }
 
-    public void updateDomainName(String domainName, String serviceType) {
+    public void updateDomainName(String domainName, ServiceType serviceType) {
         this.detailSubDomainName = changeDetailDomainName(domainName, serviceType);
     }
 

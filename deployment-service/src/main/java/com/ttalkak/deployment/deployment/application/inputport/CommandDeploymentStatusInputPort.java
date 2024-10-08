@@ -15,6 +15,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import static com.ttalkak.deployment.deployment.domain.model.vo.Status.PENDING;
+
 @RequiredArgsConstructor
 @Service
 @Transactional
@@ -28,15 +30,20 @@ public class CommandDeploymentStatusInputPort implements CommandDeploymentStatus
 
     @Override
     public void commandDeploymentStatus(DeploymentCommandStatusRequest deploymentCommandStatusRequest){
-        DeploymentEntity deploymentEntity = deploymentOutputPort.findDeployment(Long.valueOf(deploymentCommandStatusRequest.getDeploymentId()))
+        DeploymentEntity deploymentEntity = deploymentOutputPort.findDeployment(deploymentCommandStatusRequest.getDeploymentId())
                 .orElseThrow(() -> new EntityNotFoundException(ErrorCode.NOT_EXISTS_DEPLOYMENT));
-            deploymentEntity.setStatus(Status.PENDING);
-            UpdateDeploymentStatusEvent updateDeploymentStatusEvent = toKafkaEventMessage(deploymentEntity, deploymentCommandStatusRequest);
-            try{
-                changeDeploymentStatusProducer.occurUpdateDeploymentStatus(updateDeploymentStatusEvent);
-            }catch (JsonProcessingException e){
-                throw new BusinessException(ErrorCode.KAFKA_PRODUCER_ERROR);
-            }
+
+        if(deploymentEntity.getStatus().equals(PENDING)){
+            return;
+        }
+
+        deploymentEntity.setStatus(PENDING);
+        UpdateDeploymentStatusEvent updateDeploymentStatusEvent = toKafkaEventMessage(deploymentEntity, deploymentCommandStatusRequest);
+        try{
+            changeDeploymentStatusProducer.occurUpdateDeploymentStatus(updateDeploymentStatusEvent);
+        }catch (JsonProcessingException e){
+            throw new BusinessException(ErrorCode.KAFKA_PRODUCER_ERROR);
+        }
         deploymentOutputPort.save(deploymentEntity);
     }
 
