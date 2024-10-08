@@ -4,7 +4,8 @@ import {
   DeployContainerInfo,
   useContainerStore,
 } from "../../stores/containerStore";
-
+import { DeployStatus } from "../../types/deploy";
+import Loading from "../../components/loading";
 const MAX_LOGS_PER_CONTAINER = 1000;
 const LOG_CLEANUP_INTERVAL = 15 * 60 * 1000; // 15 minutes
 const LOG_RETENTION_PERIOD = 24 * 60 * 60 * 1000; // 24 hours
@@ -115,7 +116,7 @@ const ContainerList: React.FC = () => {
       <ul className="list-none p-0">
         {ports.map((port, index) => (
           <li key={index}>
-            {port.internal} : {port.external || "N/A"}
+            {port.internal} : {port.external || "NA"}
           </li>
         ))}
       </ul>
@@ -145,74 +146,127 @@ const ContainerList: React.FC = () => {
     );
   };
 
+  const getStatusElement = (status: DeployStatus) => {
+    switch (status) {
+      case DeployStatus.RUNNING:
+        return { color: "bg-green-400", text: "RUNNING" };
+      case DeployStatus.STOPPED:
+        return { color: "bg-red-400", text: "STOPPED" };
+      case DeployStatus.NA:
+        return { color: "bg-yellow-400", text: "N/A" };
+      case DeployStatus.WAITING:
+        return { color: "bg-yellow-400 animate-pulse", text: "ERROR" };
+      case DeployStatus.ERROR:
+        return { color: "bg-red-400 animate-pulse", text: "ERROR" };
+      default:
+        return { color: "bg-gray-400", text: "UNKNOWN" };
+    }
+  };
+
   const ContainerRow = useMemo(
     () =>
       ({ container }: { container: DeployContainerInfo }) => {
-        const { id, containerId, containerName, status, ports, created } =
-          container;
-        const isSelected = selectedContainerIds.includes(containerId || "");
+        const isSelected = selectedContainerIds.includes(
+          container.containerId || ""
+        );
+
+        const StatusComponent = ({ status }: { status?: DeployStatus }) => {
+          const { color, text } = getStatusElement(status || DeployStatus.NA);
+          return (
+            <td className="py-2 text-sm text-gray-900">
+              <div className="flex justify-center items-center">
+                <div
+                  className={`inline-block w-3 h-3 rounded-full mr-1 ${color}`}
+                ></div>
+                <div>{text}</div>
+              </div>
+            </td>
+          );
+        };
 
         return (
           <>
-            <tr className="hover:bg-gray-50">
-              <td className="py-2 px-4 text-sm text-gray-900">{id || "N/A"}</td>
-              <td
-                className="py-2 px-4 text-sm text-gray-900"
-                title={containerName}
-              >
-                {containerName}
-              </td>
-              <td className="py-2 px-4 text-sm text-gray-900">
-                {formatCreatedTime(created)}
-              </td>
-              <td className="py-2 px-4 text-sm text-gray-900">
-                {renderPorts(ports)}
-              </td>
-              <td className="py-2 px-4 text-sm text-gray-900">
-                {status || "N/A"}
-              </td>
-              <td className="py-2 px-4 text-sm text-gray-900">
-                <button
-                  onClick={() =>
-                    containerId && toggleContainerSelection(containerId)
-                  }
-                  className="flex items-center justify-center p-2 hover:bg-gray-200 rounded"
-                >
-                  {isSelected ? (
-                    <MdKeyboardArrowUp className="text-gray-600" />
-                  ) : (
-                    <MdKeyboardArrowDown className="text-gray-600" />
-                  )}
-                </button>
-              </td>
-            </tr>
-            {isSelected && containerId && (
-              <tr>
-                <td colSpan={6} className="p-4 bg-gray-100">
-                  <Logs logs={logData[containerId] || []} />
-                </td>
-              </tr>
-            )}
+            <React.Fragment key={container.id}>
+              {container.status === DeployStatus.RUNNING ? (
+                <tr className="hover:bg-gray-50">
+                  <td className="py-2 px-4 text-sm text-gray-900">
+                    {container.id || "N/A"}
+                  </td>
+                  <td
+                    className="py-2 px-4 text-sm text-gray-900"
+                    title={container.containerName}
+                  >
+                    {container.containerName}
+                  </td>
+                  <td className="py-2 px-4 text-sm text-gray-900">
+                    {formatCreatedTime(container.created)}
+                  </td>
+                  <td className="py-2 px-4 text-sm text-gray-900">
+                    {renderPorts(container.ports)}
+                  </td>
+                  <td className="py-2 px-4 text-sm text-gray-900">
+                    {StatusComponent({ status: container.status })}
+                  </td>
+                  <td className="py-2 px-4 text-sm text-gray-900">
+                    <button
+                      onClick={() =>
+                        container.id && toggleContainerSelection(container.id)
+                      }
+                      className="flex items-center justify-center p-2 hover:bg-gray-200 rounded"
+                    >
+                      {isSelected ? (
+                        <MdKeyboardArrowUp className="text-gray-600" />
+                      ) : (
+                        <MdKeyboardArrowDown className="text-gray-600" />
+                      )}
+                    </button>
+                  </td>
+                </tr>
+              ) : (
+                <tr className="hover:bg-gray-50">
+                  {/* RUNNING 상태가 아닌 경우 */}
+                  <td colSpan={1} className="py-2 px-4 text-sm text-gray-900">
+                    {container.id}
+                  </td>
+                  <td
+                    colSpan={5}
+                    className="py-2 px-4 text-xl text-gray-900 text-center align-middle"
+                  >
+                    <div className="flex justify-center items-center">
+                      <Loading />
+                    </div>
+                  </td>
+                </tr>
+              )}
+
+              {isSelected && container.id && (
+                <tr>
+                  <td colSpan={6} className="p-4 bg-gray-100">
+                    <Logs logs={logData[container.id] || []} />
+                  </td>
+                </tr>
+              )}
+            </React.Fragment>
           </>
         );
       },
     [selectedContainerIds, logData, toggleContainerSelection]
   );
 
-  // if (dockerContainers.length === 0) {
-  //   return (
-  //     <div className="flex flex-col items-center justify-center mt-8">
-  //       <p className="text-center text-gray-700">
-  //         현재 배포중인 서비스가 없습니다
-  //       </p>
-  //       <div className="mt-4 flex text-gray-400 text-sm ">
-  //         <div className="text-gray-400 text-sm ">
-  //           서비스 할당을 기다려주세요
-  //         </div>
-  //       </div>
-  //     </div>
-  //   );
-  // }
+  if (dockerContainers.length === 0) {
+    return (
+      <div className="flex flex-col items-center justify-center mt-8">
+        <p className="text-center text-gray-700">
+          현재 배포중인 서비스가 없습니다
+        </p>
+        <div className="mt-4 flex text-gray-400 text-sm ">
+          <div className="text-gray-400 text-sm ">
+            서비스 할당을 기다려주세요
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-col h-[calc(100vh-200px)]">

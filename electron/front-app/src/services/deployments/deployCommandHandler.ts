@@ -1,5 +1,6 @@
 import { sendInstanceUpdate } from "../websocket/sendUpdateUtils";
 import { useContainerStore } from "../../stores/containerStore";
+import { DeployStatus } from "../../types/deploy";
 
 export async function handleContainerCommand(
   serviceId: string,
@@ -11,6 +12,7 @@ export async function handleContainerCommand(
   const id = serviceId;
   const containerId = getContainerIdById(serviceId);
   const container = getContainerById(serviceId);
+  console.log(`${command} : ${serviceId} command will start`);
 
   if (!containerId || !container) {
     console.error(`No container or deployment found for ${serviceId}`);
@@ -23,15 +25,20 @@ export async function handleContainerCommand(
     switch (command) {
       case "START":
         {
-          console.log(`Starting container: ${containerId}`);
           const { success } = await window.electronAPI.restartContainer(
             containerId
           );
+
+          if (container.status === DeployStatus.RUNNING) {
+            console.log(`${serviceId} already running`);
+            return;
+          }
+
           if (success) {
             //Stats 시작
             window.electronAPI.startContainerStats([containerId]);
             //store 업데이트
-            updateContainerInfo(id, { status: "RUNNING" });
+            updateContainerInfo(id, { status: DeployStatus.RUNNING });
             //상태 전송
             if (container && container.deployId) {
               sendInstanceUpdate(
@@ -44,18 +51,23 @@ export async function handleContainerCommand(
               );
             }
           } else {
-            updateContainerInfo(id, { status: "ERROR" });
+            updateContainerInfo(id, { status: DeployStatus.ERROR });
           }
         }
         break;
 
       case "STOP":
         {
-          console.log(`Stopping container: ${containerId}`);
+          if (container.status === DeployStatus.STOPPED) {
+            console.log(`${serviceId} already running`);
+            return;
+          }
+
           await window.electronAPI.stopContainerStats([containerId]);
           const { success } = await window.electronAPI.stopContainer(
             containerId
           );
+
           if (success) {
             sendInstanceUpdate(
               container.serviceType,
@@ -65,21 +77,25 @@ export async function handleContainerCommand(
               outboundPort,
               `STOPPED`
             );
-            updateContainerInfo(id, { status: "STOPPED" });
+            updateContainerInfo(id, { status: DeployStatus.STOPPED });
           } else {
-            updateContainerInfo(id, { status: "ERROR" });
+            updateContainerInfo(id, { status: DeployStatus.ERROR });
           }
         }
         break;
 
       case "RESTART":
         {
-          console.log(`Restarting container: ${containerId}`);
+          if (container.status === DeployStatus.RUNNING) {
+            console.log(`${serviceId} already running`);
+            return;
+          }
+
           const { success } = await window.electronAPI.restartContainer(
             containerId
           );
           if (success) {
-            updateContainerInfo(id, { status: "RUNNING" });
+            updateContainerInfo(id, { status: DeployStatus.RUNNING });
 
             window.electronAPI.startContainerStats([containerId]);
             sendInstanceUpdate(
@@ -91,14 +107,18 @@ export async function handleContainerCommand(
               "RUNNING"
             );
           } else {
-            updateContainerInfo(id, { status: "ERROR" });
+            updateContainerInfo(id, { status: DeployStatus.ERROR });
           }
         }
         break;
 
       case "DELETE":
         {
-          console.log(`Deleting container: ${containerId}`);
+          if (container.status === DeployStatus.DELETED) {
+            console.log(`${serviceId} already DELETED`);
+            return;
+          }
+
           const { success } = await window.electronAPI.removeContainer(
             containerId
           );
@@ -114,7 +134,7 @@ export async function handleContainerCommand(
               outboundPort,
               "DELETED"
             );
-            updateContainerInfo(id, { status: "DELETED" });
+            updateContainerInfo(id, { status: DeployStatus.DELETED });
           }
         }
         break;

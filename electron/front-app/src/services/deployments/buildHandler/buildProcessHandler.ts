@@ -6,7 +6,7 @@ import {
   DeployContainerInfo,
   useContainerStore,
 } from "../../../stores/containerStore.tsx";
-
+import { DeployStatus } from "../../../types/deploy.ts";
 export const PGROK_URL = "pgrok.ttalkak.com:2222";
 
 // 공통 빌드 및 배포 처리 함수
@@ -37,6 +37,7 @@ export async function buildAndDeploy(
         Created: image.Created,
         Size: image.Size,
         Containers: image.Containers,
+        status: DeployStatus.RUNNING,
       };
 
       // 이미지 빌드시 리스트에 추가 (한 번만 호출)
@@ -105,7 +106,7 @@ async function completeDeployment(
       serviceType: instance.serviceType,
       containerName: instance.subdomainName,
       imageTag: image.RepoTags ? image.RepoTags[0] : undefined,
-      status: "RUNNING",
+      status: DeployStatus.RUNNING,
       containerId: container.Id,
       ports: [
         {

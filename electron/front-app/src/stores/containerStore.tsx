@@ -1,5 +1,6 @@
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
+import { DeployStatus } from "../types/deploy";
 
 export interface Port {
   internal: number;
@@ -13,7 +14,7 @@ export interface DeployContainerInfo {
   serviceType?: string;
   containerName?: string;
   imageTag?: string;
-  status?: string;
+  status?: DeployStatus;
   containerId?: string;
   ports?: Port[];
   subdomainName?: string;

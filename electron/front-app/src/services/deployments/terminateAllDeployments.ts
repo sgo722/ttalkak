@@ -3,6 +3,7 @@ import { sendInstanceUpdate } from "../websocket/sendUpdateUtils";
 import { useAppStore } from "../../stores/appStatusStore";
 import { useContainerStore } from "../../stores/containerStore";
 import { useImageStore } from "../../stores/imageStore";
+import { DeployStatus } from "../../types/deploy";
 
 export async function terminateAndRemoveContainersAndImages() {
   const { containers, removeAllContainers, updateContainerInfo } =
@@ -51,7 +52,7 @@ export async function terminateAndRemoveContainersAndImages() {
           port,
           "cloud manipulate"
         );
-        updateContainerInfo(id, { status: "DELETE" });
+        updateContainerInfo(id, { status: DeployStatus.DELETED });
         console.log(`컨테이너 ${container.containerId} 강제 종료 및 삭제 완료`);
       } catch (error) {
         console.error(
@@ -73,14 +74,16 @@ export async function terminateAndRemoveContainersAndImages() {
   // 2. 모든 이미지 삭제
   const imagePromises = images.map(async (image) => {
     const id = image.id;
-    try {
-      const { success } = await window.electronAPI.removeImage(image.imageId);
-      if (success) {
-        console.log(`이미지 ${image.imageId} 성공적으로 삭제됨.`);
-        removeImage(id);
+    if (image.imageId) {
+      try {
+        const { success } = await window.electronAPI.removeImage(image.imageId);
+        if (success) {
+          console.log(`이미지 ${image.imageId} 성공적으로 삭제됨.`);
+          removeImage(id);
+        }
+      } catch (error) {
+        console.error(`이미지 ${image.imageId} 삭제 중 오류 발생:`, error);
       }
-    } catch (error) {
-      console.error(`이미지 ${image.imageId} 삭제 중 오류 발생:`, error);
     }
   });
 
