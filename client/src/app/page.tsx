@@ -1,8 +1,9 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef } from "react";
 import { throttle } from "lodash";
 import { motion, AnimatePresence } from "framer-motion";
+import { ImArrowDown2, ImArrowUp2 } from "react-icons/im";
 
 const videoSources = [
   "/videos/earth.mp4",
@@ -38,11 +39,45 @@ const texts = [
   },
 ];
 
+const NavigationMenu: React.FC<{
+  currentSlide: number;
+  setCurrentSlide: (slide: number) => void;
+}> = ({ currentSlide, setCurrentSlide }) => {
+  return (
+    <div className="fixed right-10 top-1/2 transform -translate-y-1/2 z-50">
+      <ul className="space-y-4">
+        {texts.map((text, index) => (
+          <li key={index} className="flex items-center justify-end">
+            <button
+              onClick={() => setCurrentSlide(index + 1)}
+              className={`text-right pr-3 py-2 transition-all duration-300 flex items-center ${
+                currentSlide === index + 1
+                  ? "text-white font-bold"
+                  : "text-gray-400 hover:text-gray-200"
+              }`}
+            >
+              <span className="mr-3">{text.title}</span>
+              <span
+                className={`w-2 rounded-full ${
+                  currentSlide === index + 1
+                    ? "bg-white border-white h-5"
+                    : "bg-gray-400 h-2"
+                }`}
+              ></span>
+            </button>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+};
+
 const VideoSection: React.FC<{
   videoSrc: string;
   text: (typeof texts)[0];
   isActive: boolean;
-}> = ({ videoSrc, text, isActive }) => {
+  onScrollToTop: () => void;
+}> = ({ videoSrc, text, isActive, onScrollToTop }) => {
   const videoRef = useRef<HTMLVideoElement>(null);
 
   useEffect(() => {
@@ -97,47 +132,79 @@ const VideoSection: React.FC<{
           </motion.p>
         </div>
       </motion.div>
+      <motion.button
+        initial={{ opacity: 0, scale: 0.9 }}
+        animate={{ opacity: 1, scale: 1 }}
+        exit={{ opacity: 0, scale: 0.9 }}
+        whileHover={{ scale: 1.1 }}
+        whileTap={{ scale: 0.95 }}
+        onClick={onScrollToTop}
+        className="fixed right-12 bottom-28 bg-white bg-opacity-20 p-4 rounded-full text-white hover:bg-opacity-30 transition-all duration-300 z-50"
+      >
+        <ImArrowUp2 size={24} />
+      </motion.button>
     </div>
   );
 };
 
-const IntroSection: React.FC<{ isActive: boolean }> = ({ isActive }) => {
+const IntroSection: React.FC<{
+  isActive: boolean;
+  onNextSlide: () => void;
+}> = ({ isActive, onNextSlide }) => {
   return (
-    <div className="w-full h-full flex items-center justify-center bg-gradient-to-r from-blue-500 to-purple-600">
-      <div className="text-white text-center max-w-4xl px-4">
-        <motion.h1
-          initial={{ y: -50, opacity: 0 }}
-          animate={{ y: isActive ? 0 : -50, opacity: isActive ? 1 : 0 }}
-          transition={{ duration: 1, delay: 0.5 }}
-          className="text-5xl md:text-7xl font-bold mb-6"
-        >
-          간편한 배포 서비스
-        </motion.h1>
-        <motion.p
-          initial={{ y: 50, opacity: 0 }}
-          animate={{ y: isActive ? 0 : 50, opacity: isActive ? 1 : 0 }}
-          transition={{ duration: 1, delay: 1 }}
-          className="text-xl md:text-2xl mb-8"
-        >
-          가난한.. 개발자들 모여라.. 우리에겐 Ttalkak이 있는데 AWS? Lamda? 그게
-          왜 필요하죠? 우리에겐 Ttalkak이 있는데 도커 파일을 내가 어떻게 써..?
-          소스코드 기반 도커 파일 생성과 배포 깃허브 기반으로 Project를 배포
-          프론트 엔드만 배포하기 아쉽지 않나요 백엔드와 DB 까지? 주니어
-          개발자들을 위한 서비스 도메인 구매하기 비싸지 않나요? 도메인 자동생성
-          프로젝트 배포 원스톱 서비스 Ttalkak 버려진 프로젝트 클릭 몇번으로
-          살려보세요 언제까지 프로젝트하고 버릴래?
-        </motion.p>
-        <motion.button
-          initial={{ opacity: 0, scale: 0.9 }}
-          animate={{ opacity: isActive ? 1 : 0, scale: isActive ? 1 : 0.9 }}
-          transition={{ duration: 1, delay: 1.5 }}
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-          className="bg-white text-blue-600 font-bold py-3 px-8 rounded-full text-lg hover:bg-blue-100 transition duration-300"
-        >
-          여기는 내일 수정 ㄱ
-        </motion.button>
+    <div className="w-full h-full flex flex-col items-center justify-between py-32 bg-gradient-to-r from-blue-500 to-purple-600">
+      <div className="flex-grow flex items-center justify-center">
+        <div className="text-white text-center max-w-4xl px-4">
+          <motion.h1
+            initial={{ y: -50, opacity: 0 }}
+            animate={{ y: isActive ? 0 : -50, opacity: isActive ? 1 : 0 }}
+            transition={{ duration: 1, delay: 0.5 }}
+            className="text-5xl md:text-7xl font-bold mb-6"
+          >
+            간편한 배포 서비스
+          </motion.h1>
+          <motion.p
+            initial={{ y: 50, opacity: 0 }}
+            animate={{ y: isActive ? 0 : 50, opacity: isActive ? 1 : 0 }}
+            transition={{ duration: 1, delay: 1 }}
+            className="text-xl md:text-2xl mb-8"
+          >
+            가난한.. 개발자들 모여라.. 우리에겐 Ttalkak이 있는데 AWS? Lamda?
+            그게 왜 필요하죠? 우리에겐 Ttalkak이 있는데 도커 파일을 내가 어떻게
+            써..? 소스코드 기반 도커 파일 생성과 배포 깃허브 기반으로 Project를
+            배포 프론트 엔드만 배포하기 아쉽지 않나요 백엔드와 DB 까지? 주니어
+            개발자들을 위한 서비스 도메인 구매하기 비싸지 않나요? 도메인
+            자동생성 프로젝트 배포 원스톱 서비스 Ttalkak 버려진 프로젝트 클릭
+            몇번으로 살려보세요 언제까지 프로젝트하고 버릴래?
+          </motion.p>
+          <motion.button
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: isActive ? 1 : 0, scale: isActive ? 1 : 0.9 }}
+            transition={{ duration: 1, delay: 1.5 }}
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            onClick={() => console.log("dddd")}
+            className="bg-white text-blue-600 font-bold py-3 px-8 rounded-full text-lg hover:bg-blue-100 transition duration-300 cursor-pointer"
+          >
+            여기는 내일 수정 ㄱ
+          </motion.button>
+        </div>
       </div>
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: isActive ? 1 : 0, y: isActive ? 0 : 20 }}
+        transition={{ duration: 1, delay: 2 }}
+        className="animate-bounce"
+      >
+        <motion.button
+          onClick={onNextSlide}
+          whileHover={{ scale: 1.1 }}
+          whileTap={{ scale: 0.95 }}
+          className="bg-white cursor-pointer bg-opacity-20 p-4 rounded-full text-white hover:bg-opacity-30 transition-all duration-300"
+        >
+          <ImArrowDown2 size={24} />
+        </motion.button>
+      </motion.div>
     </div>
   );
 };
@@ -169,7 +236,7 @@ export default function Home() {
   }, [currentSlide, totalSlides]);
 
   return (
-    <div className="fixed top-0 left-0 w-screen h-screen overflow-hidden -z-10">
+    <div className="fixed top-0 left-0 w-screen h-screen overflow-hidden">
       <div ref={containerRef} className="h-full">
         <AnimatePresence>
           {currentSlide === 0 && (
@@ -181,7 +248,10 @@ export default function Home() {
               transition={{ duration: 1 }}
               className="absolute top-0 left-0 w-full h-full"
             >
-              <IntroSection isActive={true} />
+              <IntroSection
+                isActive={true}
+                onNextSlide={() => setCurrentSlide(1)}
+              />
             </motion.div>
           )}
           {videoSources.map(
@@ -199,12 +269,19 @@ export default function Home() {
                     videoSrc={src}
                     text={texts[index]}
                     isActive={true}
+                    onScrollToTop={() => setCurrentSlide(0)}
                   />
                 </motion.div>
               )
           )}
         </AnimatePresence>
       </div>
+      {currentSlide > 0 && (
+        <NavigationMenu
+          currentSlide={currentSlide}
+          setCurrentSlide={setCurrentSlide}
+        />
+      )}
     </div>
   );
 }

@@ -26,13 +26,15 @@ export default function RootLayout({
     <html lang="kr" className="h-full">
       <body className={`${inter.className} flex flex-col min-h-full`}>
         <ClientWrapper>
-          <header>
+          <header className="z-10">
             <NavBar />
           </header>
           <main className="flex-grow container mx-auto px-10 py-10">
             {children}
           </main>
-          <Footer />
+          <footer className="z-10">
+            <Footer />
+          </footer>
         </ClientWrapper>
       </body>
     </html>
