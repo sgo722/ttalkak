@@ -17,6 +17,7 @@ class AllocateService (
     private val createAllocatePort: CreateAllocatePort,
     private val loadAllocatePort: LoadAllocatePort,
     private val loadStatusPort: LoadStatusPort,
+    private val loadRunningPort: LoadRunningPort,
     private val loadPortPort: LoadPortPort,
     private val savePortPort: SavePortPort,
     private val deploymentFeignClient: DeploymentFeignClient,
@@ -92,6 +93,29 @@ class AllocateService (
             // * 할당할 컴퓨터 선정
             val compute = loadAllocatePort.findFirst()
 
+            val create = ComputeCreate(
+                senderId = compute.senderId,
+                instance = compute.instance
+            )
+
+            if (compute.rebuild) {
+                log.info { "재할당 대기중인 컴퓨터: ${compute.id}" }
+
+                val serviceType = if (compute.isDatabase) ServiceType.DATABASE else (compute.instance as DockerContainer).serviceType
+                val running = loadRunningPort.loadRunning(compute.id, serviceType)
+
+                if (running.status == RunningStatus.RUNNING) {
+                    val availablePorts = availablePorts(running.userId)
+                    val randomPort = availablePorts.random()
+                    savePortPort.savePort(running.userId, randomPort)
+
+                    (compute.instance as DockerContainer).outboundPort = randomPort
+                    loadAllocatePort.pop()
+                    simpleMessagingTemplate.convertAndSend("/sub/compute-create/${running.userId}", Json.serialize(create))
+                }
+                return
+            }
+
             // * 할당 로직
             val availableCompute = loadComputePort.loadAllCompute().filter {
                 it.isAvailable(compute.useMemory, compute.useCPU)
@@ -124,16 +148,7 @@ class AllocateService (
             }
 
             // * 컴퓨터에 할당 가능한 포트 저장
-            val availablePorts = loadStatusPort.loadStatus(availableCompute.userId).orElseThrow {
-                IllegalArgumentException("유저에 알맞는 상태가 존재하지 않습니다.")
-            }.let { status ->
-                status.availablePortStart..status.availablePortEnd
-            }.subtract(loadPortPort.loadPorts(availableCompute.userId).toSet())
-
-            val create = ComputeCreate(
-                senderId = 1L,
-                instance = compute.instance
-            )
+            val availablePorts = availablePorts(availableCompute.userId)
 
             if (compute.isDatabase) {
                 simpleMessagingTemplate.convertAndSend("/sub/database-create/${availableCompute.userId}", Json.serialize(create))
@@ -148,5 +163,13 @@ class AllocateService (
         }
 
         redisLockPort.unlock(ALLOCATE_LOCK_KEY)
+    }
+
+    private fun availablePorts(userId: Long): Set<Int> {
+        return loadStatusPort.loadStatus(userId).orElseThrow {
+            IllegalArgumentException("유저에 알맞는 상태가 존재하지 않습니다.")
+        }.let { status ->
+            status.availablePortStart..status.availablePortEnd
+        }.subtract(loadPortPort.loadPorts(userId).toSet())
     }
 }
