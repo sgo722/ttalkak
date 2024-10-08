@@ -113,7 +113,7 @@ class AllocateService (
                     loadAllocatePort.pop()
                     simpleMessagingTemplate.convertAndSend("/sub/compute-create/${running.userId}", Json.serialize(create))
                 }
-                return
+                continue
             }
 
             // * 할당 로직
