@@ -52,7 +52,6 @@ export const registerDockerEventHandlers = () => {
         message: "Container not found, skipping event.",
       };
     }
-    const id = `${container?.serviceType}-${container?.deployId}`;
 
     try {
       switch (event.Action) {
@@ -70,7 +69,7 @@ export const registerDockerEventHandlers = () => {
           }
           break;
         case "destroy":
-          removeContainer(id);
+          removeContainer(container.id);
           break;
         default:
           console.log(`Unhandled container action: ${event.Action}`);

@@ -132,8 +132,8 @@ contextBridge.exposeInMainWorld("electronAPI", {
   removeImage: (imageId: string) => ipcRenderer.invoke("remove-image", imageId),
 
   // Docker Logs
-  startLogStream: (containerId: string, deploymentId?: number) =>
-    ipcRenderer.send("start-container-log-stream", containerId, deploymentId),
+  startLogStream: (containerId: string) =>
+    ipcRenderer.send("start-container-log-stream", containerId),
   stopLogStream: (containerId: string) =>
     ipcRenderer.send("stop-container-log-stream", containerId),
   onLogStream: (
@@ -220,6 +220,8 @@ contextBridge.exposeInMainWorld("electronAPI", {
     ipcRenderer.on("pgrok-log", (_event, log) => callback(log)),
   stopPgrok: (deploymentId: number) =>
     ipcRenderer.invoke("stop-pgrok", deploymentId),
+  stopdatabasePgrok: (databasetId: number) =>
+    ipcRenderer.invoke("stop-database-pgrok", databasetId),
 
   // Port Management
   getInboundRules: () => ipcRenderer.invoke("get-inbound-rules"),

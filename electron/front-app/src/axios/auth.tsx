@@ -1,5 +1,7 @@
 import { axiosInstance } from "./constants";
 import { useAuthStore } from "../stores/authStore";
+import { setCoinInterval } from "./fee";
+import { getCoinInfo } from "./fee";
 
 // 로그인 요청
 export const login = async (username: string, password: string) => {
@@ -17,6 +19,8 @@ export const login = async (username: string, password: string) => {
       const { accessToken, refreshToken } = data;
       // zustand store에 토큰 저장
       setTokens(accessToken, refreshToken);
+      getCoinInfo();
+      setCoinInterval();
       return { success: true };
     } else {
       return { success: false, message };
@@ -35,10 +39,10 @@ export const getUserSettings = async () => {
     const response = await axiosInstance.get("/compute/status");
     const { success, data } = response.data;
 
-    let checkadress: boolean = false;
+    let checkadress: string = "";
     const address = data.address;
     if (address && address.trim !== "") {
-      checkadress = true;
+      checkadress = address;
     }
     console.log(checkadress);
     if (success) {
