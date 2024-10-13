@@ -8,7 +8,7 @@ const deleteDatabase = async (databaseId: number): Promise<void> => {
   });
 
   if (!response.success) {
-    throw new Error(response.message || "데이터베이스 삭제 실패");
+    throw new Error("데이터베이스를 삭제하지 못했습니다. 서버가 불안정합니다");
   }
 };
 

@@ -1,13 +1,13 @@
 import { useQueries } from "@tanstack/react-query";
 import { getWebhooks } from "@/apis/webhook/useGetWebhooks";
 
-interface GetMultipleWebhooksParams {
+interface GetMultipleWebhooksRequest {
   owner: string;
   repo: string;
 }
 
 const useGetMultipleWebhooks = (
-  repos: GetMultipleWebhooksParams[],
+  repos: GetMultipleWebhooksRequest[],
   isEnabled: boolean
 ) => {
   return useQueries({

@@ -8,7 +8,7 @@ const deleteDeploy = async (deploymentId: number): Promise<void> => {
   });
 
   if (!response.success) {
-    throw new Error(response.message || "배포 삭제 실패");
+    throw new Error("프로젝트를 삭제하지 못했습니다. 서버가 불안정합니다.");
   }
 };
 

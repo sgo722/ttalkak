@@ -4,26 +4,26 @@ import {
   UseMutationResult,
 } from "@tanstack/react-query";
 import { toast } from "react-toastify";
-import { PatchProjectParams } from "@/types/project";
+import { ModifyProjectRequest } from "@/types/project";
 import client from "@/apis/core/client";
 
 const modifyProject = async ({
   projectId,
   data,
-}: PatchProjectParams): Promise<void> => {
+}: ModifyProjectRequest): Promise<void> => {
   const response = await client.patch({
     url: `project/${projectId}`,
     data,
   });
   if (!response.success) {
-    throw new Error(response.message || "프로젝트 수정에 실패했습니다.");
+    throw new Error("프로젝트 수정하지 못했습니다. 서버가 불안정합니다. ");
   }
 };
 
 const useModifyProject = (): UseMutationResult<
   void,
   Error,
-  PatchProjectParams,
+  ModifyProjectRequest,
   unknown
 > => {
   const queryClient = useQueryClient();

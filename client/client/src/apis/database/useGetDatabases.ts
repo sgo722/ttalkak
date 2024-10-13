@@ -1,4 +1,4 @@
-import { GetDatabasesResponse, GetDatabasesParams } from "@/types/database";
+import { GetDatabasesResponse, GetDatabasesRequest } from "@/types/database";
 import {
   useSuspenseQuery,
   UseSuspenseQueryResult,
@@ -6,7 +6,7 @@ import {
 import client from "@/apis/core/client";
 
 const getDatabases = async (
-  params: GetDatabasesParams
+  params: GetDatabasesRequest
 ): Promise<GetDatabasesResponse> => {
   const response = await client.get<GetDatabasesResponse>({
     url: "/deployment/database/search",
@@ -16,7 +16,7 @@ const getDatabases = async (
 };
 
 const useGetDatabases = (
-  params: GetDatabasesParams
+  params: GetDatabasesRequest
 ): UseSuspenseQueryResult<GetDatabasesResponse, Error> => {
   return useSuspenseQuery({
     queryKey: ["databases", params] as const,

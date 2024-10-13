@@ -93,13 +93,22 @@ export interface EnvVar {
   value: string;
 }
 
+export interface Version {
+  id: number;
+  repositoryLastCommitMessage: string;
+  repositoryLastCommitUserName: string;
+  repositoryLastCommitUserProfile: string;
+  version: number;
+}
+
 export interface DeployData {
   hostingPort: number | null;
   githubRepositoryRequest: GithubRepositoryRequest;
   versionRequest: VersionRequest | null;
   dockerfileCreateRequest?: DockerfileCreateRequest;
-  envs?: EnvVar[] | null;
+  envs: EnvVar[] | null;
   framework: Framework;
+  favicon: string | null;
 }
 
 export interface CreateDeployRequest extends DeployData {
@@ -118,8 +127,8 @@ export interface GetDeployResponse {
   repositoryOwner: string;
   framework: string;
   payloadURL: string;
-  versions: null | any[];
-  envs: any[];
+  versions: Version[];
+  envs?: EnvVar[];
   hostingResponse: Hosting;
   statusMessage: StatusMessage;
 }

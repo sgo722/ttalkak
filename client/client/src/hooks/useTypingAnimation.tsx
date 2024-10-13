@@ -31,7 +31,7 @@ const useTypingAnimation = (text: string, speed: number = 50) => {
   useEffect(() => {
     const cursorIntervalId = setInterval(() => {
       setIsCursorVisible((prev) => !prev);
-    }, 500);
+    }, 300);
 
     return () => clearInterval(cursorIntervalId);
   }, []);

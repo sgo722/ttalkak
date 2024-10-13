@@ -17,6 +17,7 @@ interface DeployStoreState extends DeployData {
   setDockerfileCreateRequest: (
     data: Partial<DockerfileCreateRequest> | undefined
   ) => void;
+  setFavicon: (favicon: string | null) => void;
   reset: () => void;
 }
 
@@ -40,6 +41,7 @@ const initialState: DeployData = {
     exist: true,
     languageVersion: "",
   },
+  favicon: null,
 };
 
 const useDeployStore = create(
@@ -74,6 +76,11 @@ const useDeployStore = create(
         })),
       setHostingPort: (hostingPort) => set({ hostingPort }),
       setEnvironment: (envs) => set({ envs }),
+      setFavicon: (favicon: string | null) =>
+        set((state) => ({
+          ...state,
+          favicon: favicon,
+        })),
       reset: () => set(initialState),
     }),
     {

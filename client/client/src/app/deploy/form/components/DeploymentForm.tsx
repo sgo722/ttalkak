@@ -74,6 +74,7 @@ export default function DeploymentForm() {
     githubRepositoryRequest,
     versionRequest,
     dockerfileCreateRequest,
+    favicon,
     reset: resetDelpoyStore,
   } = useDeployStore();
 
@@ -105,6 +106,7 @@ export default function DeploymentForm() {
         framework: (data.serviceType === ServiceType.FRONTEND
           ? data.framework
           : Framework.SPRINGBOOT) as Framework,
+        favicon: favicon,
       },
       {
         onSuccess: (responseData) => {
@@ -140,7 +142,10 @@ export default function DeploymentForm() {
                     className="flex items-center text-md font-semibold text-gray-700 mb-1"
                   >
                     프레임워크
-                    <Tooltip content={TOOLTIPS.FRONTEND_FRAMEWORK} />
+                    <Tooltip
+                      content={TOOLTIPS.FRONTEND_FRAMEWORK}
+                      spanClassName="ml-1"
+                    />
                   </label>
                   <select
                     {...field}
@@ -158,7 +163,10 @@ export default function DeploymentForm() {
             <div>
               <label className="flex items-center text-md font-semibold text-gray-700 mb-1">
                 백엔드 프레임워크
-                <Tooltip content={TOOLTIPS.BACKEND_FRAMEWORK} />
+                <Tooltip
+                  content={TOOLTIPS.BACKEND_FRAMEWORK}
+                  spanClassName="ml-1"
+                />
               </label>
               <div className="w-full p-3 border border-gray-300 rounded-md bg-gray-100">
                 SpringBoot
@@ -208,6 +216,7 @@ export default function DeploymentForm() {
                         ? TOOLTIPS.LANGUAGE_VERSION.FRONTEND
                         : TOOLTIPS.LANGUAGE_VERSION.BACKEND
                     }
+                    spanClassName="ml-1"
                   />
                 </label>
                 <input
@@ -248,7 +257,7 @@ export default function DeploymentForm() {
                   className="flex items-center text-md font-semibold text-gray-700 mb-1"
                 >
                   포트번호
-                  <Tooltip content={TOOLTIPS.PORT} />
+                  <Tooltip content={TOOLTIPS.PORT} spanClassName="ml-1" />
                 </label>
                 <input
                   {...field}
@@ -273,7 +282,7 @@ export default function DeploymentForm() {
               className="flex items-center text-md font-semibold text-gray-700 mb-1"
             >
               브랜치
-              <Tooltip content={TOOLTIPS.BRANCH} />
+              <Tooltip content={TOOLTIPS.BRANCH} spanClassName="ml-1" />
             </label>
             <input
               id="branch"
@@ -290,7 +299,7 @@ export default function DeploymentForm() {
               className="flex items-center text-md font-semibold text-gray-700 mb-1"
             >
               루트 디렉토리
-              <Tooltip content={TOOLTIPS.ROOT_DIR} />
+              <Tooltip content={TOOLTIPS.ROOT_DIR} spanClassName="ml-1" />
             </label>
             <input
               id="rootDir"
@@ -305,7 +314,7 @@ export default function DeploymentForm() {
         <div className="mt-8">
           <h3 className="flex items-center text-md font-semibold text-gray-700 mb-1">
             환경변수
-            <Tooltip content={TOOLTIPS.ENV_VARS} />
+            <Tooltip content={TOOLTIPS.ENV_VARS} spanClassName="ml-1" />
           </h3>
           <div className="space-y-3">
             {fields.map((field, index) => (

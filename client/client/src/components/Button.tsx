@@ -30,7 +30,7 @@ export default function Button({
   const disabledStyles = disabled
     ? "opacity-50 cursor-not-allowed"
     : "hover:opacity-80";
-
+    
   return (
     <button
       type={type}

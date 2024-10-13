@@ -4,7 +4,7 @@ import { Suspense } from "react";
 import { ErrorBoundary } from "react-error-boundary";
 import { useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
-import { CreateDatabaseRequest, GetDatabasesParams } from "@/types/database";
+import { CreateDatabaseRequest, GetDatabasesRequest } from "@/types/database";
 import DatabaseList from "@/app/database/components/DatabaseList";
 import DatabaseListLoading from "@/app/database/components/DatabaseListLoading";
 import CreateModal from "@/app/database/components/CreateModal";
@@ -32,7 +32,7 @@ export default function DatabasePage() {
   const [createModalOpen, setCreateModalOpen] = useState(false);
   const [detailModalOpen, setDetailModalOpen] = useState(false);
 
-  const params: Omit<GetDatabasesParams, "page"> = {
+  const params: Omit<GetDatabasesRequest, "page"> = {
     size: 9,
     sort: "createdAt",
     direction: direction.toUpperCase(),

@@ -87,7 +87,7 @@ export default function DetailModal({
       databaseId: data.id,
       command,
     });
-  }, 5000);
+  }, 3000);
 
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
@@ -117,6 +117,7 @@ export default function DetailModal({
                 <div className="text-md ml-2">{data.status}</div>
                 <Tooltip
                   content={getStatusTooptip(data.statusMessage, "데이터베이스")}
+                  spanClassName="ml-1"
                 />
                 {data.status === DeployStatus.STOPPED && (
                   <button
@@ -146,7 +147,10 @@ export default function DetailModal({
                       <td className="py-3 text-gray-500 w-1/3">
                         <div className="flex items-center">
                           {item.label}
-                          <Tooltip content={item.tooltip} />
+                          <Tooltip
+                            content={item.tooltip}
+                            spanClassName="ml-1"
+                          />
                         </div>
                       </td>
                       <td className="py-3">

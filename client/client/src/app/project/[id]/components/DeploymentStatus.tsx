@@ -48,7 +48,7 @@ export default function DeploymentStatus({
     return (
       <Link
         href={`/deploy/${deploy.deploymentId}`}
-        className="flex flex-col gap-4 border rounded-lg p-6 cursor-pointer hover:shadow-md transition-shadow"
+        className="flex flex-col gap-4 border rounded-lg p-6 cursor-pointer hover:shadow-md transition-shadow duration-300 ease-in-out"
       >
         <h3 className="font-semibold text-lg">{type}</h3>
         <p className="text-md">{deploy.repositoryName}</p>
@@ -59,6 +59,7 @@ export default function DeploymentStatus({
           <div className="text-md">{deploy.status}</div>
           <Tooltip
             content={getStatusTooptip(deploy.statusMessage, "프로젝트")}
+            spanClassName="ml-1"
           />
         </div>
         <div className="flex justify-between items-center">

@@ -27,6 +27,18 @@ const HistogramChart = ({
   onBarClick: (start: string, end: string) => void;
 }) => {
   const [chartData, setChartData] = useState<any>(null);
+  const dummyHeights = [
+    "20%",
+    "40%",
+    "10%",
+    "50%",
+    "20%",
+    "30%",
+    "0",
+    "10%",
+    "0",
+    "30%",
+  ];
 
   // 시작 시간과 가장 유사한 분(mm)을 반환
   const roundMinutes = (date: Date, interval: number) => {
@@ -106,7 +118,7 @@ const HistogramChart = ({
   };
 
   return (
-    <div className="w-full h-52 border rounded overflow-x-auto overflow-y-hidden custom-scrollbar px-4 pt-4 shadow-lg">
+    <div className="w-full h-52 border rounded overflow-x-auto overflow-y-hidden custom-scrollbar px-4 pt-4 hover:shadow-lg transition-shadow duration-200">
       <div className="text-lg mb-3 font-semibold">시간별 요청 횟수</div>
       <div className="h-[160px]">
         {chartData ? (
@@ -164,8 +176,17 @@ const HistogramChart = ({
             }}
           />
         ) : (
-          <div className="h-[134px] text-[#b0b0b0] bg-gradient-to-br from-[#f5f5f5] rounded via-[#F4F4F5] to-[#f1f1ff] text-[#3b3b3b] flex items-center justify-center">
-            조회된 데이터가 없습니다
+          <div className="relative flex flex-wrap justify-center items-end relative h-[134px] bg-gradient-to-br from-[#f5f5f5] rounded via-[#F4F4F5] to-[#f1f1ff] text-[#3b3b3b]">
+            {dummyHeights.map((height, index) => (
+              <div
+                key={index}
+                className="hidden xl:block w-[72px] bg-gradient-to-b from-[#c8c8c8] to-[#f5f5f5] mx-2 opacity-50"
+                style={{ height }}
+              ></div>
+            ))}
+            <div className="absolute w-full h-full flex items-center justify-center text-[#acacac] text-sm">
+              조회된 데이터가 없습니다
+            </div>
           </div>
         )}
       </div>

@@ -2,9 +2,10 @@
 
 import { useState, useMemo } from "react";
 import { useRouter } from "next/navigation";
+import { toast } from "react-toastify";
 import { ServiceType } from "@/types/deploy";
 import { Deployment } from "@/types/project";
-import { CreateProjectParams } from "@/types/project";
+import { CreateProjectRequest } from "@/types/project";
 import ConfirmModal from "@/components/ConfirmModal";
 import Modal from "@/app/project/components/Modal";
 import DeploymentStatus from "@/app/project/[id]/components/DeploymentStatus";
@@ -42,9 +43,11 @@ export default function ProjectContent({ id }: ProjectContentProps) {
     [project.deployments]
   );
 
+  // 프로젝트에 등록된 deployments들의 모든 웹훅 조회
   const webhookQueries = useGetMultipleWebhooks(repos, isDeleteClicked);
 
-  const handleEditSubmit = (data: CreateProjectParams) => {
+  // 프로젝트 수정
+  const handleEditSubmit = (data: CreateProjectRequest) => {
     modifyProject({
       projectId: project.id,
       data,
@@ -52,33 +55,39 @@ export default function ProjectContent({ id }: ProjectContentProps) {
     setEditModal(false);
   };
 
+  // 프로젝트 삭제 버튼 클릭
   const handleDeleteClick = () => {
     setIsDeleteClicked(true);
     setDeleteModal(true);
   };
 
-  const handleDeleteConfirm = async () => {
-    if (project.deployments.length >= 1) {
-      const deletePromises = webhookQueries.flatMap((query, index) => {
-        if (!query.data) return [];
-        const repo = repos[index];
-        return query.data
-          .filter((webhook) =>
-            webhook.config.url.includes(project.webhookToken)
-          )
-          .map((webhook) =>
-            deleteWebhook({
-              owner: repo.owner,
-              repo: repo.repo,
-              hook_id: webhook.id,
-            })
-          );
-      });
+  // 웹훅 삭제 함수
+  const deleteWebhooks = async () => {
+    if (project.deployments.length < 1) return;
 
+    const deletePromises = webhookQueries.flatMap((query, index) => {
+      if (!query.data) return [];
+      const repo = repos[index];
+      return query.data
+        .filter((webhook) => webhook.config.url.includes(project.webhookToken))
+        .map((webhook) =>
+          deleteWebhook({
+            owner: repo.owner,
+            repo: repo.repo,
+            hook_id: webhook.id,
+          })
+        );
+    });
+    try {
       await Promise.all(deletePromises);
+      toast.success("웹훅이 성공적으로 삭제되었습니다.");
+    } catch (error) {
+      toast.error("웹훅 삭제에 실패했습니다.");
     }
+  };
 
-    // 프로젝트 삭제
+  // 프로젝트 삭제, 페이지 이동 함수
+  const deleteProjectAndRedirect = () => {
     deleteProject(id, {
       onSuccess: () => {
         setDeleteModal(false);
@@ -86,6 +95,12 @@ export default function ProjectContent({ id }: ProjectContentProps) {
         router.push("/project");
       },
     });
+  };
+
+  // 프로젝트 삭제 최종 확인 시 실행될 함수
+  const handleDeleteConfirm = async () => {
+    await deleteWebhooks();
+    deleteProjectAndRedirect();
   };
 
   const handleBackClick = () => {

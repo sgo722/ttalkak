@@ -1,15 +1,16 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "react-toastify";
-import { CreateProjectParams } from "@/types/project";
+import { CreateProjectRequest } from "@/types/project";
 import client from "@/apis/core/client";
 
-const createProject = async (data: CreateProjectParams): Promise<void> => {
+const createProject = async (data: CreateProjectRequest): Promise<void> => {
   const response = await client.post({
     url: "/project",
     data,
   });
 
-  if (!response.success) throw new Error(response.message!!);
+  if (!response.success)
+    throw new Error(response.message || "데이터베이스 생성에 실패했습니다.");
 };
 
 const useCreateProject = () => {

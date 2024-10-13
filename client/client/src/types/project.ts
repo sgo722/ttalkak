@@ -23,6 +23,7 @@ export interface Project {
   expirationDate: string;
   createdAt: string;
   updatedAt: string;
+  favicon: string | null;
   deployments: Deployment[];
 }
 
@@ -44,7 +45,7 @@ export interface GetProjectsResponse {
   totalElements: number;
 }
 
-export interface GetProjectsParams {
+export interface GetProjectsRequest {
   page: number;
   size: number;
   sort: string;
@@ -53,15 +54,15 @@ export interface GetProjectsParams {
   searchKeyword?: string;
 }
 
-export interface ProjectParams {
+export interface ProjectRequest {
   projectName: string;
   domainName: string;
   expirationDate: string;
 }
 
-export interface CreateProjectParams extends ProjectParams {}
+export interface CreateProjectRequest extends ProjectRequest {}
 
-export interface PatchProjectParams {
+export interface ModifyProjectRequest {
   projectId: number;
-  data: Partial<ProjectParams>;
+  data: Partial<ProjectRequest>;
 }

@@ -19,7 +19,7 @@ const createDeploy = async (
     data,
   });
   if (!response.success)
-    throw new Error(response.message || "배포 생성에 실패했습니다.");
+    throw new Error("프로젝트를 생성하지 못했습니다. 서버가 불안정합니다.");
   return response.data;
 };
 

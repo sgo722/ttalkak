@@ -5,10 +5,11 @@ import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
 import useAuthStore from "@/store/useAuthStore";
 import getUserInfo from "@/apis/user/useGetUserInfo";
+import getValidation from "@/apis/user/useGetValidation";
 
 export default function CallbackPage() {
   const router = useRouter();
-  const { setAccessToken, setUserInfo } = useAuthStore();
+  const { setAccessToken, setUserInfo, setValidation } = useAuthStore();
 
   const fetchUserInfoAndSetState = useCallback(async () => {
     const urlParams = new URLSearchParams(window.location.search);
@@ -18,9 +19,16 @@ export default function CallbackPage() {
       setAccessToken(accessToken);
 
       try {
-        const response = await getUserInfo();
-        const userInfo = response.data;
+        // UserInfo 가져오기
+        const userInfoResponse = await getUserInfo();
+        const userInfo = userInfoResponse.data;
         setUserInfo(userInfo);
+
+        // Validation 가져오기
+        const validationResponse = await getValidation();
+        const validationInfo = validationResponse.data;
+        setValidation(validationInfo);
+
         router.push("/");
         toast.success("로그인에 성공했습니다.");
       } catch (error) {
@@ -32,7 +40,7 @@ export default function CallbackPage() {
       console.error("url에서 accessToken 찾을 수 없음");
       router.push("/login");
     }
-  }, [router, setAccessToken, setUserInfo]);
+  }, [router, setAccessToken, setUserInfo, setValidation]);
 
   useEffect(() => {
     fetchUserInfoAndSetState();

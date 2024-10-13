@@ -1,6 +1,6 @@
 import { useState } from "react";
 import {
-  GetDatabasesParams,
+  GetDatabasesRequest,
   GetDatabasesContentResponse,
 } from "@/types/database";
 import NoData from "@/components/NoData";
@@ -9,7 +9,7 @@ import useGetDatabases from "@/apis/database/useGetDatabases";
 import { getDatabaseIcon, getDatabaseName } from "@/utils/getDatabaseIcons";
 
 interface DatabaseListProps {
-  initialParams: Omit<GetDatabasesParams, "page">;
+  initialParams: Omit<GetDatabasesRequest, "page">;
   onDatabaseClick: (id: number) => void;
 }
 
@@ -18,7 +18,7 @@ export default function DatabaseList({
   onDatabaseClick,
 }: DatabaseListProps) {
   const [currentPage, setCurrentPage] = useState(0);
-  const params: GetDatabasesParams = { ...initialParams, page: currentPage };
+  const params: GetDatabasesRequest = { ...initialParams, page: currentPage };
   const { data } = useGetDatabases(params);
 
   if (!data || data.content.length === 0) {
