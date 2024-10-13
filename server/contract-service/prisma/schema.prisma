@@ -1,0 +1,40 @@
+generator client {
+  provider      = "prisma-client-js"
+  binaryTargets = ["native", "linux-musl-arm64-openssl-3.0.x", "linux-musl-openssl-3.0.x"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model TransactionConfrim {
+  id Int @id @default(autoincrement())
+  userId Int
+  toAddress String
+  fromAddress String
+  hash String
+}
+
+model UserTransactionKey {
+  id Int @id @default(autoincrement())
+  userId Int @unique
+  privateKey String
+  address String
+}
+
+model TransactionHistory {
+  id            Int         @id @default(autoincrement())
+  domain        String
+  fromAddress   String
+  toAddress     String
+  senderId      Int
+  receipientId  Int
+  blockHash     String
+  amount        Decimal     @db.Decimal(10, 8)
+  serviceId     Int
+  serviceType   String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}

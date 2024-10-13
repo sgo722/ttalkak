@@ -1,0 +1,29 @@
+# 1. 빌드 환경 설정 (Node.js를 사용하여 NestJS 빌드)
+FROM node:18 AS build
+WORKDIR /app
+
+# 2. 의존성 설치
+COPY package*.json ./
+RUN npm install
+
+# 3. 소스 복사 및 NestJS 빌드
+COPY . .
+RUN npx prisma generate 
+RUN npm run build
+
+# 4. 실제 서버 실행 환경 설정
+FROM node:18-alpine
+
+# 5. 빌드된 파일 복사
+COPY --from=build /app/dist ./dist
+COPY --from=build /app/node_modules ./node_modules
+COPY --from=build /app/.env.production .env.production
+COPY package*.json ./
+
+ENV NODE_ENV=production
+
+EXPOSE 5555
+
+# 6. NestJS 앱 실행
+CMD ["npm", "run", "start:prod"]
+# CMD ["sh", "-c", "sleep 600"]

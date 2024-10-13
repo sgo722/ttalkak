@@ -1,0 +1,41 @@
+server:
+  port: 0
+
+spring:
+  cache:
+    jcache:
+      config: classpath:ehcache.xml
+  profiles:
+    include: kafka
+  application:
+    name: project-service
+  elasticsearch:
+    uris: 34.64.227.45:9200
+
+
+producers:
+  topics:
+    delete-deployment:
+      name: delete-deployment
+    update-domain-name:
+      name: update-domain-name
+
+consumers:
+  topics:
+    delete-project-exception:
+      name: delete-project-exception
+    update-domain-name-exception:
+      name: update-domain-name-exception
+
+    update-project-favicon:
+      name: update-project-favicon
+
+  group-id:
+    project-deletion-group:
+      name: project_deletion_group
+    update-hosting-status:
+      name: update_hosting_status
+
+
+
+

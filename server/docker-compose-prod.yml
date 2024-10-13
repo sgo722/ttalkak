@@ -1,0 +1,154 @@
+version: "3.9"
+
+services:
+  eureka-server:
+    container_name: eureka-server
+    build: eureka-server
+    ports:
+      - 8761:8761
+    networks:
+      - spring-network
+    deploy:
+      resources:
+        limits:
+          cpus: "0.25"
+          memory: 256M
+
+  config-server:
+    container_name: config-server
+    build: config-server
+    ports:
+      - 8888:8888
+    networks:
+      - spring-network
+    deploy:
+      resources:
+        limits:
+          cpus: "0.25"
+          memory: 256M
+
+  gateway-service:
+    container_name: gateway-service
+    build: 
+      context: gateway-service
+      dockerfile: Dockerfile.prod
+    ports:
+      - 8000:8000
+    networks:
+      - spring-network
+    depends_on:
+      - eureka-server
+      - config-server
+    deploy:
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: 512M
+
+  compute-service:
+    container_name: compute-service
+    build: 
+      context: compute-service
+      dockerfile: Dockerfile.prod
+    ports:
+      - 15000:15000
+    networks:
+      - spring-network
+    depends_on:
+      - eureka-server
+      - config-server
+      - gateway-service
+    deploy:
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: 512M
+
+  user-service:
+    container_name: user-service
+    build: 
+      context: user-service
+      dockerfile: Dockerfile.prod
+    depends_on:
+      - eureka-server
+      - config-server
+      - gateway-service
+    networks:
+      - spring-network
+    deploy:
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: 512M
+
+  deployment-service:
+    container_name: deployment-service
+    build:
+      context: deployment-service
+      dockerfile: Dockerfile.prod
+    depends_on:
+      - eureka-server
+      - config-server
+      - gateway-service
+    networks:
+      - spring-network
+    deploy:
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: 512M
+
+  project-service:
+    container_name: project-service
+    build:
+      context: project-service
+      dockerfile: Dockerfile.prod
+    depends_on:
+      - eureka-server
+      - config-server
+      - gateway-service
+    networks:
+      - spring-network
+    deploy:
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: 512M
+
+  notification-service:
+    container_name: notification-service
+    build:
+      context: notification-service
+      dockerfile: Dockerfile.prod
+    depends_on:
+      - eureka-server
+      - config-server
+      - gateway-service
+    networks:
+      - spring-network
+    deploy:
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: 512M  
+
+  contract-service:
+    container_name: contract-service
+    build:
+      context: contract-service
+      dockerfile: Dockerfile.prod
+    ports:
+      - 5555:5555
+    depends_on:
+      - eureka-server
+      - gateway-service
+    networks:
+      - spring-network
+    deploy:
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: 512M         
+
+networks:
+  spring-network:
