@@ -403,42 +403,42 @@ pipeline {
             }
         }
 
-        // stage('Update GitLab Repository') {
-        //     steps {
-        //         withCredentials([usernamePassword(credentialsId: GITLAB_CREDENTIALS_ID, passwordVariable: 'GITLAB_PASSWORD', usernameVariable: 'GITLAB_USERNAME'),
-        //                          string(credentialsId: GITHUB_TOKEN, variable: 'GITHUB_TOKEN')]) {
-        //             sh '''
-        //                     git config --global user.email "sgo722@naver.com"
-        //                     git config --global user.name "sgo722"
+        stage('Update GitLab Repository') {
+            steps {
+                withCredentials([usernamePassword(credentialsId: GITLAB_CREDENTIALS_ID, passwordVariable: 'GITLAB_PASSWORD', usernameVariable: 'GITLAB_USERNAME'),
+                                 string(credentialsId: GITHUB_TOKEN, variable: 'GITHUB_TOKEN')]) {
+                    sh '''
+                            git config --global user.email "sgo722@naver.com"
+                            git config --global user.name "sgo722"
 
-        //                     # Clone GitLab repository
-        //                     rm -rf S11P21C108
-        //                     git clone https://oauth2:${GITLAB_PASSWORD}@lab.ssafy.com/s11-blochain-transaction-sub1/S11P21C108.git
-        //                     cd S11P21C108
+                            # Clone GitLab repository
+                            rm -rf S11P21C108
+                            git clone https://oauth2:${GITLAB_PASSWORD}@lab.ssafy.com/s11-blochain-transaction-sub1/S11P21C108.git
+                            cd S11P21C108
 
-        //                     git fetch --all
+                            git fetch --all
 
-        //                     git reset --hard origin/master
+                            git reset --hard origin/master
 
-        //                     git subtree pull --prefix=config https://${GITHUB_TOKEN}@github.com/sunsuking/ddalkak_config.git main --squash
-        //                     git subtree pull --prefix=tunneling https://${GITHUB_TOKEN}@github.com/sunsuking/tunelling.git master --squash
-        //                     git subtree pull --prefix=config https://${GITHUB_TOKEN}@github.com/sunsuking/ddalkak_config.git main --squash
-        //                     git subtree pull --prefix=server https://${GITHUB_TOKEN}@github.com/sunsuking/ddalkak.git master --squash
-        //                     git subtree pull --prefix=client https://${GITHUB_TOKEN}@github.com/ljjunh/ttalkak.git master --squash
+                            git subtree pull --prefix=config https://${GITHUB_TOKEN}@github.com/sunsuking/ddalkak_config.git main --squash
+                            git subtree pull --prefix=tunneling https://${GITHUB_TOKEN}@github.com/sunsuking/tunelling.git master --squash
+                            git subtree pull --prefix=config https://${GITHUB_TOKEN}@github.com/sunsuking/ddalkak_config.git main --squash
+                            git subtree pull --prefix=server https://${GITHUB_TOKEN}@github.com/sunsuking/ddalkak.git master --squash
+                            git subtree pull --prefix=client https://${GITHUB_TOKEN}@github.com/ljjunh/ttalkak.git master --squash
 
-        //                     git subtree pull --prefix=electron https://oauth2:${GITLAB_PASSWORD}@lab.ssafy.com/yhy5049/electron-vite.git master --squash
+                            git subtree pull --prefix=electron https://oauth2:${GITLAB_PASSWORD}@lab.ssafy.com/yhy5049/electron-vite.git master --squash
 
-        //                     # Set remote URL for GitLab
-        //                     git clone https://oauth2:${GITLAB_PASSWORD}@lab.ssafy.com/s11-blochain-transaction-sub1/S11P21C108.git
+                            # Set remote URL for GitLab
+                            git clone https://oauth2:${GITLAB_PASSWORD}@lab.ssafy.com/s11-blochain-transaction-sub1/S11P21C108.git
 
-        //                     # Ensure there are changes to commit and force push
-        //                     git add .
-        //                     git commit -m "Update subtrees" || true
-        //                     git push --force origin master
-        //                 '''
-        //         }
-        //     }
-        // }
+                            # Ensure there are changes to commit and force push
+                            git add .
+                            git commit -m "Update subtrees" || true
+                            git push --force origin master
+                        '''
+                }
+            }
+        }
     }
 
     post {
