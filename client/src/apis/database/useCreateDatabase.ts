@@ -1,8 +1,4 @@
-import {
-  useMutation,
-  useQueryClient,
-  UseMutationResult,
-} from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "react-toastify";
 import { CreateDatabaseRequest } from "@/types/database";
 import client from "@/apis/core/client";
@@ -13,7 +9,7 @@ const createDatabase = async (data: CreateDatabaseRequest): Promise<void> => {
     data,
   });
   if (!response.success)
-    throw new Error(response.message || "데이터베이스 생성에 실패했습니다.");
+    throw new Error("데이터베이스를 생성하지 못했습니다. 서버가 불안정합니다.");
   return response.data;
 };
 

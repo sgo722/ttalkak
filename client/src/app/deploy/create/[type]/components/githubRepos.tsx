@@ -26,6 +26,7 @@ export default function GitHubRepos() {
     setGithubRepositoryRequest,
     setVersionRequest,
     setDockerfileCreateRequest,
+    setFavicon,
   } = useDeployStore();
 
   const { data: repos } = useGetRepos();
@@ -311,6 +312,42 @@ export default function GitHubRepos() {
     }
   };
 
+  const findAndStoreFaviconUrl = async (
+    repo: Repository,
+    branch: string,
+    rootDirectory: string
+  ) => {
+    const faviconPaths = [
+      "public/favicon.ico",
+      "public/favicon.png",
+      "public/logo.png",
+      "public/logo.svg",
+    ];
+
+    for (const path of faviconPaths) {
+      const fullPath = `${rootDirectory}${path}`.replace(/^\.?\//, "");
+      try {
+        const response = await fetch(
+          `https://api.github.com/repos/${repo.full_name}/contents/${fullPath}?ref=${branch}`,
+          {
+            headers: {
+              Authorization: `Bearer ${githubApiKey}`,
+            },
+          }
+        );
+
+        if (response.ok) {
+          const data = await response.json();
+          const faviconUrl = data.download_url;
+          setFavicon(faviconUrl);
+          return;
+        }
+      } catch (error) {
+        continue;
+      }
+    }
+  };
+
   // 루트 디렉토리인지 검증하는 함수
   const checkIfRootDirectory = () => {
     const hasFrontendMarker = repoContents.some(
@@ -411,7 +448,7 @@ export default function GitHubRepos() {
   };
 
   // 선택완료 버튼 클릭 핸들러
-  const handleSelectComplete = useThrottle(() => {
+  const handleSelectComplete = useThrottle(async () => {
     const rootDirCheckResult = checkIfRootDirectory();
     if (rootDirCheckResult !== null) {
       toast.error(rootDirCheckResult, {
@@ -435,17 +472,26 @@ export default function GitHubRepos() {
         commitUserProfile =
           latestCommit.author?.avatar_url || selectedRepo.owner.avatar_url;
       }
-      if (!dockerfileExists) {
-        if (deployType === ServiceType.FRONTEND) {
-          checkFrontendProject().then((res) => {
-            setDockerfileCreateRequest({
-              exist: false,
-              buildTool: res.buildTool,
-              packageManager: res.packageManager,
-            });
+
+      const rootDirectory = currentPath ? `./${currentPath}/` : "./";
+
+      if (deployType === ServiceType.FRONTEND) {
+        await findAndStoreFaviconUrl(
+          selectedRepo,
+          selectedBranch,
+          rootDirectory
+        );
+        if (!dockerfileExists) {
+          const res = await checkFrontendProject();
+          setDockerfileCreateRequest({
+            exist: false,
+            buildTool: res.buildTool,
+            packageManager: res.packageManager,
           });
         }
-        if (deployType === ServiceType.BACKEND) {
+      }
+      if (deployType === ServiceType.BACKEND) {
+        if (!dockerfileExists) {
           const backendBuildTool = checkBackendProject();
           setDockerfileCreateRequest({
             exist: false,
@@ -454,11 +500,30 @@ export default function GitHubRepos() {
         }
       }
 
+      // if (!dockerfileExists) {
+      //   if (deployType === ServiceType.FRONTEND) {
+      //     checkFrontendProject().then((res) => {
+      //       setDockerfileCreateRequest({
+      //         exist: false,
+      //         buildTool: res.buildTool,
+      //         packageManager: res.packageManager,
+      //       });
+      //     });
+      //   }
+      //   if (deployType === ServiceType.BACKEND) {
+      //     const backendBuildTool = checkBackendProject();
+      //     setDockerfileCreateRequest({
+      //       exist: false,
+      //       buildTool: backendBuildTool,
+      //     });
+      //   }
+      // }
+
       setGithubRepositoryRequest({
         repositoryOwner: selectedRepo.owner.login,
         repositoryName: selectedRepo.name,
         repositoryUrl: selectedRepo.html_url,
-        rootDirectory: currentPath ? `./${currentPath}/` : "./",
+        rootDirectory: rootDirectory,
         branch: selectedBranch,
       });
 

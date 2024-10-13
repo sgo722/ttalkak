@@ -14,7 +14,7 @@ export interface CreateDatabaseRequest {
   name: string;
 }
 
-export interface GetDatabasesParams {
+export interface GetDatabasesRequest {
   page: number;
   size: number;
   sort: string;

@@ -81,7 +81,7 @@ axiosInstance.interceptors.response.use(
         try {
           await useAuthStore.getState().logout();
         } catch (logoutError) {
-          console.log("로그아웃 실패", logoutError);
+          console.log(logoutError);
         }
         window.location.href = "/login";
         return Promise.reject(refreshError);

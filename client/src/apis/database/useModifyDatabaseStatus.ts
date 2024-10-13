@@ -3,20 +3,20 @@ import { toast } from "react-toastify";
 import { DeployCommand } from "@/types/deploy";
 import client from "@/apis/core/client";
 
-interface DatabaseStatusRequest {
+interface ModifyDatabaseStatusRequest {
   databaseId: number;
   command: DeployCommand;
 }
 
 const modifyDatabaseStatus = async (
-  data: DatabaseStatusRequest
+  data: ModifyDatabaseStatusRequest
 ): Promise<void> => {
   const response = await client.post({
     url: "/deployment/database/command",
     data,
   });
   if (!response.success) {
-    throw new Error(response.message!!);
+    throw new Error("요청에 실패했습니다. 서버가 불안정합니다.");
   }
 };
 

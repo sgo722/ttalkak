@@ -1,18 +1,19 @@
 import { useState } from "react";
 import Link from "next/link";
-import { GetProjectsParams, Project } from "@/types/project";
+import Image from "next/image";
+import { GetProjectsRequest, Project } from "@/types/project";
 import NoData from "@/components/NoData";
 import NoSearchResult from "@/components/NoSearchResult";
 import useGetProjects from "@/apis/project/useGetProjects";
 import { getRelativeTime } from "@/utils/getRelativeTime";
 
 interface ProjectListProps {
-  initialParams: Omit<GetProjectsParams, "page">;
+  initialParams: Omit<GetProjectsRequest, "page">;
 }
 
 export default function ProjectList({ initialParams }: ProjectListProps) {
   const [currentPage, setCurrentPage] = useState(0);
-  const params: GetProjectsParams = { ...initialParams, page: currentPage };
+  const params: GetProjectsRequest = { ...initialParams, page: currentPage };
   const { data } = useGetProjects(params);
 
   if (!data || data.content.length === 0) {
@@ -33,7 +34,19 @@ export default function ProjectList({ initialParams }: ProjectListProps) {
             className="border rounded-lg p-6"
           >
             <div className="flex items-center mb-2 cursor-pointer">
-              <div className="w-10 h-10 bg-gray-200 rounded-full mr-3"></div>
+              <Image
+                src={project.favicon || "/favicon.png"}
+                alt={`${project.projectName} favicon`}
+                width={40}
+                height={40}
+                className="w-10 h-10 rounded-full mr-3 object-cover"
+                onError={(e) => {
+                  // 이미지 로드 실패 시 기본 이미지로 대체
+                  const target = e.target as HTMLImageElement;
+                  target.onerror = null; // 무한 루프 방지
+                  target.src = "/favicon.png";
+                }}
+              />
               <div>
                 <h2 className="font-semibold">{project.projectName}</h2>
                 <p className="text-sm text-gray-500">{project.domainName}</p>

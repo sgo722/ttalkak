@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
+import { toast } from "react-toastify";
 import Tooltip from "@/components/Tooltip";
 import Button from "@/components/Button";
 import ConfirmModal from "@/components/ConfirmModal";
@@ -13,6 +14,7 @@ import useGetWebhooks from "@/apis/webhook/useGetWebhooks";
 import useCreateWebhook from "@/apis/webhook/useCreateWebhook";
 import useDeleteWebhook from "@/apis/webhook/useDeleteWebhook";
 import useDeleteDeploy from "@/apis/deploy/useDeleteDeploy";
+import useThrottle from "@/hooks/useThrottle";
 import useStatusColor from "@/hooks/useStatusColor";
 import { getStatusTooptip } from "@/utils/getStatusTooltip";
 import { FaExternalLinkAlt } from "react-icons/fa";
@@ -64,11 +66,13 @@ export default function DeployDetailPage() {
           },
           {
             onSuccess: () => {
+              toast.success("웹훅이 성공적으로 삭제되었습니다.");
               setIsToggled(false);
               setIsWebhookLoading(false);
             },
             onError: () => {
               setIsWebhookLoading(false);
+              toast.error("웹훅 삭제에 실패했습니다.");
             },
           }
         );
@@ -95,7 +99,8 @@ export default function DeployDetailPage() {
   };
 
   // deploy 삭제
-  const handleDeleteConfirm = () => {
+  const handleDeleteConfirm = useThrottle(() => {
+    console.log("클릭!");
     deleteDeploy(Number(data?.deploymentId), {
       onSuccess: () => {
         if (isToggled) {
@@ -104,7 +109,7 @@ export default function DeployDetailPage() {
         router.push(`/project/${data?.projectId}`);
       },
     });
-  };
+  }, 3000);
 
   // 도메인 처리
   const formatDomain = (serviceType?: string, detailDomainName?: string) => {
@@ -124,6 +129,11 @@ export default function DeployDetailPage() {
     return null;
   }
 
+  const sortedVersions = [...data.versions].sort(
+    (a, b) => b.version - a.version
+  );
+  const previousVersions = sortedVersions.slice(1);
+
   return (
     <div>
       <div className="flex justify-between mb-3">
@@ -141,11 +151,13 @@ export default function DeployDetailPage() {
         ></Button>
       </div>
       <div className="border rounded-lg shadow-sm p-6">
-        <iframe
-          src={`https://books-page-gamma.vercel.app/`}
-          title="Website Preview"
-          className="w-[100%] h-[400px] mb-6"
-        />
+        {data.status === DeployStatus.RUNNING && (
+          <iframe
+            src={`https://${formattedDomain}`}
+            title="Website Preview"
+            className="w-[100%] h-[400px] mb-6"
+          />
+        )}
         <div className="grid grid-cols-2 gap-6 text-sm">
           <div>
             <p className="text-gray-600 mb-3">상태</p>
@@ -165,8 +177,8 @@ export default function DeployDetailPage() {
               rel="noopener noreferrer"
               className="hover:underline transition-all duration-200 flex items-center gap-2"
             >
+              <FaExternalLinkAlt className="w-5 h-4" />
               <p className="font-medium">{data?.repositoryName}</p>
-              <FaExternalLinkAlt />
             </Link>
             <div className="flex items-center gap-2">
               <FaCodeBranch className="w-5 h-4" />
@@ -190,23 +202,19 @@ export default function DeployDetailPage() {
             <p className="text-gray-600 mb-1">최근 커밋 메시지</p>
             <div className="flex gap-2">
               <FaCodeCommit className="w-5 h-5" />
-              <p className="font-medium max-w-[400px] truncate">
-                {data?.versions?.[0]?.repositoryLastCommitMessage}
+              <p className="font-medium max-w-[400px] truncate flex gap-1">
+                {data?.versions?.[0]?.repositoryLastCommitMessage} by{" "}
+                {data?.versions?.[0]?.repositoryLastCommitUserName}
+                {data?.versions?.[0]?.repositoryLastCommitUserProfile && (
+                  <Image
+                    src={data.versions[0].repositoryLastCommitUserProfile}
+                    alt={`${data.versions[0].repositoryLastCommitUserName}'s profile`}
+                    width={20}
+                    height={20}
+                    className="inline-block rounded-full"
+                  />
+                )}
               </p>
-            </div>
-            <div className="flex items-center gap-1">
-              <p className="font-medium pl-7">
-                by {data?.versions?.[0]?.repositoryLastCommitUserName}
-              </p>
-              {data?.versions?.[0]?.repositoryLastCommitUserProfile && (
-                <Image
-                  src={data.versions[0].repositoryLastCommitUserProfile}
-                  alt={`${data.versions[0].repositoryLastCommitUserName}'s profile`}
-                  width={20}
-                  height={20}
-                  className="inline-block rounded-full"
-                />
-              )}
             </div>
           </div>
           <div>
@@ -233,6 +241,39 @@ export default function DeployDetailPage() {
           </div>
         </div>
       </div>
+      {previousVersions.length > 0 && (
+        <div className="border rounded-lg shadow-sm px-6 pt-6 mt-3">
+          <h2 className="text-xl font-semibold mb-4">버전내역</h2>
+          {previousVersions.map((version) => (
+            <div
+              key={version.version}
+              className="flex items-center mb-4 pb-4 border-b last:border-b-0"
+            >
+              <span className="font-medium w-24 flex-shrink-0">
+                Version: {version.version}
+              </span>
+              <div className="flex items-center justify-center flex-grow mx-4">
+                <FaCodeCommit className="w-4 h-4 flex-shrink-0 mr-2" />
+                <p className="font-medium truncate">
+                  커밋 메시지 : {version.repositoryLastCommitMessage}
+                </p>
+              </div>
+              <span className="text-sm text-gray-500 flex items-center w-36 justify-end flex-shrink-0">
+                by {version.repositoryLastCommitUserName}
+                {version.repositoryLastCommitUserProfile && (
+                  <Image
+                    src={version.repositoryLastCommitUserProfile}
+                    alt={`${version.repositoryLastCommitUserName}'s profile`}
+                    width={20}
+                    height={20}
+                    className="inline-block rounded-full ml-2"
+                  />
+                )}
+              </span>
+            </div>
+          ))}
+        </div>
+      )}
       <ConfirmModal
         isOpen={deleteModal}
         onClose={() => setDeleteModal(false)}

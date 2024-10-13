@@ -8,7 +8,6 @@ export function middleware(request: NextRequest) {
     "/deploy",
     "/dashboard",
     "/database",
-    "/payment",
     "/mypage",
   ];
 

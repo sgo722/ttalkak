@@ -1,22 +1,19 @@
 import { useQuery, UseQueryResult } from "@tanstack/react-query";
-import { PaymentResponse } from "@/types/payment";
+import { PaymentRegistrationStatus } from "@/types/payment";
 import client from "@/apis/core/client";
 
-const getPayment = async (range: number): Promise<PaymentResponse> => {
-  const response = await client.get<PaymentResponse>({
-    url: "/payment",
-    params: { range },
+const getPayment = async (): Promise<PaymentRegistrationStatus> => {
+  const response = await client.get<PaymentRegistrationStatus>({
+    url: "/payment/signature",
   });
 
   return response.data;
 };
 
-const useGetPayment = (
-  range: number
-): UseQueryResult<PaymentResponse, Error> => {
+const useGetPayment = (): UseQueryResult<PaymentRegistrationStatus, Error> => {
   return useQuery({
-    queryKey: ["payment", range] as const,
-    queryFn: () => getPayment(range),
+    queryKey: ["payment", "signature"] as const,
+    queryFn: () => getPayment(),
   });
 };
 

@@ -13,7 +13,7 @@ import {
   toISOWithTimezone,
 } from "@/utils/getDate";
 import useAuthStore from "@/store/useAuthStore";
-import { GetProjectsParams, Project, Deployment } from "@/types/project";
+import { GetProjectsRequest, Project, Deployment } from "@/types/project";
 import {
   HistogramParams,
   DeploymentLogParams,
@@ -50,7 +50,7 @@ export default function CallbackPage() {
     "5",
   ]);
 
-  const projectsParams: GetProjectsParams = {
+  const projectsParams: GetProjectsRequest = {
     page: 0,
     size: 999,
     sort: "createdAt",
@@ -171,6 +171,7 @@ export default function CallbackPage() {
   const handleRefresh = () => {
     setSelectedStatus(["2", "3", "4", "5"]);
     setSelectedMethod(["GET", "POST", "PUT", "PATCH", "DELETE"]);
+    setToDate(getNowDate());
     resetData();
   };
 
@@ -215,7 +216,7 @@ export default function CallbackPage() {
   const dateClass =
     "cursor-pointer border border-[#cecece] px-2.5 h-[37.6px] rounded disabled:border-[#dbdbdb] disabled:text-[#858585] mr-2";
   const refreshClass =
-    "cursor-pointer bg-[#eeeeee] w-[37.6px] h-[37.6px] rounded ml-1";
+    "cursor-pointer bg-[#eeeeee] w-[37.6px] h-[37.6px] rounded ml-1 hover:bg-[#e6e6e6] transition-background duration-200";
 
   return (
     <>
@@ -323,7 +324,7 @@ export default function CallbackPage() {
         />
       </div>
 
-      <div className="w-full border rounded p-4 shadow-lg">
+      <div className="w-full border rounded p-4 hover:shadow-lg transition-shadow duration-200">
         <div className="text-lg mb-3 font-semibold">타입별 로그 데이터</div>
         <div className="flex flex-wrap">
           <select

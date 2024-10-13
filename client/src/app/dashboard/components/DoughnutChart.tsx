@@ -158,7 +158,7 @@ const DoughnutChart = ({
                     : "#ececec",
                   color: selectedStatus.includes(status[0])
                     ? "white"
-                    : "#8b8b8b",
+                    : "#aaaaaa",
                 }}
                 onClick={() => handleStatusToggle(status[0])}
               >
@@ -175,11 +175,11 @@ const DoughnutChart = ({
                 style={{
                   backgroundColor: selectedMethod.includes(method)
                     ? methodBackgroundColors[index]
-                    : "lightgray",
+                    : "#ececec",
                   color: selectedMethod.includes(method) ? "white" : "gray",
                   textDecoration: selectedMethod.includes(method)
-                    ? "none"
-                    : "line-through",
+                    ? "white"
+                    : "#aaaaaa",
                 }}
                 onClick={() => handleMethodToggle(method)}
               >
@@ -226,8 +226,44 @@ const DoughnutChart = ({
               </div>
             ))
           ) : (
-            <div className="w-full h-full text-[#b0b0b0] bg-gradient-to-br from-[#f5f5f5] rounded via-[#F4F4F5] to-[#f1f1ff] text-[#3b3b3b] flex items-center justify-center">
-              조회된 데이터가 없습니다
+            <div className="relative w-full h-full bg-gradient-to-br from-[#f5f5f5] rounded via-[#F4F4F5] to-[#f1f1ff] text-[#3b3b3b]">
+              <div className="absolute w-full h-full flex items-center justify-center text-[#acacac] text-sm">
+                조회된 데이터가 없습니다
+              </div>
+              <div className="w-full px-20 pt-6 pb-1.5 text-[#d1d1d1]">
+                <div className="flex justify-between">
+                  <div className="w-60">2024-10-06 21:57:19</div>
+                  <div>
+                    <span className="mr-4">method</span>GET
+                  </div>
+                  <div>
+                    <span className="mr-4">status</span>200
+                  </div>
+                  <div>
+                    <span className="mr-4">path</span>/user
+                  </div>
+                  <div>
+                    <span className="mr-4">duration</span>0.037s
+                  </div>
+                </div>
+              </div>
+              <div className="w-full px-20 py-1.5 text-[#e6e6e6]">
+                <div className="flex justify-between">
+                  <div className="w-60">2024-10-06 21:59:00</div>
+                  <div>
+                    <span className="mr-4">method</span>PUT
+                  </div>
+                  <div>
+                    <span className="mr-4">status</span>201
+                  </div>
+                  <div>
+                    <span className="mr-4">path</span>/user
+                  </div>
+                  <div>
+                    <span className="mr-4">duration</span>0.067s
+                  </div>
+                </div>
+              </div>
             </div>
           )}
         </div>

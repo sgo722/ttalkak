@@ -8,7 +8,7 @@ interface Webhook {
   };
 }
 
-interface GetWebhooksParams {
+interface GetWebhooksRequest {
   owner: string;
   repo: string;
 }
@@ -16,7 +16,7 @@ interface GetWebhooksParams {
 export const getWebhooks = async ({
   owner,
   repo,
-}: GetWebhooksParams): Promise<Webhook[]> => {
+}: GetWebhooksRequest): Promise<Webhook[]> => {
   try {
     const response = await webhookClient.repos.listWebhooks({
       owner,

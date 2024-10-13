@@ -1,14 +1,16 @@
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
-import { UserInfo } from "@/types/userInfo";
+import { UserInfo, Validation } from "@/types/userInfo";
 import Cookies from "js-cookie";
 
 interface AuthState {
   accessToken: string | null;
   userInfo: UserInfo | null;
+  isValidated: boolean;
   isLogin: boolean;
   setAccessToken: (token: string | null) => void;
   setUserInfo: (info: UserInfo | null) => void;
+  setValidation: (validation: Validation) => void;
   logout: () => Promise<boolean>;
 }
 
@@ -21,6 +23,7 @@ const useAuthStore = create<AuthState>()(
       accessToken: null,
       userInfo: null,
       isLogin: false,
+      isValidated: false,
       setAccessToken: (token) => {
         set({ accessToken: token, isLogin: !!token });
         if (token) {
@@ -30,11 +33,16 @@ const useAuthStore = create<AuthState>()(
         }
       },
       setUserInfo: (info) => set({ userInfo: info }),
+      setValidation: (validation) => {
+        const isValidated = Object.values(validation).every(Boolean);
+        set({ isValidated });
+      },
       logout: async () => {
         try {
           set({
             accessToken: null,
             userInfo: null,
+            isValidated: false,
             isLogin: false,
           });
           Cookies.remove("isLogin");
@@ -51,6 +59,7 @@ const useAuthStore = create<AuthState>()(
         accessToken: state.accessToken,
         isLogin: state.isLogin,
         userInfo: state.userInfo,
+        validation: state.isValidated,
       }),
     }
   )

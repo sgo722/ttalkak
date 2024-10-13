@@ -58,7 +58,7 @@ export default function FileList({
                 className="py-2 px-3 text-gray-600 truncate"
                 data-cy="file-commit-message"
               >
-                {commit ? commit.commit.message : "커밋 정보 로딩 중..."}
+                {commit ? commit.commit.message : "커밋 정보 로딩 중"}
               </td>
               <td
                 className="py-2 px-20 text-gray-600 truncate"
@@ -66,7 +66,7 @@ export default function FileList({
               >
                 {commit
                   ? formatDate(commit.commit.author.date)
-                  : "날짜 로딩 중..."}
+                  : "커밋 날짜 로딩 중"}
               </td>
             </tr>
           );

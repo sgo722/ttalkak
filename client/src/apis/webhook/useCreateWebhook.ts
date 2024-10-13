@@ -2,7 +2,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "react-toastify";
 import webhookClient from "@/apis/core/webhookClient";
 
-interface CreateWebhookParams {
+interface CreateWebhookRequest {
   owner: string;
   repo: string;
   webhookUrl: string;
@@ -12,7 +12,7 @@ const createWebhook = async ({
   owner,
   repo,
   webhookUrl,
-}: CreateWebhookParams) => {
+}: CreateWebhookRequest) => {
   try {
     const response = await webhookClient.repos.createWebhook({
       owner,
