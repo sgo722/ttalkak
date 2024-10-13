@@ -14,10 +14,10 @@ export const startService = async () => {
   const setOsType = useCpuStore.getState().setOsType;
 
   const { userSettings } = useAuthStore.getState();
-  const address = userSettings?.address;
+  const address = userSettings?.address || "";
 
-  if (!address) {
-    alert("Metamask 지갑정보를 확인하세요");
+  if (address.trim() === "") {
+    alert("지갑 정보를 확인하세요");
     return;
   }
 
@@ -45,7 +45,6 @@ export const startService = async () => {
     await connectWebSocket();
     console.log("6. ServiceUtil: WebSocket connected");
 
-    setServiceStatus("running");
     startContainerStatsMonitoring();
   } catch (err) {
     console.error("!ServiceUtil: Error in service handler:", err);

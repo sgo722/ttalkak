@@ -34,7 +34,7 @@ declare global {
 
   //FE, BE  CREATE요청
   interface DeploymentCreateEvent {
-    senderId: string;
+    senderId: number;
     instance: DeploymentCommand;
   }
 
@@ -54,7 +54,7 @@ declare global {
 
   // DATABASE 생성 관련
   interface DatabaseCreateEvent {
-    senderId: string;
+    senderId: number;
     instance: DatabaseCommand;
   }
 
@@ -101,7 +101,7 @@ declare global {
     removeAllDockerEventListeners: () => void;
 
     // Docker Logs
-    startLogStream: (containerId: string, deploymentId?: number) => void;
+    startLogStream: (containerId: string) => void;
     stopLogStream: (containerId: string) => void;
     onLogStream: (
       callback: (data: { containerId: string; log: string }) => void
@@ -261,6 +261,7 @@ declare global {
     ) => Promise<string>;
     onPgrokLog: (callback: LogCallback) => void;
     stopPgrok: (deploymentId: number) => Promise<string>;
+    stopdatabasePgrok: (databaseId: number) => Promise<string>;
   }
 
   // System and Project Operations

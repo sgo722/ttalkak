@@ -6,12 +6,15 @@ import { DeployImageInfo } from "../../../stores/imageStore";
 import { DeployContainerInfo } from "../../../stores/containerStore";
 import { DeployStatus } from "../../../types/deploy";
 import { checkAndUpdateContainerMonitoring } from "../../../services/monitoring/healthCheckPingUtils";
+import { stopAndRemoveExistingContainer } from "./deploymentUtils";
+import { useAuthStore } from "../../../stores/authStore";
+import { startPostInterval } from "../../../axios/payment.tsx";
 
 export async function handleDatabaseBuild(dbCreate: DatabaseCreateEvent) {
   const { senderId, instance } = dbCreate;
-  const { getContainerById, removeContainer, updateContainerInfo } =
+  const { getContainerById, updateContainerInfo } =
     useContainerStore.getState();
-  const { updateImageInfo, removeImage } = useImageStore.getState();
+  const { updateImageInfo } = useImageStore.getState();
   const id = `${instance.serviceType}-${instance.databaseId}`;
   const dbImageName = `${instance.dockerImageName}:${
     instance.dockerImageTag || "latest"
@@ -28,8 +31,6 @@ export async function handleDatabaseBuild(dbCreate: DatabaseCreateEvent) {
           await stopAndRemoveExistingContainer(existingContainerId);
           updateImageInfo(id, { status: DeployStatus.DELETED });
           updateContainerInfo(id, { status: DeployStatus.DELETED });
-          removeImage(id);
-          removeContainer(id);
           console.log(`기존 컨테이너 삭제 완료, ID: ${existingContainerId}`);
         } catch (error) {
           console.error(`기존 배포 삭제 중 오류 발생: ${error}`);
@@ -62,23 +63,17 @@ export async function handleDatabaseBuild(dbCreate: DatabaseCreateEvent) {
   }
 }
 
-// 기존 컨테이너 중지 및 삭제 처리 함수
-async function stopAndRemoveExistingContainer(containerId: string) {
-  await window.electronAPI.stopContainerStats([containerId]);
-  await window.electronAPI.stopContainer(containerId);
-  await window.electronAPI.removeContainer(containerId);
-}
-
 // 새로운 컨테이너 시작 성공 시 처리 함수
 async function handleSuccessfulContainerStart(
   instance: DatabaseCommand,
   image: DockerImage,
   container: DockerContainer,
-  senderId: string,
+  senderId: number,
   id: string
 ) {
   const { updateImageInfo } = useImageStore.getState();
   const { updateContainerInfo } = useContainerStore.getState();
+  const address = useAuthStore.getState().userSettings?.address;
   // 이미지 정보를 업데이트
   const newImage: Omit<DeployImageInfo, "id"> = {
     imageId: image.Id,
@@ -109,15 +104,6 @@ async function handleSuccessfulContainerStart(
   };
   updateImageInfo(id, newImage);
   // 상태 업데이트
-  sendInstanceUpdate(
-    instance.serviceType,
-    instance.databaseId,
-    senderId,
-    "PENDING",
-    instance.outboundPort,
-    "PENDING"
-  );
-
   // pgrok 실행 및 결과 처리
   const result = await window.electronAPI.runPgrok(
     PGROK_URL,
@@ -150,7 +136,20 @@ async function handleSuccessfulContainerStart(
       //pgrok 생성 되고 나서
       updateContainerInfo(id, newContainer);
       checkAndUpdateContainerMonitoring();
-      window.electronAPI.startLogStream(container.Id);
+      // window.electronAPI.startLogStream(container.Id);
+
+      if (newContainer && address) {
+        const paymentContainer = {
+          id: id,
+          domain: "database", // 도메인 정보
+          deployId: instance.databaseId, // 배포 ID
+          serviceType: instance.serviceType, // 서비스 타입
+          senderId: senderId, // 발신자 ID
+          address: address, // 주소 정보
+        };
+
+        startPostInterval(paymentContainer);
+      }
       break;
     default:
       break;
