@@ -1,8 +1,0 @@
-server:
-  port: 15000
-
-spring:
-  profiles:
-    include: kafka
-  application:
-    name: compute-service
