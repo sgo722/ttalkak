@@ -90,6 +90,8 @@ public class GetProjectInputPort implements GetProjectUseCase {
             }
         }
 
+        log.info("------------------------프로젝트 페이징 조회 시 반환 데이터 ::: ------------------------" + projects);
+
         ProjectPageResponse projectPageResponse = ProjectPageResponse.builder()
                 .content(page.getContent())
                 .pageNumber(page.getNumber())
