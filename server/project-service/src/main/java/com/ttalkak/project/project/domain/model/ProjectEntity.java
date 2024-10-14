@@ -12,7 +12,6 @@ import java.util.UUID;
 @Entity
 @Table(name = "projects")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@ToString
 public class ProjectEntity extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
