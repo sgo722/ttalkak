@@ -6,6 +6,7 @@
   <component name="ChangeListManager">
     <list default="true" id="a1774c54-c6a5-4af4-9971-881967232b08" name="Changes" comment="프로젝트 기능 구현">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/project-service/src/main/java/com/ttalkak/project/project/domain/model/ProjectEntity.java" beforeDir="false" afterPath="$PROJECT_DIR$/project-service/src/main/java/com/ttalkak/project/project/domain/model/ProjectEntity.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -210,6 +211,13 @@
     <configuration name="DeploymentServiceApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot">
       <module name="deployment.main" />
       <option name="SPRING_BOOT_MAIN_CLASS" value="com.ttalkak.deployment.DeploymentServiceApplication" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="GatewayServiceApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot">
+      <module name="gateway-service.main" />
+      <option name="SPRING_BOOT_MAIN_CLASS" value="com.ttalkak.gateway.GatewayServiceApplication" />
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
