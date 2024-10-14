@@ -1,5 +1,5 @@
-import { useState, useEffect } from "react";
-import { Bar } from "react-chartjs-2";
+import { useState, useEffect } from 'react';
+import { Bar } from 'react-chartjs-2';
 import {
   Chart,
   CategoryScale, // X축
@@ -7,9 +7,9 @@ import {
   BarElement,
   Title,
   Tooltip,
-} from "chart.js";
-import { formatTimestamp } from "@/utils/getDate";
-import { Histogram } from "@/types/dashboard";
+} from 'chart.js';
+import { formatTimestamp } from '@/utils/getDate';
+import { Histogram } from '@/types/dashboard';
 
 Chart.register(CategoryScale, LinearScale, BarElement, Title, Tooltip);
 
@@ -28,16 +28,16 @@ const HistogramChart = ({
 }) => {
   const [chartData, setChartData] = useState<any>(null);
   const dummyHeights = [
-    "20%",
-    "40%",
-    "10%",
-    "50%",
-    "20%",
-    "30%",
-    "0",
-    "10%",
-    "0",
-    "30%",
+    '20%',
+    '40%',
+    '10%',
+    '50%',
+    '20%',
+    '30%',
+    '0',
+    '10%',
+    '0',
+    '30%',
   ];
 
   // 시작 시간과 가장 유사한 분(mm)을 반환
@@ -95,7 +95,7 @@ const HistogramChart = ({
         datasets: [
           {
             data: counts, // y축 (요청 수)
-            backgroundColor: "#c1c1ff",
+            backgroundColor: '#c1c1ff',
           },
         ],
       });
@@ -148,16 +148,16 @@ const HistogramChart = ({
                       const date = new Date(label);
 
                       if (intervalMinute && intervalMinute <= 60) {
-                        return date.toLocaleTimeString("ko-KR", {
-                          hour: "2-digit",
-                          minute: "2-digit",
+                        return date.toLocaleTimeString('ko-KR', {
+                          hour: '2-digit',
+                          minute: '2-digit',
                           hour12: false, // 24시간 형식으로 표시
                         });
                       } else {
-                        return date.toLocaleDateString("ko-KR", {
-                          year: "numeric",
-                          month: "2-digit",
-                          day: "2-digit",
+                        return date.toLocaleDateString('ko-KR', {
+                          year: 'numeric',
+                          month: '2-digit',
+                          day: '2-digit',
                         });
                       }
                     },
@@ -167,7 +167,7 @@ const HistogramChart = ({
                   // y축 설정
                   grid: {
                     display: true,
-                    color: "#f0f0f0",
+                    color: '#f0f0f0',
                   },
                 },
               },
@@ -180,7 +180,7 @@ const HistogramChart = ({
             {dummyHeights.map((height, index) => (
               <div
                 key={index}
-                className="hidden xl:block w-[72px] bg-gradient-to-b from-[#c8c8c8] to-[#f5f5f5] mx-2 opacity-50"
+                className="hidden xl:block w-[7%] bg-gradient-to-b from-[#c8c8c8] to-[#f5f5f5] mx-2 opacity-50"
                 style={{ height }}
               ></div>
             ))}

@@ -1,14 +1,14 @@
-"use client";
+'use client';
 
-import Image from "next/image";
-import React, { useState } from "react";
-import PaymentModal from "@/components/PaymentModal";
-import EmailRegistrationModal from "@/components/EmailRegistrationModal";
-import useAuthStore from "@/store/useAuthStore";
-import useGetConfirm from "@/apis/payment/useGetConfirm";
-import useGetPayment from "@/apis/payment/useGetPayment";
-import useGetPaymentResult from "@/apis/payment/useGetPaymentResult";
-import { TbCoinFilled } from "react-icons/tb";
+import Image from 'next/image';
+import React, { useState } from 'react';
+import PaymentModal from '@/components/PaymentModal';
+import EmailRegistrationModal from '@/components/EmailRegistrationModal';
+import useAuthStore from '@/store/useAuthStore';
+import useGetConfirm from '@/apis/payment/useGetConfirm';
+import useGetPayment from '@/apis/payment/useGetPayment';
+import useGetPaymentResult from '@/apis/payment/useGetPaymentResult';
+import { TbCoinFilled } from 'react-icons/tb';
 
 export default function MyPage() {
   const { userInfo } = useAuthStore();
@@ -36,8 +36,10 @@ export default function MyPage() {
     setIsPaymentModalOpen(false);
   };
 
-  const profile = "rounded-full w-16 h-16 mr-12 bg-gray-200";
-  const thStyle = "font-normal w-20 text-left text-gray-400";
+  const profile = 'rounded-full w-16 h-16 mr-12 bg-gray-200';
+  const thStyle = 'font-normal w-20 text-left text-gray-400';
+
+  const currentMonth = new Date().getMonth() + 1;
 
   return (
     <>
@@ -101,13 +103,13 @@ export default function MyPage() {
       </div>
       <div className="w-full border rounded p-6 mt-8 min-h-[340px] hover:shadow-lg transition-shadow duration-200">
         <div className="flex justify-between font-semibold text-lg mb-3.5 pb-2 border-b border-[#a7a7a7]">
-          <div>청구 금액</div>
+          <div>{currentMonth}월 청구 금액</div>
           <div>
             <span className="mr-4">합계</span>
             {paymentResult &&
               paymentResult
                 .reduce((acc, payment) => acc + parseFloat(payment.amount), 0)
-                .toFixed(1)}{" "}
+                .toFixed(1)}{' '}
             ssf
           </div>
         </div>
