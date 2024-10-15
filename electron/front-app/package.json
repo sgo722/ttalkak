@@ -4,6 +4,8 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
+  "description": "ttalkak",
+  "author": "ssafy 11th C108",
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build && electron-builder",
@@ -64,11 +66,13 @@
     "files": [
       "dist-electron/**/*",
       "dist/**/*",
-      "node_modules/**/*"
+      "node_modules/**/*",
+      "!**/darwin/**"  
     ],
     "directories": {
       "buildResources": "assets"
     },
+
     "win": {
       "target": [
         {
