@@ -18,8 +18,14 @@ const createDeploy = async (
     url: "deployment",
     data,
   });
-  if (!response.success)
-    throw new Error("프로젝트를 생성하지 못했습니다. 서버가 불안정합니다.");
+  if (!response.success) {
+    if (response.status === 503) {
+      throw new Error("깃허브 서버 상태가 불안정합니다.");
+    }
+    throw new Error(
+      "프로젝트를 생성하지 못했습니다. 서버 상태가 불안정합니다."
+    );
+  }
   return response.data;
 };
 

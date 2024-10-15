@@ -41,7 +41,7 @@ const ListItem: React.FC<{
 
 const AppGuidePage: React.FC = () => {
   const downloadUrl =
-    "https://drive.google.com/file/d/1uTLGHWoJJMzvW4JvsHxvDX6Qh9USj3EB/view?usp=drive_link";
+    "https://drive.google.com/file/d/18VPEb_-APx4j2zEmuyfnkVvdoOXjAUUD/view?usp=drive_link";
   const dockerUrl = "https://docs.docker.com/desktop/install/windows-install/";
 
   const steps: GuideStepProps[] = [

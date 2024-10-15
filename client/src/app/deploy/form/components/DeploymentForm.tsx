@@ -152,8 +152,9 @@ export default function DeploymentForm() {
                     id="framework"
                     className="w-full p-3 border border-gray-300 rounded-md focus:outline-none"
                   >
-                    <option value="REACT">React.js</option>
-                    <option value="NEXTJS">Next.js</option>
+                    <option value={Framework.REACT}>React.js</option>
+                    <option value={Framework.NEXTJS}>Next.js</option>
+                    <option value={Framework.VUEJS}>Vue.js</option>
                   </select>
                 </div>
               )}
