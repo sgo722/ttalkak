@@ -14,7 +14,7 @@ const modifyDeployStatus = async (data: DeployStatusRequest): Promise<void> => {
     data,
   });
   if (!response.success) {
-    throw new Error("요청에 실패했습니다. 서버가 불안정합니다.");
+    throw new Error("요청에 실패했습니다. 서버 상태가 불안정합니다.");
   }
 };
 

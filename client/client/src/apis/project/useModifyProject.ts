@@ -16,7 +16,7 @@ const modifyProject = async ({
     data,
   });
   if (!response.success) {
-    throw new Error("프로젝트 수정하지 못했습니다. 서버가 불안정합니다. ");
+    throw new Error("프로젝트 수정하지 못했습니다. 서버 상태가 불안정합니다. ");
   }
 };
 

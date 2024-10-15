@@ -31,6 +31,7 @@ export enum DeployCommand {
 export enum Framework {
   REACT = "REACT",
   NEXTJS = "NEXTJS",
+  VUEJS = "VUEJS",
   SPRINGBOOT = "SPRINGBOOT",
 }
 

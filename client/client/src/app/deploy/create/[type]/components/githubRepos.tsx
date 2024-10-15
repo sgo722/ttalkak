@@ -485,7 +485,7 @@ export default function GitHubRepos() {
           const res = await checkFrontendProject();
           setDockerfileCreateRequest({
             exist: false,
-            buildTool: res.buildTool,
+            // buildTool: res.buildTool,
             packageManager: res.packageManager,
           });
         }
@@ -499,25 +499,6 @@ export default function GitHubRepos() {
           });
         }
       }
-
-      // if (!dockerfileExists) {
-      //   if (deployType === ServiceType.FRONTEND) {
-      //     checkFrontendProject().then((res) => {
-      //       setDockerfileCreateRequest({
-      //         exist: false,
-      //         buildTool: res.buildTool,
-      //         packageManager: res.packageManager,
-      //       });
-      //     });
-      //   }
-      //   if (deployType === ServiceType.BACKEND) {
-      //     const backendBuildTool = checkBackendProject();
-      //     setDockerfileCreateRequest({
-      //       exist: false,
-      //       buildTool: backendBuildTool,
-      //     });
-      //   }
-      // }
 
       setGithubRepositoryRequest({
         repositoryOwner: selectedRepo.owner.login,
