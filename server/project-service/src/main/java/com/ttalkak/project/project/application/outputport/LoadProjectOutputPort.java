@@ -4,6 +4,8 @@ import com.ttalkak.project.project.domain.model.ProjectEntity;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import java.util.List;
+
 public interface LoadProjectOutputPort {
 
     // 프로젝트 단건 조회
@@ -12,6 +14,7 @@ public interface LoadProjectOutputPort {
     // 프로젝트 단순 페이징 처리
     Page<ProjectEntity> findMyProjects(Pageable pageable, Long userId);
 
+    List<ProjectEntity> findAllByUserId(Long userId);
     // 프로젝트 키워드 포함 페이징 처리
     Page<ProjectEntity> findMyProjectsContainsSearchKeyWord(Pageable pageable, Long userId, String searchKeyword);
 

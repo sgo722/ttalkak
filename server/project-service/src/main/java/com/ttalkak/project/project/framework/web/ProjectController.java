@@ -149,7 +149,7 @@ public class ProjectController {
     @GetMapping("/project/ehcache")
     public List<Map<String, Object>> findAll() {
         return cacheManager.getCacheNames().stream()
-                .map(cacheName -> {
+                  .map(cacheName -> {
                     Map<String, Object> cacheData = new HashMap<>();
                     cacheData.put("cacheName", cacheName);
 
