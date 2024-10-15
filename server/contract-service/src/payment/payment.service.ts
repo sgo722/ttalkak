@@ -108,7 +108,7 @@ export class PaymentService {
 
   async getPaymentHistory(userId: number, range: number): Promise<any> {
     const histories = await this.prisma.transactionHistory.groupBy({
-      by: ['domain', 'serviceId', 'serviceType'],
+      by: ['domain', 'serviceType'],
       _sum: {
         amount: true,
       },
@@ -119,7 +119,6 @@ export class PaymentService {
 
     return histories.map((history) => {
       return {
-        serviceId: history.serviceId,
         serviceType: history.serviceType,
         domain: history.domain,
         amount: history._sum.amount,
