@@ -10,6 +10,7 @@ import com.ttalkak.project.project.domain.model.vo.ProjectStatus;
 import com.ttalkak.project.project.framework.jpaadapter.repository.ProjectJpaRepository;
 import com.ttalkak.project.project.application.outputport.SaveProjectOutputPort;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -19,6 +20,7 @@ import java.util.List;
 
 @PersistenceAdapter
 @RequiredArgsConstructor
+@Slf4j
 public class ProjectPersistenceAdapter implements SaveProjectOutputPort, 
         LoadProjectOutputPort,
         DeleteProjectOutputPort {
@@ -66,6 +68,13 @@ public class ProjectPersistenceAdapter implements SaveProjectOutputPort,
         return projectJpaRepository.findMyProjects(pageable, userId);
     }
 
+    @Override
+    public List<ProjectEntity> findAllByUserId(Long userId) {
+        List<ProjectEntity> allByUserId = projectJpaRepository.findAllByUserId(userId);
+        log.info("=======================데이터 삽입 후 데이터 전체 조회 시 :: =======================\n" + allByUserId);
+        return allByUserId;
+    }
+
     /**
      * 프로젝트 키워드 포함 페이징 처리 
      * @param pageable
@@ -80,7 +89,12 @@ public class ProjectPersistenceAdapter implements SaveProjectOutputPort,
             unless = "#result == null || #result.isEmpty()")
     public Page<ProjectEntity> findMyProjectsContainsSearchKeyWord(Pageable pageable, Long userId, String searchKeyword) {
         System.out.println("========== " + "#"+userId+"_#"+searchKeyword + "_#"+pageable.getPageNumber()+'_'+pageable.getPageSize());
-        return projectJpaRepository.findMyProjectsContainsSearchKeyWord(pageable, userId, searchKeyword);
+
+
+        Page<ProjectEntity> myProjectsContainsSearchKeyWord = projectJpaRepository.findMyProjectsContainsSearchKeyWord(pageable, userId, searchKeyword);
+
+        log.info("======================= 데이터 삽입 후 데이터 전체 조회 시 :: =======================\n" + myProjectsContainsSearchKeyWord);
+        return myProjectsContainsSearchKeyWord;
     }
 
     /**

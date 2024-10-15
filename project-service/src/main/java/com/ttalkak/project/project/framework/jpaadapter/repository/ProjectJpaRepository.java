@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface ProjectJpaRepository extends JpaRepository<ProjectEntity, Long> {
@@ -24,4 +25,7 @@ public interface ProjectJpaRepository extends JpaRepository<ProjectEntity, Long>
 
     @Query("SELECT p FROM ProjectEntity p WHERE p.webhookToken = :webhookToken")
     Optional<ProjectEntity> findByWebHookToken(@Param("webhookToken") String webhookToken);
+
+    @Query("SELECT p FROM ProjectEntity p WHERE p.userId = :userId")
+    List<ProjectEntity> findAllByUserId(Long userId);
 }
