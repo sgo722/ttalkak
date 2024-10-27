@@ -70,10 +70,10 @@ MySQL, Redis, PostgreSQL, MongoDB, MariaDB 데이터베이스 배포 기능 제�
 | **FE Framework**  | Next.js, Electron                                                                           |
 | **Web Libraries** | TypeScript, TanstackQuery, Zustand, react-hook-form, Tailwind, Chart.js, Cypress, Storybook, framer-motion, react-loading-skeleton, react-tostify, ethers, web3, lottie |
 | **App Libraries** | TypeScript, Axios, Zustand, Tailwind, Dockerode, Stomp.js                                  |
-| **BE Framework**  | -                                                                                          |
-| **DB**            | -                                                                                          |
-| **Library**       | -                                                                                          |
-| **Protocol & Message Queue** | -                                                                              |
+| **BE Framework**  | - Spring, FastAPI                                                                          |
+| **DB**            | -  PostgreSQL, Redis, Elastic Search                                                       |
+| **Library**       | - pgrok, Spring Security                                                                   |
+| **Protocol & Message Queue** | - OpenFeign, Kafka                                                              |
 | **Server**        | -                                                                                          |
 
 
